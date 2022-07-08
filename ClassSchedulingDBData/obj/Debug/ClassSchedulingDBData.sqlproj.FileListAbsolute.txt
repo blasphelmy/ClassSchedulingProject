@@ -1,0 +1,10 @@
+C:\Users\David Nguyen\Desktop\gitHub\ClassSchedulingProject\ClassSchedulingDBData\bin\Debug\ClassSchedulingDBData.dacpac
+C:\Users\David Nguyen\Desktop\gitHub\ClassSchedulingProject\ClassSchedulingDBData\obj\Debug\ClassSchedulingDBData.sqlproj.AssemblyReference.cache
+C:\Users\David Nguyen\Desktop\gitHub\ClassSchedulingProject\ClassSchedulingDBData\obj\Debug\ClassSchedulingDBData.dll
+C:\Users\David Nguyen\Desktop\gitHub\ClassSchedulingProject\ClassSchedulingDBData\obj\Debug\ClassSchedulingDBData.pdb
+C:\Users\David Nguyen\Desktop\gitHub\ClassSchedulingProject\ClassSchedulingDBData\bin\Debug\ClassSchedulingDBData.dll
+C:\Users\David Nguyen\Desktop\gitHub\ClassSchedulingProject\ClassSchedulingDBData\bin\Debug\ClassSchedulingDBData.pdb
+C:\Users\David Nguyen\Desktop\gitHub\ClassSchedulingProject\ClassSchedulingDBData\obj\Debug\Model.xml
+C:\Users\David Nguyen\Desktop\gitHub\ClassSchedulingProject\ClassSchedulingDBData\obj\Debug\refactor.xml
+C:\Users\David Nguyen\Desktop\gitHub\ClassSchedulingProject\ClassSchedulingDBData\obj\Debug\postdeploy.sql
+C:\Users\David Nguyen\Desktop\gitHub\ClassSchedulingProject\ClassSchedulingDBData\obj\Debug\predeploy.sql

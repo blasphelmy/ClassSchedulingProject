@@ -1,0 +1,78 @@
+﻿@model RegisterAccount
+@{
+}
+<style>
+    label {
+        margin-top: 10px;
+    }
+
+    input {
+        margin-top: 15px;
+    }
+</style>
+<br>
+<br>
+<div class="container">
+    <main role="main" class="pb-3">
+        <div class="container">
+            <h1>Create a new Account Today!</h1>
+            <form id="registration" asp-action="createAccount" method="post">
+        
+                <select id="instSelection" class="custom-select" style="margin-top: 25px; margin-bottom: 25px;" onchange="updateEmailSuffix()">
+                  <option selected>Select your Institution</option>
+                </select>
+        
+        
+        @*        <div class="form-group">
+                    <label asp-for="email" class="control-label"></label>
+                    <input id="email" asp-for="email" class="form-control" />
+                    <span id="emailWarning" asp-validation-for="email" class="text-danger"></span>
+                    <span id="emailconfirm" class="text-success"></span>
+                </div>*@
+
+                <label class="control-label">Email</label>
+                <div class="input-group mb-3">
+                  <input id="email" type="text" class="form-control" placeholder="Email" aria-describedby="basic-addon2">
+                  <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon2" style="position:relative; height: 38px; top: 15px">@@example.com</span>
+                  </div>
+                </div>
+                <span id="emailWarning" asp-validation-for="email" class="text-danger"></span>
+                <span id="emailconfirm" class="text-success"></span>
+
+
+                <div class="form-group">
+                    <label asp-for="firstName" class="control-label"></label>
+                    <input asp-for="firstName" class="form-control" />
+                    <span asp-validation-for="firstName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="lastName" class="control-label"></label>
+                    <input asp-for="lastName" class="form-control" />
+                    <span asp-validation-for="lastName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="password" class="control-label"></label>
+                    <input asp-for="password" class="form-control" />
+                    <span  asp-validation-for="password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="passwordcnf" class="control-label"></label>
+                    <input asp-for="passwordcnf" class="form-control" />
+                    <span asp-validation-for="passwordcnf" class="text-danger"></span>
+                </div>
+                <div class="form-group"><button class="btn btn-primary" id="submitBtn" type="submit" style="margin-top: 20px;margin-right: 10px">Create Account</button><button class="Btn btn btn-primary" id="loginBtn" style="margin-top: 20px">Already have an account?</button></div>
+            </form>
+            @section Scripts{
+                @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+            }
+            <script src="/js/forms.js"></script>
+            <script src="/js/formhelpers.js"></script>
+        <script>
+        let i = "@ViewBag.institutionRegistry".split("--").filter(e);
+        let ise = "@ViewBag.institutionEmailSuffix".split("--").filter(e);
+        let iseDict = new Map();
+        </script>
+        </div>            
+    </main>
+</div>

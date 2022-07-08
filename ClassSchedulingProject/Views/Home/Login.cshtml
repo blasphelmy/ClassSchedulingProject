@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = ViewData["Login"];
+}
+@model Login
+@{
+}
+<style>
+    label {
+        margin-top: 10px;
+    }
+
+    input {
+        margin-top: 15px;
+    }
+</style>
+<br>
+<br>
+<div class="container">
+    <main role="main" class="pb-3">
+        <div class="container">
+            <h1>Create a new Account Today!</h1>
+            <form id="login" asp-action="Login" method="post">
+        
+                <select id="instSelection" class="custom-select" style="margin-top: 25px; margin-bottom: 25px;" onchange="updateEmailSuffix()">
+                  <option selected>Select your Institution</option>
+                </select>
+        
+        
+        @*        <div class="form-group">
+                    <label asp-for="email" class="control-label"></label>
+                    <input id="email" asp-for="email" class="form-control" />
+                    <span id="emailWarning" asp-validation-for="email" class="text-danger"></span>
+                    <span id="emailconfirm" class="text-success"></span>
+                </div>*@
+
+                <label class="control-label">Email</label>
+                <div class="input-group mb-3">
+                  <input id="email" type="text" class="form-control" placeholder="JohnAppleSeed" aria-describedby="basic-addon2">
+                  <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon2" style="position:relative; height: 38px; top: 15px">@@example.com</span>
+                  </div>
+                </div>
+                <span id="emailWarning" asp-validation-for="email" class="text-danger"></span>
+                <span id="emailconfirm" class="text-success"></span>
+
+                <div class="form-group">
+                    <label asp-for="password" class="control-label"></label>
+                    <input asp-for="password" class="form-control" />
+                    <span  asp-validation-for="password" class="text-danger"></span>
+                </div>
+                <div class="form-group"><button class="Btn btn btn-primary" id="loginBtn" style="margin-top: 20px">Login</button></div>
+            </form>
+            @section Scripts{
+                @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+            }
+        <script src="/js/formhelpers.js"></script>
+        <script>
+        let i = "@ViewBag.institutionRegistry".split("--").filter(e);
+        let ise = "@ViewBag.institutionEmailSuffix".split("--").filter(e);
+        let iseDict = new Map();
+
+        document.getElementById("loginBtn").addEventListener("click", function (e) {
+            e.preventDefault();
+            if (iseDict.get(document.getElementById("instSelection").value)) {
+                post();
+            }
+        });
+
+
+        function post() {
+            var newPost = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: document.getElementById("email").value + iseDict.get(document.getElementById("instSelection").value),
+                    password: document.getElementById("password").value,
+                })
+            }
+            fetch("/Home/Login", newPost).then((response) => response.json()).then(function (data) {
+                console.log(data);
+                if (data) {
+                    window.location.href = "/";
+                }
+            })
+        }
+        </script>
+        </div>            
+    </main>
+</div>
