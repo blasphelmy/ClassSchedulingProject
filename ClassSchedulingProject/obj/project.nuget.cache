@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "UHhwpWYRsdjOUZkvD1+C9B4cyLnfRKS3FjZmE7RgsN28NHeIez/W/ErgvSdpW0PiQTv/Zx9Bi8YsBgFv+f0R+w==",
+  "dgSpecHash": "uD41hjU16PCCbvGhtvmUCtECxRCJN3HEYOYsxvSY5IW2KZpffOQhBhet1OHJUUAyDgrBewRo2AqkJUYrutpsgA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\David Nguyen\\Desktop\\gitHub\\ClassSchedulingProject\\ClassSchedulingProject\\ClassSchedulingProject.csproj",
+  "projectFilePath": "C:\\Users\\David Nguyen\\Desktop\\gitHub\\Class-Scheduling-Project\\ClassSchedulingProject\\ClassSchedulingProject.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\David Nguyen\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\David Nguyen\\.nuget\\packages\\castle.core\\4.4.0\\castle.core.4.4.0.nupkg.sha512",

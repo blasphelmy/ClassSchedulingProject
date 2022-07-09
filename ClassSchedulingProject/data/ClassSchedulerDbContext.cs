@@ -36,9 +36,15 @@ namespace ClassSchedulingProject.data
         {
             modelBuilder.Entity<ApiEvents>(entity =>
             {
+                entity.HasIndex(e => e.EventUuid)
+                    .HasName("UQ__tmp_ms_x__5E26E5A1EB150136")
+                    .IsUnique();
+
                 entity.Property(e => e.EventAuthorHash).IsUnicode(false);
 
                 entity.Property(e => e.EventData).IsUnicode(false);
+
+                entity.Property(e => e.EventUuid).IsUnicode(false);
 
                 entity.Property(e => e.InstitutonId).IsUnicode(false);
 

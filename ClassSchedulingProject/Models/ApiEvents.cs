@@ -14,6 +14,10 @@ namespace ClassSchedulingProject.Models
         [Column("eventData")]
         public string EventData { get; set; }
         [Required]
+        [Column("eventUUID")]
+        [StringLength(256)]
+        public string EventUuid { get; set; }
+        [Required]
         [Column("eventAuthorHash")]
         [StringLength(512)]
         public string EventAuthorHash { get; set; }

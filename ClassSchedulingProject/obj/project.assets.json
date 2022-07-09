@@ -7398,11 +7398,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\David Nguyen\\Desktop\\gitHub\\ClassSchedulingProject\\ClassSchedulingProject\\ClassSchedulingProject.csproj",
+      "projectUniqueName": "C:\\Users\\David Nguyen\\Desktop\\gitHub\\Class-Scheduling-Project\\ClassSchedulingProject\\ClassSchedulingProject.csproj",
       "projectName": "ClassSchedulingProject",
-      "projectPath": "C:\\Users\\David Nguyen\\Desktop\\gitHub\\ClassSchedulingProject\\ClassSchedulingProject\\ClassSchedulingProject.csproj",
+      "projectPath": "C:\\Users\\David Nguyen\\Desktop\\gitHub\\Class-Scheduling-Project\\ClassSchedulingProject\\ClassSchedulingProject.csproj",
       "packagesPath": "C:\\Users\\David Nguyen\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\David Nguyen\\Desktop\\gitHub\\ClassSchedulingProject\\ClassSchedulingProject\\obj\\",
+      "outputPath": "C:\\Users\\David Nguyen\\Desktop\\gitHub\\Class-Scheduling-Project\\ClassSchedulingProject\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

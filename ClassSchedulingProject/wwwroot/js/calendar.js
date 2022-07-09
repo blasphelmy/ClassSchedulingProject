@@ -1,7 +1,9 @@
 ﻿class CalenderApp {
     data;
     calendar;
+    permissibleEvents;
     constructor(data) {
+        this.permissibleEvents = new Map();
         this.data = {};
         this.data.firstName = data.firstName;
         this.data.lastName = data.lastName;
@@ -32,9 +34,8 @@
             defaultView: 'basicWeek',
             select: SelectAction,
             eventDidMount: EventMountAction,
-            eventClick: function (info) {
-                //console.log(info)
-            },
+            eventResize: EventResizeAction,
+            eventClick: EventClickAction,
             week: {
                 columnFormat: 'ddd'
             },
@@ -47,7 +48,7 @@
             allDaySlot: false,
             weekends: false,
             dayHeaderFormat: { weekday: 'short' },
-            editable: true,
+            editable: false,
             eventResizableFromStart: true,
             eventOverlap: false,
             events: this.data.events,
@@ -57,12 +58,14 @@
         $(".fc-header-toolbar").hide();
     }
     addEvent(newEvent) {
+        newEvent.extendedProps.userAccountID = this.data.userAccountID;
         try {
             this.calendar.addEvent(newEvent);
         } catch {
             return "error";
         }
         //this.events.push(newEvent);
+        console.log(newEvent.extendedProps.uuid);
         console.log(JSON.stringify(newEvent));
         
     }
