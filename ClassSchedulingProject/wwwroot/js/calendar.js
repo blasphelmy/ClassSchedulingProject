@@ -1,72 +1,130 @@
 ﻿class CalenderApp {
     data;
-    calendar;
-    permissibleEvents;
+    EventMap;
+    colorWheel;
+    usersColors;
+    isActive;
+    init;
     constructor(data) {
-        this.permissibleEvents = new Map();
+        this.init = 0;
+        this.isActive = 0;
+        this.usersColors = new Map();
+        this.EventMap = new Map();
+        this.colorWheel = {
+            colors: this.shuffle("#90BE6D #507DBC #F4C095 #C3ACCE #2271B3".split(" ")),
+            default: "#ab4e68",
+            index: 0
+        }
         this.data = {};
         this.data.firstName = data.firstName;
         this.data.lastName = data.lastName;
         this.data.userAccountID = data.userAccountID;
-        this.data.events = data.events;
-        this.calendar = "undefined";
+        this.data.events = [];
         //console.log(this.data);
-        this.createCalender();
-        this.parseEvents(this.data.events);
+        if (data.events) {
+            this.parseEvents(data.events);
+        }
     }
     parseEvents(eventString) {
         let newEventList = eventString.split(" _--__- ").filter(e => e !== "");
         //console.log(newEventList);
         for (let i in newEventList) {
             newEventList[i] = JSON.parse(newEventList[i]);
-            this.calendar.addEvent(newEventList[i]);
+            if (this.usersColors.get(newEventList[i].extendedProps.userAccountID) === undefined) {
+                this.usersColors.set(newEventList[i].extendedProps.userAccountID, this.colorWheel.colors[this.colorWheel.index++]);
+                if (this.colorWheel.index > this.colorWheel.colors.length) {
+                    this.colorWheel.index = 0;
+                }
+            }
+            if (newEventList[i].extendedProps.userAccountID === this.data.userAccountID) {
+                newEventList[i].color = this.colorWheel.default;
+            } else {
+                newEventList[i].color = this.usersColors.get(newEventList[i].extendedProps.userAccountID);
+            }
+            this.data.events.push(newEventList[i]);
+            this.EventMap.set(this.data.events[i].extendedProps.uuid, i)
         }
-        this.data.events = newEventList;
-        console.log(newEventList);
+        this.init = 1;
+        console.log(this.data.events);
     }
-    createCalender() {
-        var calendarEl = document.getElementById('calendar');
-        this.calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'timeGridWeek',
-            selectable: true,
-            slotDuration: slotDuration[Number(document.getElementById("viewSizeRangeSlider").value) - 1],
-            snapDuration: '00:05',
-            defaultView: 'basicWeek',
-            select: SelectAction,
-            eventDidMount: EventMountAction,
-            eventResize: EventResizeAction,
-            eventClick: EventClickAction,
-            week: {
-                columnFormat: 'ddd'
+    updateEvents(eventString) {
+        let newEventList = eventString.split(" _--__- ").filter(e => e !== "");
+        //console.log(newEventList);
+        for (let i in newEventList) {
+            this.addEvent(JSON.parse(newEventList[i]));
+        }
+    }
+    addEvent(newEvent){
+        console.log("addEventClassMethod");
+        console.log("newevent", newEvent);
+        newEvent.color = this.usersColors.get(newEvent.extendedProps.userAccountID);
+        //console.log(this.permissibleEvents);
+        //console.log(newEvent.extendedProps.uuid)
+        if (newEvent.extendedProps.userAccountID === this.data.userAccountID) {
+            newEvent.color = this.colorWheel.default;
+            if (this.EventMap.get(newEvent.extendedProps.uuid)) {
+                if (this.data.events[this.EventMap.get(newEvent.extendedProps.uuid)] !== newEvent) {
+                    this.saveEvent(newEvent);
+                }
+                this.data.events[this.EventMap.get(newEvent.extendedProps.uuid)] = newEvent;
+                setTimeout(createCalender, 20);
+                return;
+            }
+            this.EventMap.set(newEvent.extendedProps.uuid, this.data.events.length);
+            this.data.events[this.data.events.length] = newEvent;
+            this.saveEvent(newEvent);
+        }
+        console.log(this.data.events);
+        setTimeout(createCalender, 20);
+        //console.log(newEvent);
+        //console.log(this.data);
+        //setTimeout(function () {
+        //    createCalender();
+        //}, 200);
+    }
+    checkEventPermmisions(eventUID) {
+        for (let event of this.data.events) {
+            if (eventUID === event.extendedProps.uuid && event.extendedProps.userAccountID === this.data.us) {
+                return true;
+            }
+        }
+        return false;
+    }
+    saveEvent(newEvent) {
+        let newPost = {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
             },
-            displayEventTime: true,
-            selectMirror: true,
-            slotMinTime: "06:00:00",
-            slotMaxTime: "21:00:00",
-            slotLabelInterval: "01:00",
-            height: '100%',
-            allDaySlot: false,
-            weekends: false,
-            dayHeaderFormat: { weekday: 'short' },
-            editable: false,
-            eventResizableFromStart: true,
-            eventOverlap: false,
-            events: this.data.events,
-            contentHeight: 1,
-        });
-        this.calendar.render();
-        $(".fc-header-toolbar").hide();
-    }
-    addEvent(newEvent) {
-        newEvent.extendedProps.userAccountID = this.data.userAccountID;
-        try {
-            this.calendar.addEvent(newEvent);
-        } catch {
-            return "error";
+            body: JSON.stringify({
+                EventData: JSON.stringify(newEvent),
+                EventUuid: newEvent.extendedProps.uuid,
+                Year: Number(elements.year.val()),
+                Quarter: Number(elements.quarter.val()),
+                Building: elements.building.val(),
+                Room: elements.room.val()
+            })
         }
-        //this.events.push(newEvent);
-        console.log(newEvent.extendedProps.uuid);
-        console.log(JSON.stringify(newEvent));
-        
+        console.log(newPost)
+        fetch(`/home/SaveEventData`, newPost).then(response => response.json()).then((data) => {
+            console.log(data);
+        });
     }
+    shuffle(array) {
+    let currentIndex = array.length, randomIndex;
+
+    // While there remain elements to shuffle.
+    while (currentIndex != 0) {
+
+        // Pick a remaining element.
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+    }
+
+    return array;
+}
 }

@@ -37,8 +37,10 @@ namespace ClassSchedulingProject.data
             modelBuilder.Entity<ApiEvents>(entity =>
             {
                 entity.HasIndex(e => e.EventUuid)
-                    .HasName("UQ__tmp_ms_x__5E26E5A1EB150136")
+                    .HasName("UQ__apiEvent__5E26E5A1E8B001EC")
                     .IsUnique();
+
+                entity.Property(e => e.Building).IsUnicode(false);
 
                 entity.Property(e => e.EventAuthorHash).IsUnicode(false);
 
@@ -47,6 +49,8 @@ namespace ClassSchedulingProject.data
                 entity.Property(e => e.EventUuid).IsUnicode(false);
 
                 entity.Property(e => e.InstitutonId).IsUnicode(false);
+
+                entity.Property(e => e.Room).IsUnicode(false);
 
                 entity.HasOne(d => d.EventAuthorHashNavigation)
                     .WithMany(p => p.ApiEvents)

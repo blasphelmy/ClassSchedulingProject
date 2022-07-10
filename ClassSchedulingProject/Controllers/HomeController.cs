@@ -19,6 +19,7 @@ namespace ClassSchedulingProject.Controllers
         private IDictionary<string, InstitutionsRegistry> institutionsDict;
         private IDictionary<string, int> registeredEmailsDict;
         private IDictionary<string, string> institutionEmailSuffixDict;
+        private IDictionary<string, ApiEvents> eventMap;
         private string instutionNames;
         private string institutionEmailSuffix;
         private CryptTools CryptTool;
@@ -29,6 +30,7 @@ namespace ClassSchedulingProject.Controllers
             this.context = newContext;
             institutionsDict = new Dictionary<string, InstitutionsRegistry>();
             institutionEmailSuffixDict = new Dictionary<string, string>();
+            eventMap = new Dictionary<string , ApiEvents>();
             registeredEmailsDict = new Dictionary<string, int>();
             foreach (InstitutionsRegistry i in context.InstitutionsRegistry)
             {
@@ -57,17 +59,7 @@ namespace ClassSchedulingProject.Controllers
                     ViewBag.isAuthorized = 1;
                     SessionTokens thisToken = context.SessionTokens.FirstOrDefault(e => e.SessionId == cookieValueFromReq);
                     UserInformation thisUser = context.UserInformation.FirstOrDefault(e => e.AccountHash == thisToken.AccountHash);
-                    string institutionEvents = "";
-                    foreach(ApiEvents evnt in context.ApiEvents)
-                    {
-                        if(evnt.InstitutonId == thisUser.PrimaryInstitutionId)
-                            {
-                                institutionEvents = institutionEvents + evnt.EventData + " _--__- ";
-                            }
-                    }
-                    System.Console.WriteLine(institutionEvents);
                     ViewBag.thisUser = thisUser;
-                    ViewBag.institutionEvents = institutionEvents;
                     return View();
                 }
             return RedirectToAction("Register", "Home");
@@ -84,10 +76,39 @@ namespace ClassSchedulingProject.Controllers
             return View();
         }
         [HttpGet]
-        public IActionResult fetchEvents(string institutionID)
+        public IActionResult fetchEvents(string filterterms)
         {
+            string[] terms = filterterms.Split(",");
+            try
+            {
+                int.Parse(terms[0]);
+                int.Parse(terms[1]);
+            }
+            catch
+            {
+                return Json("error");
+            }
+            string institutionID = getUser(Request.Cookies["sessionID"]).PrimaryInstitutionId;
             string institutionEvents = "";
-            foreach (ApiEvents evnt in context.ApiEvents)
+
+            List<ApiEvents> eventList = context.ApiEvents.ToList();
+            if(eventList.Count > 0)
+            {
+                eventList = eventList.FindAll(e =>
+                {
+                if (e.InstitutonId == institutionID && 
+                    e.Year == int.Parse(terms[0]) && 
+                    e.Quarter == int.Parse(terms[1]) &&
+                    e.Building == terms[2] &&
+                    e.Room == terms[3])
+                    {
+                        return true;
+                    }
+                    return false;
+                });
+            }
+
+            foreach (ApiEvents evnt in eventList)
             {
                 if (evnt.InstitutonId == institutionID)
                 {
@@ -183,6 +204,24 @@ namespace ClassSchedulingProject.Controllers
             }
             return Json(0);
         }
+        [HttpPost]
+        public IActionResult SaveEventData([FromBody] ApiEvents newEvent)
+        {
+            UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
+            if(thisUser != null)
+            {
+                newEvent.EventAuthorHash = thisUser.AccountHash;
+                newEvent.InstitutonId = thisUser.PrimaryInstitutionId;
+                ApiEvents existing = context.ApiEvents.FirstOrDefault(e => e.EventUuid == newEvent.EventUuid);
+                if(existing != null)
+                {
+                    context.ApiEvents.Remove(existing);
+                }
+                context.ApiEvents.Add(newEvent);
+                context.SaveChanges();
+            }
+            return Json("error");
+        }
         public int verifyUser(string hash)
         {
             SessionTokens token = context.SessionTokens.FirstOrDefault(o => o.SessionId == hash);
@@ -194,6 +233,11 @@ namespace ClassSchedulingProject.Controllers
                 }
             }
             return 0;
+        }
+        public UserInformation getUser(string cookie)
+        {
+            SessionTokens token = context.SessionTokens.FirstOrDefault(o => o.SessionId == cookie);
+            return token.AccountHashNavigation;
         }
         public void SetCookie(string key, string value, int? expireTime)
         {

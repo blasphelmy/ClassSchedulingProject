@@ -1,13 +1,14 @@
 ﻿//let events = JSON.parse(localStorage.getItem("tdata"))
 let calEvents = [];
 var newCalender;
+let calendar;
 var slotDuration = `00:05 00:10 00:15 00:30 01:00)`.split(" ");
-console.log(slotDuration)
+var init = 0;
 let SelectAction = (info) => {
     console.log("selectaction");
     //console.log(info);
     //console.log(document.getElementById("yearSel").value);
-    if (document.getElementById("yearSel").value === "Select Year" || document.getElementById("qSel").value === "Select Quarter") return;
+    if (!elements.checkNull()) return;
     let newEvent = {
         title: function () { return prompt("Enter Class Title") }(),
         start: info.startStr,
@@ -17,41 +18,91 @@ let SelectAction = (info) => {
         extendedProps: {
             description: function () { return prompt("Enter Description") }(),
             uuid: create_UUID(),
-            userAccountID: undefined
+            userAccountID: newCalender.data.userAccountID
         }
     }
-    calEvents.push(newEvent);
     newCalender.addEvent(newEvent);
 }
 let EventMountAction = (info) => {
     console.log("event mount action");
-    //console.log("info", info);
-    //console.log(info.el.querySelectorAll('.fc-event-title.fc-sticky')[0]);
-    let timestamps = info.event._instance.range;
-    timestamps.start = new Date(timestamps.start.getTime() + (7 * 1000 * 60 * 60));
-    timestamps.end = new Date(timestamps.end.getTime() + (7 * 1000 * 60 * 60));
-    let titleElement = info.el.querySelectorAll('.fc-event-title.fc-sticky')[0];
-    let eventTimeElement = info.el.querySelectorAll('.fc-event-time')[0];
-    titleElement.after(info.event.extendedProps.description);
-    //console.log("duration: ", timestamps[0].toLocaleString());
-    eventTimeElement.innerText = `${formatTime(timestamps)} (${getDuration(timestamps).toFixed(2)}hrs)`
-    info.el.id = info.event.extendedProps.uuid ?? "error - " + create_UUID();
-    console.log(info.el);
-    //testContainer.querySelector('.four');
-}
-let EventResizeAction = (info) => {
-    console.log("ResizeAction");
-    console.log(info.el.id);
+    //console.log(info);
+    formatCalendarItem(info);
 }
 let EventClickAction = (info) => {
     console.log(info.el.id);
-    console.log(info.jsEvent);
-    if (info.el.id === newCalender.userAccountID) {
-        console.log(true);
+    console.log(info);
+    createPopUp(info);
+}
+let EventResizeAction = (info) => {
+    console.log("ResizeAction");
+    EventDropAction(info);
+    formatTime(info);
+}
+let EventDropAction = (info) => {
+    newCalender.isActive = 1;
+    console.log("event drop triggerd");
+    let newEvent = {
+        title: info.event._def.title,
+        start: info.event._instance.range.start.toISOString(),
+        end: info.event._instance.range.end.toISOString(),
+        overlap: false,
+        color: "#cd3",
+        extendedProps: info.event._def.extendedProps
     }
+    newCalender.addEvent(newEvent);
+}
+let EventDragStartAction = (info) => {
+    newCalender.isActive = 1;
+    console.log("eventDragAction", newCalender.isActive);
+}
+let EventDragStopAction = (info) => {
+    console.log("event drag stop action")
+    newCalender.isActive = 0;
 }
 function renderCalendar() {
-    newCalender.createCalender();
+    createCalender();
+}
+function createCalender(events) {
+    console.log("rendering calendar...");
+    var calendarEl = document.getElementById('calendar');
+    let scroll = document.querySelectorAll('.fc-scroller.fc-scroller-liquid-absolute')[0]?.scrollTop ?? 0;
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        timeZone: 'America/Los_Angeles',
+        initialView: 'timeGridWeek',
+        selectable: true,
+        slotDuration: slotDuration[Number(document.getElementById("viewSizeRangeSlider").value) - 1],
+        snapDuration: '00:05',
+        defaultView: 'basicWeek',
+        select: SelectAction,
+        eventDidMount: EventMountAction,
+        eventResize: EventResizeAction,
+        eventClick: EventClickAction,
+        eventDrop: EventDropAction,
+        eventDragStart: EventDragStartAction,
+        eventDragStop: EventDragStopAction,
+        week: {
+            columnFormat: 'ddd'
+        },
+        displayEventTime: true,
+        selectMirror: true,
+        slotMinTime: "06:00:00",
+        slotMaxTime: "21:00:00",
+        slotLabelInterval: "01:00",
+        height: '100%',
+        allDaySlot: false,
+        weekends: false,
+        dayHeaderFormat: { weekday: 'short' },
+        editable: true,
+        eventResizableFromStart: true,
+        eventOverlap: false,
+        events: events ?? newCalender.data.events ?? [],
+        //events: JSON.parse(),
+        contentHeight: 1,
+        initialDate: "2022-07-04"
+    });
+    calendar.render();
+    $(".fc-header-toolbar").hide();
+    document.querySelectorAll('.fc-scroller.fc-scroller-liquid-absolute')[0].scrollTop = scroll;
 }
 function create_UUID() {
     var dt = new Date().getTime();
@@ -67,7 +118,11 @@ function getDuration(timestamps) {
     xms = xms / 1000 / 60 / 60;
     return xms;
 }
-function formatTime(timestamps) {
+function formatTime(info) {
+    let eventTimeElement = info.el.querySelectorAll('.fc-event-time')[0];
+    let timestamps = {};
+    timestamps.start = new Date(info.event._instance.range.start.getTime() + (7 * 1000 * 60 * 60));
+    timestamps.end = new Date(info.event._instance.range.end.getTime() + (7 * 1000 * 60 * 60));
     let iTs = [timestamps.start, timestamps.end];
     let timeStamp = [];
     for (let date of iTs) {
@@ -84,5 +139,17 @@ function formatTime(timestamps) {
         ts = `${ts[0]}:${ts[1]}${ts[2]}`;
         timeStamp.push(ts);
     }
-    return timeStamp.join(" - ");
+    eventTimeElement.innerText = `${timeStamp.join(" - ") } (${getDuration(timestamps).toFixed(2)}hrs)`;
+}
+function formatCalendarItem(info) {
+    info.event.extendedProps.userAccountID = caldata.userAccountID;
+    let titleElement = info.el.querySelectorAll('.fc-event-title.fc-sticky')[0];
+    let timestamps = {};
+    timestamps.start = new Date(info.event._instance.range.start.getTime() + (7 * 1000 * 60 * 60));
+    timestamps.end = new Date(info.event._instance.range.end.getTime() + (7 * 1000 * 60 * 60));
+    formatTime(info);
+    titleElement.after(info.event.extendedProps.description);
+    //console.log("duration: ", timestamps[0].toLocaleString());
+    info.el.id = info.event.extendedProps.uuid ?? "error - " + create_UUID();
+    return info;
 }
