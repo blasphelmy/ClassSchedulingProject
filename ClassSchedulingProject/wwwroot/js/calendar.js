@@ -51,8 +51,14 @@
         let newEventList = eventString.split(" _--__- ").filter(e => e !== "");
         //console.log(newEventList);
         for (let i in newEventList) {
-            this.addEvent(JSON.parse(newEventList[i]));
+            newEventList[i] = JSON.parse(newEventList[i]);
+            this.addEvent(newEventList[i]);
+            if (newEventList[i].extendedProps.userAccountID !== this.data.userAccountID) { 
+                console.log("this.EventMap.get(newEventList[i].extendedProps.uuid)",this.EventMap.get(newEventList[i].extendedProps.uuid));
+                this.data.events[this.EventMap.get(newEventList[i].extendedProps.uuid)] = newEventList[i];
+            }
         }
+        this.isActive = 0;
     }
     addEvent(newEvent){
         console.log("addEventClassMethod");
@@ -62,7 +68,7 @@
         //console.log(newEvent.extendedProps.uuid)
         if (newEvent.extendedProps.userAccountID === this.data.userAccountID) {
             newEvent.color = this.colorWheel.default;
-            if (this.EventMap.get(newEvent.extendedProps.uuid)) {
+            if (this.EventMap.get(newEvent.extendedProps.uuid) === 0 || this.EventMap.get(newEvent.extendedProps.uuid)) {
                 if (this.data.events[this.EventMap.get(newEvent.extendedProps.uuid)] !== newEvent) {
                     this.saveEvent(newEvent);
                 }
@@ -76,6 +82,7 @@
         }
         console.log(this.data.events);
         setTimeout(createCalender, 20);
+        this.isActive = 0;
         //console.log(newEvent);
         //console.log(this.data);
         //setTimeout(function () {

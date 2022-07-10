@@ -39,7 +39,6 @@ let EventResizeAction = (info) => {
     formatTime(info);
 }
 let EventDropAction = (info) => {
-    newCalender.isActive = 1;
     console.log("event drop triggerd");
     let newEvent = {
         title: info.event._def.title,
@@ -80,6 +79,12 @@ function createCalender(events) {
         eventDrop: EventDropAction,
         eventDragStart: EventDragStartAction,
         eventDragStop: EventDragStopAction,
+        eventResizeStart: function (info) {
+            newCalender.isActive = 1;
+        },
+        eventResizeStop: function (info) {
+            newCalender.isActive = 0;
+        },
         week: {
             columnFormat: 'ddd'
         },
