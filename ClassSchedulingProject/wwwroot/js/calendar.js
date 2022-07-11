@@ -42,27 +42,27 @@
                 newEventList[i].color = this.usersColors.get(newEventList[i].extendedProps.userAccountID);
             }
             this.data.events.push(newEventList[i]);
-            this.EventMap.set(this.data.events[i].extendedProps.uuid, i)
+            this.EventMap.set(this.data.events[i].extendedProps.uuid, i);
         }
         this.init = 1;
-        console.log(this.data.events);
+        //console.log(this.data.events);
     }
     updateEvents(eventString) {
         let newEventList = eventString.split(" _--__- ").filter(e => e !== "");
+        this.data.events = [];
         //console.log(newEventList);
         for (let i in newEventList) {
             newEventList[i] = JSON.parse(newEventList[i]);
-            this.addEvent(newEventList[i]);
-            if (newEventList[i].extendedProps.userAccountID !== this.data.userAccountID) { 
-                console.log("this.EventMap.get(newEventList[i].extendedProps.uuid)",this.EventMap.get(newEventList[i].extendedProps.uuid));
-                this.data.events[this.EventMap.get(newEventList[i].extendedProps.uuid)] = newEventList[i];
+            this.data.events[i] = newEventList[i];
+            if (this.EventMap.get(this.data.events[i]) != i) {
+                this.EventMap.set(this.data.events[i].extendedProps.uuid, i);
             }
+            this.addEvent(newEventList[i]);
         }
-        this.isActive = 0;
     }
     addEvent(newEvent){
-        console.log("addEventClassMethod");
-        console.log("newevent", newEvent);
+        //console.log("addEventClassMethod");
+        //console.log("newevent", newEvent);
         newEvent.color = this.usersColors.get(newEvent.extendedProps.userAccountID);
         //console.log(this.permissibleEvents);
         //console.log(newEvent.extendedProps.uuid)
@@ -80,14 +80,9 @@
             this.data.events[this.data.events.length] = newEvent;
             this.saveEvent(newEvent);
         }
-        console.log(this.data.events);
+
         setTimeout(createCalender, 20);
         this.isActive = 0;
-        //console.log(newEvent);
-        //console.log(this.data);
-        //setTimeout(function () {
-        //    createCalender();
-        //}, 200);
     }
     checkEventPermmisions(eventUID) {
         for (let event of this.data.events) {
@@ -112,10 +107,23 @@
                 Room: elements.room.val()
             })
         }
-        console.log(newPost)
+        //console.log(newPost)
         fetch(`/home/SaveEventData`, newPost).then(response => response.json()).then((data) => {
-            console.log(data);
+            //console.log(data);
         });
+    }
+    deleteEvent(uuid) {
+        console.log(this.data.events[this.EventMap.get(uuid)]);
+        if (this.data.events[this.EventMap.get(uuid)] && this.data.events[this.EventMap.get(uuid)].extendedProps.userAccountID === this.data.userAccountID) {
+            fetch(`/home/deleteEvent?uuid=${uuid}`).then(response => response.json()).then((data) => {
+                console.log(data);
+                if (data === 1) {
+                    this.data.events = this.data.events.splice(Number(this.EventMap.get(uuid)), 1);
+                    console.log(this.data.events);
+                    fetchData(new Object);
+                }
+            });
+        }
     }
     shuffle(array) {
     let currentIndex = array.length, randomIndex;

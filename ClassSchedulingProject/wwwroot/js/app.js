@@ -24,22 +24,21 @@ let SelectAction = (info) => {
     newCalender.addEvent(newEvent);
 }
 let EventMountAction = (info) => {
-    console.log("event mount action");
+    //console.log("event mount action");
     //console.log(info);
     formatCalendarItem(info);
 }
 let EventClickAction = (info) => {
-    console.log(info.el.id);
-    console.log(info);
     createPopUp(info);
 }
 let EventResizeAction = (info) => {
-    console.log("ResizeAction");
+    //console.log("ResizeAction");
+    closePopUp();
     EventDropAction(info);
     formatTime(info);
 }
 let EventDropAction = (info) => {
-    console.log("event drop triggerd");
+    //console.log("event drop triggerd");
     let newEvent = {
         title: info.event._def.title,
         start: info.event._instance.range.start.toISOString(),
@@ -51,18 +50,19 @@ let EventDropAction = (info) => {
     newCalender.addEvent(newEvent);
 }
 let EventDragStartAction = (info) => {
+    closePopUp();
     newCalender.isActive = 1;
-    console.log("eventDragAction", newCalender.isActive);
+    //console.log("eventDragAction", newCalender.isActive);
 }
 let EventDragStopAction = (info) => {
-    console.log("event drag stop action")
+    //console.log("event drag stop action")
     newCalender.isActive = 0;
 }
 function renderCalendar() {
     createCalender();
 }
 function createCalender(events) {
-    console.log("rendering calendar...");
+    //console.log("rendering calendar...");
     var calendarEl = document.getElementById('calendar');
     let scroll = document.querySelectorAll('.fc-scroller.fc-scroller-liquid-absolute')[0]?.scrollTop ?? 0;
     calendar = new FullCalendar.Calendar(calendarEl, {
@@ -71,7 +71,7 @@ function createCalender(events) {
         selectable: true,
         slotDuration: slotDuration[Number(document.getElementById("viewSizeRangeSlider").value) - 1],
         snapDuration: '00:05',
-        defaultView: 'basicWeek',
+        //defaultView: 'basicWeek',
         select: SelectAction,
         eventDidMount: EventMountAction,
         eventResize: EventResizeAction,
@@ -85,9 +85,9 @@ function createCalender(events) {
         eventResizeStop: function (info) {
             newCalender.isActive = 0;
         },
-        week: {
-            columnFormat: 'ddd'
-        },
+        //week: {
+        //    columnFormat: 'ddd'
+        //},
         displayEventTime: true,
         selectMirror: true,
         slotMinTime: "06:00:00",
@@ -144,7 +144,21 @@ function formatTime(info) {
         ts = `${ts[0]}:${ts[1]}${ts[2]}`;
         timeStamp.push(ts);
     }
-    eventTimeElement.innerText = `${timeStamp.join(" - ") } (${getDuration(timestamps).toFixed(2)}hrs)`;
+    let timeStampStr = `${timeStamp.join(" - ")} (${getDuration(timestamps).toFixed(2)}hrs)`;
+    eventTimeElement.innerHTML = `${function () {
+        if (info.event._def.extendedProps.userAccountID === newCalender.data.userAccountID) {
+            return `<span id="eventDelete_${info.event._def.extendedProps.uuid}" class="close text-light" style="position:relative;bottom:6px;">&times;</span> <br /> `;
+        }
+        return ``;
+    }()}${timeStampStr}`;
+    if (info.event._def.extendedProps.userAccountID === newCalender.data.userAccountID) {
+        document.getElementById(`eventDelete_${info.event._def.extendedProps.uuid}`).addEventListener("click", function (e) {
+            closePopUp();
+            e.stopPropagation();
+            let element = document.getElementById(`eventDelete_${info.event._def.extendedProps.uuid}`);
+            newCalender.deleteEvent(element.id.split("_")[1]);
+        });
+    }
 }
 function formatCalendarItem(info) {
     info.event.extendedProps.userAccountID = caldata.userAccountID;
@@ -157,4 +171,138 @@ function formatCalendarItem(info) {
     //console.log("duration: ", timestamps[0].toLocaleString());
     info.el.id = info.event.extendedProps.uuid ?? "error - " + create_UUID();
     return info;
+}
+
+function createPopUp(info) {
+    closePopUp();
+    let element = info.el;
+    let data = {
+        
+    }
+    renderPopUp(info);
+    let popupElement = document.getElementById("popup");
+    setPopUpPos(popupElement, { x: info.jsEvent.clientX, y: info.jsEvent.clientY });
+}
+function setPopUpPos(popupElement, mouseClickData) {
+    let screenWidth = window.innerWidth;
+    let screenHeight = window.innerHeight;
+    let popUpElementWidth = popupElement.offsetWidth;
+    let popUpElementHeight = popupElement.offsetHeight;
+    popupElement.style.setProperty("top", mouseClickData.y + "px");
+    popupElement.style.setProperty("left", mouseClickData.x + "px");
+    if (mouseClickData.x > (screenWidth - popUpElementWidth)) { 
+        popupElement.style.setProperty("left", (mouseClickData.x - popUpElementWidth) + "px");
+    }
+    if (screenHeight - mouseClickData.y < (popUpElementHeight)) {
+        popupElement.style.setProperty("top", (mouseClickData.y - popUpElementHeight) + "px");
+    }
+}
+function renderPopUp(info) {
+    $(`<div id="popup" class="card">
+        <div id="ptitle">CSI 242 Lab <span id="pclose-UUID" class="close" onclick="closePopUp()">&times;</span></div>
+        <div id="ptime">3:00pm - 7:00pm</div>
+        <div><span class="pauthor">Event by</span> <span id="pauthor">David Nguyen</span></div>
+        <div id="pdescription">With Live Code Sessions!</div>
+        <hr />
+        <div id="comments">
+            <div class="comment">Duck says: can you move this event to a different time please</div>
+            <div class="comment">Duck says: can you move this event to a different time please</div>
+            <div class="comment">Duck says: can you move this event to a different time please</div>
+            <div class="comment">Duck says: can you move this event to a different time please</div>
+            <div class="comment">Duck says: can you move this event to a different time please</div>
+            <div class="comment">Duck says: can you move this event to a different time please</div>
+            <div class="comment">Duck says: can you move this event to a different time please</div>
+            <div class="comment">Duck says: can you move this event to a different time please</div>
+            <div class="comment">Duck says: can you move this event to a different time please</div>
+        </div>
+    </div>`).appendTo("body");
+    //$(`body`)[0].append($popupElement);
+    //console.log($(`body`)[0]);
+    //<div id="popup" class="card">
+    //    <div id="ptitle">CSI 242 Lab <span id="pclose-UUID" class="close">&times;</span></div>
+    //    <div id="ptime">3:00pm - 7:00pm</div>
+    //    <div><span class="pauthor">Event by</span> <span id="pauthor">David Nguyen</span></div>
+    //    <div id="pdescription">With Live Code Sessions!</div>
+    //    <hr />
+    //    <div id="comments">
+    //        <div class="comment">Duck says: can you move this event to a different time please</div>
+    //        <div class="comment">Duck says: can you move this event to a different time please</div>
+    //        <div class="comment">Duck says: can you move this event to a different time please</div>
+    //        <div class="comment">Duck says: can you move this event to a different time please</div>
+    //        <div class="comment">Duck says: can you move this event to a different time please</div>
+    //        <div class="comment">Duck says: can you move this event to a different time please</div>
+    //        <div class="comment">Duck says: can you move this event to a different time please</div>
+    //        <div class="comment">Duck says: can you move this event to a different time please</div>
+    //        <div class="comment">Duck says: can you move this event to a different time please</div>
+    //    </div>
+    //</div>
+    createDraggableElement(document.getElementById("popup"))
+}
+function createDraggableElement(element) {
+        dragElement(element);
+
+        function dragElement(element) {
+        var x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+        element.onmousedown = dragMouseDown;
+        element.ontouchstart = touchStart;
+
+            function dragMouseDown(e) {
+                e = e || window.event;
+            e.preventDefault();
+            // get the mouse cursor position at startup:
+            x2 = e.clientX;
+            y2 = e.clientY;
+            document.onmouseup = closeDragElement;
+            // call a function whenever the cursor moves:
+            document.onmousemove = elementDrag;
+        }
+
+            function touchStart(e) {
+                e = e || window.event;
+            x1 = e.targetTouches[0].clientX;
+            y1 = e.targetTouches[0].clientY;
+            document.ontouchend = closeTouchAndDragElement;
+            document.ontouchmove = dragElement;
+        }
+
+            function elementDrag(e) {
+                e = e || window.event;
+            e.preventDefault();
+            // calculate the new cursor position:
+            x1 = x2 - e.clientX;
+            y1 = y2 - e.clientY;
+            x2 = e.clientX;
+            y2 = e.clientY;
+            // set the element's new position:
+            element.style.top = (element.offsetTop - y1) + "px";
+            element.style.left = (element.offsetLeft - x1) + "px";
+        }
+
+            function dragElement(e) {
+                e = e || window.event;
+            x2 = x1 - e.targetTouches[0].clientX;
+            y2 = y1 - e.targetTouches[0].clientY;
+            x1 = e.targetTouches[0].clientX;
+            y1 = e.targetTouches[0].clientY;
+            element.style.top = (element.offsetTop - y2) + "px";
+            element.style.left = (element.offsetLeft - x2) + "px";
+        }
+
+            function closeDragElement() {
+                // stop moving when mouse button is released:
+                document.onmouseup = null;
+            document.onmousemove = null;
+        }
+            function closeTouchAndDragElement() {
+                document.ontouchend = null;
+            document.ontouchmove = null;
+        }
+    }
+}
+function closePopUp() {
+    try {
+        $('#popup').remove();
+    } catch {
+
+    }
 }

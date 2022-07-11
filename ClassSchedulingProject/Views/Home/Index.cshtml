@@ -11,45 +11,84 @@
         thisUser = ViewBag.thisUser;
     }
 }
-
-<div class="popup">
-
-</div>
+<style>
+body {
+     overflow: hidden;
+}
+.fc-timegrid-slot {
+    height: 0px!important;
+    border-bottom: 0 !important;
+}
+.fc-v-event {
+    background-color: rgba(23, 34, 54,.4);
+}
+#popup {
+    position: absolute;
+    font-size: 14px;
+    top: 0px;
+    left: 0px;
+    background-color: inherit;
+    color: #000;
+    height: 405px;
+    width: 326px;
+    padding: 10px;
+    z-index: 999;
+    -webkit-box-shadow: 0px 2px 10px 5px rgba(0,0,0,0.27); 
+    box-shadow: 0px 2px 10px 5px rgba(0,0,0,0.27);
+    overflow-y: scroll;
+}
+#ptitle {
+    font-size: 20px;
+}
+.pauthor {
+    opacity: .8;
+}
+#pdescription {
+    opacity: .9;
+    font-size: 12px;
+    margin-top: 10px;
+}
+#comments {
+    font-size: 12px;
+    opacity: .8;
+    overflow-y: scroll;
+}
+</style>
 
 <div style="padding-left: 20px; overflow:hidden; max-width: 1040px">
     <div class="row">
         <div class="col">
             <h2>@thisUser.PrimaryInstitution.InstitutionName</h2>
             <div>
-                <select id="yearSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
-                  <option selected>Select Year</option>
-                    @foreach(int year in AvailableYears)
-                    {
-                        <option value="@year">@year</option>
-                    }
-                </select>
-                <select id="qSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
-                  <option selected>Select Quarter</option>
-                  <option value="1">Winter</option>
-                  <option value="2">Spring</option>
-                  <option value="3">Summer</option>
-                  <option value="4">Fall</option>
-                </select>
-                <select id="building" class="custom-select-sm" style="margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
-                  <option selected>Select Building</option>
-                  <option value="J">J</option>
-                </select>
-                <select id="room" class="custom-select-sm" style="margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
-                  <option selected>Select Room</option>
-                  <option value="108">108</option>
-                  <option value="111">111</option>
-                  <option value="112">112</option>
-                  <option value="114">114</option>
-                </select>
-            </div>
-@*            <div>
+                <span>
+                    <select id="yearSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
+                      <option selected>Select Year</option>
+                        @foreach(int year in AvailableYears)
+                        {
+                            <option value="@year">@year</option>
+                        }
+                    </select>
+                    <select id="qSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
+                      <option selected>Select Quarter</option>
+                      <option value="1">Winter</option>
+                      <option value="2">Spring</option>
+                      <option value="3">Summer</option>
+                      <option value="4">Fall</option>
+                    </select>
+                    <select id="building" class="custom-select-sm" style="margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
+                      <option selected>Select Building</option>
+                      <option value="J">J</option>
+                    </select>
+                    <select id="room" class="custom-select-sm" style="margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
+                      <option selected>Select Room</option>
+                      <option value="108">108</option>
+                      <option value="111">111</option>
+                      <option value="112">112</option>
+                      <option value="114">114</option>
+                    </select>
+                </span>
 
-            </div>*@
+            </div>
         </div>
         <div class="col">
             <div style="position:absolute; right: 30px; bottom: 10px;">
@@ -74,22 +113,6 @@
 <script src="libCal/main.js"></script>
 <script src="js/app.js"></script>
 <script src="js/calendar.js"></script>
-<style>
-body {
-     overflow: hidden;
-}
-.fc-timegrid-slot {
-    height: 0px!important;
-    border-bottom: 0 !important;
-}
-.fc-v-event {
-    background-color: rgba(23, 34, 54,.4);
-}
-.popup {
-    position: relative;
-
-}
-</style>
 <script>
 let elements = {}
 let caldata = {
@@ -97,6 +120,7 @@ let caldata = {
     lastName: "@thisUser.LastName",
     userAccountID : "@thisUser.AccountHash",
 }
+let isFetching = 0;
 document.addEventListener('DOMContentLoaded', function () {
     elements = {
         year: $("#yearSel"),
@@ -130,12 +154,14 @@ document.addEventListener('DOMContentLoaded', function () {
     elements.setItemsFromLocalStorage();
     newCalender = new CalenderApp(caldata);
     fetchData(new Object);
-    updateTimer(5 * 1000);
+    updateTimer(2 * 1000);
+    
 });
 
 function updateTimer(delay) {
     setTimeout(function () {
-        if (elements.checkNull() && newCalender.isActive === 0) {
+        if (elements.checkNull() && newCalender.isActive === 0 && isFetching === 0) {
+            isFetching = 1;
             fetchData(new Object);
         }
         updateTimer(delay);
@@ -151,14 +177,19 @@ function fetchData(e) {
             return createCalender(caldata);
         }
     let filterterms = `${elements.year.val()},${elements.quarter.val()},${elements.building.val()},${elements.room.val()}`;
-    console.log(filterterms);
+    //console.log(filterterms);
     fetch(`/home/fetchEvents?filterterms=${filterterms}`).then(response => response.json()).then((data) => {
-        if (newCalender.init === 0) {
-            newCalender.parseEvents(data);
-            createCalender(newCalender.data.events);
+        if (data !== "error") {
+            if (newCalender.init === 0) {
+                newCalender.parseEvents(data);
+                createCalender(newCalender.data.events);
+            } else {
+                newCalender.updateEvents(data);
+            }
         } else {
-            newCalender.updateEvents(data);
+            console.log("error fetching calendar events...")
         }
+        isFetching = 0;
     });
 }
 function fetchNewCalendar(element) {

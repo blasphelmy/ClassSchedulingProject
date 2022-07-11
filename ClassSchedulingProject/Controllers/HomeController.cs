@@ -213,14 +213,39 @@ namespace ClassSchedulingProject.Controllers
                 newEvent.EventAuthorHash = thisUser.AccountHash;
                 newEvent.InstitutonId = thisUser.PrimaryInstitutionId;
                 ApiEvents existing = context.ApiEvents.FirstOrDefault(e => e.EventUuid == newEvent.EventUuid);
-                if(existing != null)
+                int status = 0;
+                if(existing != null && existing.EventAuthorHash == thisUser.AccountHash)
                 {
                     context.ApiEvents.Remove(existing);
+                    status++;
                 }
                 context.ApiEvents.Add(newEvent);
+                status++;
                 context.SaveChanges();
+                return Json(status);
+
             }
             return Json("error");
+        }
+        [HttpGet]
+        public IActionResult deleteEvent(string UUID)
+        {
+            UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
+            if(thisUser != null)
+            {
+                ApiEvents thisEvent = context.ApiEvents.FirstOrDefault(e => e.EventUuid == UUID);
+                if (thisEvent != null)
+                {
+                    context.ApiEvents.Remove(thisEvent);
+                    context.SaveChanges();
+                    return Json(1);
+                }
+                else
+                {
+                    return Json("error: event not found");
+                }
+            }
+            return Json("ERROR DELETING EVENT");
         }
         public int verifyUser(string hash)
         {
