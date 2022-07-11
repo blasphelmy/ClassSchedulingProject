@@ -49,7 +49,6 @@
     }
     updateEvents(eventString) {
         let newEventList = eventString.split(" _--__- ").filter(e => e !== "");
-        this.data.events = [];
         //console.log(newEventList);
         for (let i in newEventList) {
             newEventList[i] = JSON.parse(newEventList[i]);
@@ -57,10 +56,11 @@
             if (this.EventMap.get(this.data.events[i]) != i) {
                 this.EventMap.set(this.data.events[i].extendedProps.uuid, i);
             }
-            this.addEvent(newEventList[i]);
+            this.addEvent(newEventList[i], 1);
         }
+        setTimeout(createCalender, 20);
     }
-    addEvent(newEvent){
+    addEvent(newEvent, isUpdatingEventList){
         //console.log("addEventClassMethod");
         //console.log("newevent", newEvent);
         newEvent.color = this.usersColors.get(newEvent.extendedProps.userAccountID);
@@ -70,23 +70,25 @@
             newEvent.color = this.colorWheel.default;
             if (this.EventMap.get(newEvent.extendedProps.uuid) === 0 || this.EventMap.get(newEvent.extendedProps.uuid)) {
                 if (this.data.events[this.EventMap.get(newEvent.extendedProps.uuid)] !== newEvent) {
+                    console.log("event changes detected..saving event...")
                     this.saveEvent(newEvent);
                 }
                 this.data.events[this.EventMap.get(newEvent.extendedProps.uuid)] = newEvent;
-                setTimeout(createCalender, 20);
+                if (isUpdatingEventList !== 1) setTimeout(createCalender, 20);
                 return;
             }
+            console.log("new event detected... adding event to calender...")
             this.EventMap.set(newEvent.extendedProps.uuid, this.data.events.length);
             this.data.events[this.data.events.length] = newEvent;
             this.saveEvent(newEvent);
         }
 
-        setTimeout(createCalender, 20);
+        if (isUpdatingEventList != 1) setTimeout(createCalender, 20);
         this.isActive = 0;
     }
     checkEventPermmisions(eventUID) {
         for (let event of this.data.events) {
-            if (eventUID === event.extendedProps.uuid && event.extendedProps.userAccountID === this.data.us) {
+            if (eventUID === event.extendedProps.uuid && event.extendedProps.userAccountID === this.data.userAccountID) {
                 return true;
             }
         }

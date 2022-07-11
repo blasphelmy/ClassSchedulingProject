@@ -154,12 +154,13 @@ document.addEventListener('DOMContentLoaded', function () {
     elements.setItemsFromLocalStorage();
     newCalender = new CalenderApp(caldata);
     fetchData(new Object);
-    updateTimer(2 * 1000);
+    updateTimer(1 * 1000);
     
 });
 
 function updateTimer(delay) {
     setTimeout(function () {
+        console.log("update timer set");
         if (elements.checkNull() && newCalender.isActive === 0 && isFetching === 0) {
             isFetching = 1;
             fetchData(new Object);
@@ -169,6 +170,7 @@ function updateTimer(delay) {
 }
 
 function fetchData(e) {
+    console.log("fetching data...");
     try {
         localStorage.setItem(e.id, e.value);
     } catch {
@@ -189,7 +191,9 @@ function fetchData(e) {
         } else {
             console.log("error fetching calendar events...")
         }
-        isFetching = 0;
+        setTimeout(function() {
+            isFetching = 0;
+        }, 200);
     });
 }
 function fetchNewCalendar(element) {

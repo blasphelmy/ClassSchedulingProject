@@ -216,27 +216,7 @@ function renderPopUp(info) {
             <div class="comment">Duck says: can you move this event to a different time please</div>
         </div>
     </div>`).appendTo("body");
-    //$(`body`)[0].append($popupElement);
-    //console.log($(`body`)[0]);
-    //<div id="popup" class="card">
-    //    <div id="ptitle">CSI 242 Lab <span id="pclose-UUID" class="close">&times;</span></div>
-    //    <div id="ptime">3:00pm - 7:00pm</div>
-    //    <div><span class="pauthor">Event by</span> <span id="pauthor">David Nguyen</span></div>
-    //    <div id="pdescription">With Live Code Sessions!</div>
-    //    <hr />
-    //    <div id="comments">
-    //        <div class="comment">Duck says: can you move this event to a different time please</div>
-    //        <div class="comment">Duck says: can you move this event to a different time please</div>
-    //        <div class="comment">Duck says: can you move this event to a different time please</div>
-    //        <div class="comment">Duck says: can you move this event to a different time please</div>
-    //        <div class="comment">Duck says: can you move this event to a different time please</div>
-    //        <div class="comment">Duck says: can you move this event to a different time please</div>
-    //        <div class="comment">Duck says: can you move this event to a different time please</div>
-    //        <div class="comment">Duck says: can you move this event to a different time please</div>
-    //        <div class="comment">Duck says: can you move this event to a different time please</div>
-    //    </div>
-    //</div>
-    createDraggableElement(document.getElementById("popup"))
+    createDraggableElement(document.getElementById("popup"));
 }
 function createDraggableElement(element) {
         dragElement(element);
