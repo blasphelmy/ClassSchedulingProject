@@ -50,6 +50,7 @@
     updateEvents(eventString) {
         let newEventList = eventString.split(" _--__- ").filter(e => e !== "");
         //console.log(newEventList);
+        this.data.events = [];
         for (let i in newEventList) {
             newEventList[i] = JSON.parse(newEventList[i]);
             this.data.events[i] = newEventList[i];
