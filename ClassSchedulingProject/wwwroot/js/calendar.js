@@ -57,13 +57,27 @@
             if (this.EventMap.get(this.data.events[i]) != i) {
                 this.EventMap.set(this.data.events[i].extendedProps.uuid, i);
             }
-            this.addEvent(newEventList[i], 1);
+            if (!this.usersColors.get(this.data.events[i].extendedProps.userAccountID) && this.data.events[i].extendedProps.userAccountID !== caldata.userAccountID) {
+                console.log("new user detected");
+                console.log(this.data.events[i].extendedProps.userAccountID !== caldata.userAccountID);
+                this.usersColors.set(this.data.events[i].extendedProps.userAccountID, this.colorWheel.colors[this.colorWheel.index++]);
+                if (this.colorWheel.index > this.colorWheel.colors.length) {
+                    this.colorWheel.index = 0;
+                }
+            }
+
+            if (this.data.events[i].extendedProps.userAccountID === this.data.userAccountID) {
+                this.data.events[i].color = this.colorWheel.default;
+            } else {
+                this.data.events[i].color = this.usersColors.get(this.data.events[i].extendedProps.userAccountID);
+            }
+            //this.addEvent(newEventList[i], 1);
         }
         setTimeout(createCalender, 20);
     }
     addEvent(newEvent, isUpdatingEventList){
         //console.log("addEventClassMethod");
-        //console.log("newevent", newEvent);
+        console.log(newEvent);
         newEvent.color = this.usersColors.get(newEvent.extendedProps.userAccountID);
         //console.log(this.permissibleEvents);
         //console.log(newEvent.extendedProps.uuid)
@@ -95,7 +109,7 @@
         }
         return false;
     }
-    saveEvent(newEvent) {
+    saveEvent(newEvent, callback) {
         let newPost = {
             method: "POST",
             headers: {
@@ -107,12 +121,18 @@
                 Year: Number(elements.year.val()),
                 Quarter: Number(elements.quarter.val()),
                 Building: elements.building.val(),
-                Room: elements.room.val()
+                Room: elements.room.val(),
+                CoursePrefix: newEvent.extendedProps.coursePrefix + "",
+                DeliveryType: newEvent.extendedProps.delivery + "",
+                CourseNumber: newEvent.extendedProps.courseNumber + "",
+                Section: newEvent.extendedProps.section + "",
+                Component: newEvent.extendedProps.component + ""
             })
         }
         //console.log(newPost)
         fetch(`/home/SaveEventData`, newPost).then(response => response.json()).then((data) => {
-            //console.log(data);
+            console.log(data);
+            if (callback) callback();
         });
     }
     deleteEvent(uuid) {

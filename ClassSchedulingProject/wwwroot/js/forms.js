@@ -26,7 +26,7 @@ function post() {
     }
     fetch("/Home/createAccount", newPost).then((response) => response.json()).then(function (data) {
         console.log(data);
-        //window.location.href = "/";
+        window.location.href = "/";
     })
 }
 document.getElementById("registration").addEventListener("keyup", function () {

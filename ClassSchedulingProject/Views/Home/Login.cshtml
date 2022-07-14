@@ -80,7 +80,7 @@
             }
             fetch("/Home/Login", newPost).then((response) => response.json()).then(function (data) {
                 console.log(data);
-                if (data) {
+                if (data === 1) {
                     window.location.href = "/";
                 }
             })

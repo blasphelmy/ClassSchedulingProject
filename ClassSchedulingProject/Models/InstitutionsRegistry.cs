@@ -11,7 +11,9 @@ namespace ClassSchedulingProject.Models
         {
             ApiEvents = new HashSet<ApiEvents>();
             CalendarBookBackUps = new HashSet<CalendarBookBackUps>();
+            Departments = new HashSet<Departments>();
             InstitutionEmailDomains = new HashSet<InstitutionEmailDomains>();
+            SessionDates = new HashSet<SessionDates>();
             UserInformation = new HashSet<UserInformation>();
         }
 
@@ -26,7 +28,9 @@ namespace ClassSchedulingProject.Models
 
         public virtual ICollection<ApiEvents> ApiEvents { get; set; }
         public virtual ICollection<CalendarBookBackUps> CalendarBookBackUps { get; set; }
+        public virtual ICollection<Departments> Departments { get; set; }
         public virtual ICollection<InstitutionEmailDomains> InstitutionEmailDomains { get; set; }
+        public virtual ICollection<SessionDates> SessionDates { get; set; }
         public virtual ICollection<UserInformation> UserInformation { get; set; }
     }
 }

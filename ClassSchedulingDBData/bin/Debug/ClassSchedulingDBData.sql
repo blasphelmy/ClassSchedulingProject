@@ -40,6 +40,224 @@ USE [$(DatabaseName)];
 
 
 GO
+/*
+The column [dbo].[UserInformation].[accountFlag] on table [dbo].[UserInformation] must be added, but the column has no default value and does not allow NULL values. If the table contains data, the ALTER script will not work. To avoid this issue you must either: add a default value to the column, mark it as allowing NULL values, or enable the generation of smart-defaults as a deployment option.
+*/
+
+IF EXISTS (select top 1 1 from [dbo].[UserInformation])
+    RAISERROR (N'Rows were detected. The schema update is terminating because data loss might occur.', 16, 127) WITH NOWAIT
+
+GO
+PRINT N'Altering Table [dbo].[UserInformation]...';
+
+
+GO
+ALTER TABLE [dbo].[UserInformation]
+    ADD [accountFlag] INT NOT NULL;
+
+
+GO
+PRINT N'Creating Table [dbo].[apiEvents]...';
+
+
+GO
+CREATE TABLE [dbo].[apiEvents] (
+    [Id]              INT           IDENTITY (1, 1) NOT NULL,
+    [eventData]       VARCHAR (MAX) NOT NULL,
+    [eventUUID]       VARCHAR (256) NOT NULL,
+    [eventAuthorHash] VARCHAR (512) NOT NULL,
+    [institutonID]    VARCHAR (64)  NOT NULL,
+    [sessionID]       INT           NOT NULL,
+    [building]        VARCHAR (64)  NOT NULL,
+    [room]            VARCHAR (64)  NOT NULL,
+    [deliveryType]    INT           NOT NULL,
+    [recurring]       VARCHAR (64)  NOT NULL,
+    [coursePrefix]    VARCHAR (24)  NOT NULL,
+    [courseNumber]    VARCHAR (12)  NOT NULL,
+    [Section]         VARCHAR (12)  NOT NULL,
+    [Component]       VARCHAR (64)  NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    UNIQUE NONCLUSTERED ([eventUUID] ASC)
+);
+
+
+GO
+PRINT N'Creating Table [dbo].[calendarBookBackUps]...';
+
+
+GO
+CREATE TABLE [dbo].[calendarBookBackUps] (
+    [Id]              INT           IDENTITY (1, 1) NOT NULL,
+    [institutonID]    VARCHAR (64)  NOT NULL,
+    [completeBooking] VARCHAR (MAX) NOT NULL,
+    [backupNumber]    INT           NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [uniqueBackUp] UNIQUE NONCLUSTERED ([institutonID] ASC, [backupNumber] ASC)
+);
+
+
+GO
+PRINT N'Creating Table [dbo].[Departments]...';
+
+
+GO
+CREATE TABLE [dbo].[Departments] (
+    [Id]             INT          IDENTITY (1, 1) NOT NULL,
+    [departmentName] VARCHAR (24) NOT NULL,
+    [departmentID]   INT          NOT NULL,
+    [departmentType] INT          NOT NULL,
+    [institutionID]  VARCHAR (64) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    UNIQUE NONCLUSTERED ([departmentID] ASC)
+);
+
+
+GO
+PRINT N'Creating Table [dbo].[InstitutionEmailDomains]...';
+
+
+GO
+CREATE TABLE [dbo].[InstitutionEmailDomains] (
+    [Id]            INT          IDENTITY (1, 1) NOT NULL,
+    [institutionID] VARCHAR (64) NOT NULL,
+    [emailSuffix]   VARCHAR (64) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+
+
+GO
+PRINT N'Creating Table [dbo].[SessionDates]...';
+
+
+GO
+CREATE TABLE [dbo].[SessionDates] (
+    [Id]            INT          IDENTITY (1, 1) NOT NULL,
+    [SessionName]   VARCHAR (24) NOT NULL,
+    [sessionID]     INT          NOT NULL,
+    [sessionNumber] INT          NOT NULL,
+    [sessionYear]   INT          NOT NULL,
+    [startDate]     DATE         NOT NULL,
+    [endDate]       DATE         NOT NULL,
+    [institutonID]  VARCHAR (64) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    UNIQUE NONCLUSTERED ([sessionID] ASC),
+    CONSTRAINT [uniqueSession] UNIQUE NONCLUSTERED ([sessionNumber] ASC, [sessionYear] ASC, [institutonID] ASC)
+);
+
+
+GO
+PRINT N'Creating Table [dbo].[SessionTokens]...';
+
+
+GO
+CREATE TABLE [dbo].[SessionTokens] (
+    [Id]          INT           IDENTITY (1, 1) NOT NULL,
+    [SessionID]   VARCHAR (256) NOT NULL,
+    [accountHash] VARCHAR (512) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    UNIQUE NONCLUSTERED ([SessionID] ASC)
+);
+
+
+GO
+PRINT N'Creating Foreign Key [dbo].[EventSession]...';
+
+
+GO
+ALTER TABLE [dbo].[apiEvents] WITH NOCHECK
+    ADD CONSTRAINT [EventSession] FOREIGN KEY ([sessionID]) REFERENCES [dbo].[SessionDates] ([sessionID]);
+
+
+GO
+PRINT N'Creating Foreign Key [dbo].[eventAuthorReference]...';
+
+
+GO
+ALTER TABLE [dbo].[apiEvents] WITH NOCHECK
+    ADD CONSTRAINT [eventAuthorReference] FOREIGN KEY ([eventAuthorHash]) REFERENCES [dbo].[UserInformation] ([accountHash]);
+
+
+GO
+PRINT N'Creating Foreign Key [dbo].[eventInstitutionReference]...';
+
+
+GO
+ALTER TABLE [dbo].[apiEvents] WITH NOCHECK
+    ADD CONSTRAINT [eventInstitutionReference] FOREIGN KEY ([institutonID]) REFERENCES [dbo].[InstitutionsRegistry] ([InstitutionID]);
+
+
+GO
+PRINT N'Creating Foreign Key [dbo].[backupInstitutionReference]...';
+
+
+GO
+ALTER TABLE [dbo].[calendarBookBackUps] WITH NOCHECK
+    ADD CONSTRAINT [backupInstitutionReference] FOREIGN KEY ([institutonID]) REFERENCES [dbo].[InstitutionsRegistry] ([InstitutionID]);
+
+
+GO
+PRINT N'Creating Foreign Key [dbo].[DepartmentInstitutionReference]...';
+
+
+GO
+ALTER TABLE [dbo].[Departments] WITH NOCHECK
+    ADD CONSTRAINT [DepartmentInstitutionReference] FOREIGN KEY ([institutionID]) REFERENCES [dbo].[InstitutionsRegistry] ([InstitutionID]);
+
+
+GO
+PRINT N'Creating Foreign Key [dbo].[EmailSuffixReferenceToInstitution]...';
+
+
+GO
+ALTER TABLE [dbo].[InstitutionEmailDomains] WITH NOCHECK
+    ADD CONSTRAINT [EmailSuffixReferenceToInstitution] FOREIGN KEY ([institutionID]) REFERENCES [dbo].[InstitutionsRegistry] ([InstitutionID]);
+
+
+GO
+PRINT N'Creating Foreign Key [dbo].[InstitutionSessions]...';
+
+
+GO
+ALTER TABLE [dbo].[SessionDates] WITH NOCHECK
+    ADD CONSTRAINT [InstitutionSessions] FOREIGN KEY ([institutonID]) REFERENCES [dbo].[InstitutionsRegistry] ([InstitutionID]);
+
+
+GO
+PRINT N'Creating Foreign Key [dbo].[referenceToRealUser]...';
+
+
+GO
+ALTER TABLE [dbo].[SessionTokens] WITH NOCHECK
+    ADD CONSTRAINT [referenceToRealUser] FOREIGN KEY ([accountHash]) REFERENCES [dbo].[UserInformation] ([accountHash]);
+
+
+GO
+PRINT N'Checking existing data against newly created constraints';
+
+
+GO
+USE [$(DatabaseName)];
+
+
+GO
+ALTER TABLE [dbo].[apiEvents] WITH CHECK CHECK CONSTRAINT [EventSession];
+
+ALTER TABLE [dbo].[apiEvents] WITH CHECK CHECK CONSTRAINT [eventAuthorReference];
+
+ALTER TABLE [dbo].[apiEvents] WITH CHECK CHECK CONSTRAINT [eventInstitutionReference];
+
+ALTER TABLE [dbo].[calendarBookBackUps] WITH CHECK CHECK CONSTRAINT [backupInstitutionReference];
+
+ALTER TABLE [dbo].[Departments] WITH CHECK CHECK CONSTRAINT [DepartmentInstitutionReference];
+
+ALTER TABLE [dbo].[InstitutionEmailDomains] WITH CHECK CHECK CONSTRAINT [EmailSuffixReferenceToInstitution];
+
+ALTER TABLE [dbo].[SessionDates] WITH CHECK CHECK CONSTRAINT [InstitutionSessions];
+
+ALTER TABLE [dbo].[SessionTokens] WITH CHECK CHECK CONSTRAINT [referenceToRealUser];
+
+
+GO
 PRINT N'Update complete.';
 
 

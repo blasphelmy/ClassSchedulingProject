@@ -219,6 +219,10 @@ namespace ClassSchedulingProject.Controllers
                     context.ApiEvents.Remove(existing);
                     status++;
                 }
+                else
+                {
+                    return Json("not authorized to make changes on this event..");
+                }
                 context.ApiEvents.Add(newEvent);
                 status++;
                 context.SaveChanges();

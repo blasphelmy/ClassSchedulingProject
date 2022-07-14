@@ -1,0 +1,24 @@
+﻿** Highlights
+     Tables that will be rebuilt
+       [dbo].[apiEvents]
+     Clustered indexes that will be dropped
+       None
+     Clustered indexes that will be created
+       None
+     Possible data issues
+       The column [dbo].[apiEvents].[recurring] is being dropped, data loss could occur.
+
+** User actions
+     Table rebuild
+       [dbo].[apiEvents] (Table)
+
+** Supporting actions
+     Drop
+       [dbo].[eventAuthorReference] (Foreign Key)
+       [dbo].[eventInstitutionReference] (Foreign Key)
+     Create
+       [dbo].[eventAuthorReference] (Foreign Key)
+       [dbo].[eventInstitutionReference] (Foreign Key)
+
+The column [dbo].[apiEvents].[recurring] is being dropped, data loss could occur.
+

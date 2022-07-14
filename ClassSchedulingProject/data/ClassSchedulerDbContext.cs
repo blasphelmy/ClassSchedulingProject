@@ -18,8 +18,10 @@ namespace ClassSchedulingProject.data
 
         public virtual DbSet<ApiEvents> ApiEvents { get; set; }
         public virtual DbSet<CalendarBookBackUps> CalendarBookBackUps { get; set; }
+        public virtual DbSet<Departments> Departments { get; set; }
         public virtual DbSet<InstitutionEmailDomains> InstitutionEmailDomains { get; set; }
         public virtual DbSet<InstitutionsRegistry> InstitutionsRegistry { get; set; }
+        public virtual DbSet<SessionDates> SessionDates { get; set; }
         public virtual DbSet<SessionTokens> SessionTokens { get; set; }
         public virtual DbSet<UserInformation> UserInformation { get; set; }
 
@@ -37,10 +39,18 @@ namespace ClassSchedulingProject.data
             modelBuilder.Entity<ApiEvents>(entity =>
             {
                 entity.HasIndex(e => e.EventUuid)
-                    .HasName("UQ__apiEvent__5E26E5A1E8B001EC")
+                    .HasName("UQ__tmp_ms_x__5E26E5A168AC7C4E")
                     .IsUnique();
 
                 entity.Property(e => e.Building).IsUnicode(false);
+
+                entity.Property(e => e.Component).IsUnicode(false);
+
+                entity.Property(e => e.CourseNumber).IsUnicode(false);
+
+                entity.Property(e => e.CoursePrefix).IsUnicode(false);
+
+                entity.Property(e => e.DeliveryType).IsUnicode(false);
 
                 entity.Property(e => e.EventAuthorHash).IsUnicode(false);
 
@@ -51,6 +61,8 @@ namespace ClassSchedulingProject.data
                 entity.Property(e => e.InstitutonId).IsUnicode(false);
 
                 entity.Property(e => e.Room).IsUnicode(false);
+
+                entity.Property(e => e.Section).IsUnicode(false);
 
                 entity.HasOne(d => d.EventAuthorHashNavigation)
                     .WithMany(p => p.ApiEvents)
@@ -85,6 +97,24 @@ namespace ClassSchedulingProject.data
                     .HasConstraintName("backupInstitutionReference");
             });
 
+            modelBuilder.Entity<Departments>(entity =>
+            {
+                entity.HasIndex(e => e.DepartmentId)
+                    .HasName("UQ__Departme__F9B8344C7F25B8FD")
+                    .IsUnique();
+
+                entity.Property(e => e.DepartmentName).IsUnicode(false);
+
+                entity.Property(e => e.InstitutionId).IsUnicode(false);
+
+                entity.HasOne(d => d.Institution)
+                    .WithMany(p => p.Departments)
+                    .HasPrincipalKey(p => p.InstitutionId)
+                    .HasForeignKey(d => d.InstitutionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("DepartmentInstitutionReference");
+            });
+
             modelBuilder.Entity<InstitutionEmailDomains>(entity =>
             {
                 entity.Property(e => e.EmailSuffix).IsUnicode(false);
@@ -112,6 +142,28 @@ namespace ClassSchedulingProject.data
                 entity.Property(e => e.InstitutionId).IsUnicode(false);
 
                 entity.Property(e => e.InstitutionName).IsUnicode(false);
+            });
+
+            modelBuilder.Entity<SessionDates>(entity =>
+            {
+                entity.HasIndex(e => e.SessionId)
+                    .HasName("UQ__SessionD__23DB12CA881502CD")
+                    .IsUnique();
+
+                entity.HasIndex(e => new { e.SessionNumber, e.SessionYear, e.InstitutonId })
+                    .HasName("uniqueSession")
+                    .IsUnique();
+
+                entity.Property(e => e.InstitutonId).IsUnicode(false);
+
+                entity.Property(e => e.SessionName).IsUnicode(false);
+
+                entity.HasOne(d => d.Instituton)
+                    .WithMany(p => p.SessionDates)
+                    .HasPrincipalKey(p => p.InstitutionId)
+                    .HasForeignKey(d => d.InstitutonId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("InstitutionSessions");
             });
 
             modelBuilder.Entity<SessionTokens>(entity =>

@@ -12,9 +12,9 @@ C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingDBD
 C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingDBData\bin\Debug\ClassSchedulingDBData.dll
 C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingDBData\bin\Debug\ClassSchedulingDBData.pdb
 C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingDBData\obj\Debug\ClassSchedulingDBData.sqlproj.AssemblyReference.cache
+C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingDBData\obj\Debug\ClassSchedulingDBData.dll
+C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingDBData\obj\Debug\ClassSchedulingDBData.pdb
 C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingDBData\obj\Debug\Model.xml
 C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingDBData\obj\Debug\refactor.xml
 C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingDBData\obj\Debug\postdeploy.sql
 C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingDBData\obj\Debug\predeploy.sql
-C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingDBData\obj\Debug\ClassSchedulingDBData.dll
-C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingDBData\obj\Debug\ClassSchedulingDBData.pdb

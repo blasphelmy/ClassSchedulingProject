@@ -66,5 +66,8 @@
     <Build Include="DataTables\EmailVerificationTokens.sql" />
     <Build Include="DataTables\apiEvents.sql" />
     <Build Include="DataTables\calendarBookBackUps.sql" />
+    <Build Include="DataTables\Departments.sql" />
+    <Build Include="DataTables\SessionDates.sql" />
+    <Build Include="DataTables\ValidPrefixes.sql" />
   </ItemGroup>
 </Project>

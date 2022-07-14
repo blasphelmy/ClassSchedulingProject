@@ -37,6 +37,24 @@ namespace ClassSchedulingProject.Models
         [Column("room")]
         [StringLength(64)]
         public string Room { get; set; }
+        [Required]
+        [Column("coursePrefix")]
+        [StringLength(24)]
+        public string CoursePrefix { get; set; }
+        [Column("deliveryType")]
+        [StringLength(24)]
+        public string DeliveryType { get; set; }
+        [Column("startDate", TypeName = "date")]
+        public DateTime? StartDate { get; set; }
+        [Column("endDate", TypeName = "date")]
+        public DateTime? EndDate { get; set; }
+        [Column("courseNumber")]
+        [StringLength(12)]
+        public string CourseNumber { get; set; }
+        [StringLength(12)]
+        public string Section { get; set; }
+        [StringLength(64)]
+        public string Component { get; set; }
 
         public virtual UserInformation EventAuthorHashNavigation { get; set; }
         public virtual InstitutionsRegistry Instituton { get; set; }
