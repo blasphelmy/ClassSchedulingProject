@@ -219,7 +219,7 @@ namespace ClassSchedulingProject.Controllers
                     context.ApiEvents.Remove(existing);
                     status++;
                 }
-                else
+                else if(existing != null && existing.EventAuthorHash != thisUser.AccountHash)
                 {
                     return Json("not authorized to make changes on this event..");
                 }
