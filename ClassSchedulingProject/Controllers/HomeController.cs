@@ -10,12 +10,14 @@ using System.Threading.Tasks;
 using ClassSchedulingProject.data;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
+using ClassSchedulingProject.Structs;
 
 namespace ClassSchedulingProject.Controllers
 {
     public class HomeController : Controller
     {
         private ClassSchedulerDbContext context;
+        List<CourseOfferedTemplates> courseTemplates;
         private IDictionary<string, InstitutionsRegistry> institutionsDict;
         private IDictionary<string, int> registeredEmailsDict;
         private IDictionary<string, string> institutionEmailSuffixDict;
@@ -28,6 +30,7 @@ namespace ClassSchedulingProject.Controllers
         public HomeController(ClassSchedulerDbContext newContext)
         {
             this.context = newContext;
+            courseTemplates = new List<CourseOfferedTemplates>();
             institutionsDict = new Dictionary<string, InstitutionsRegistry>();
             institutionEmailSuffixDict = new Dictionary<string, string>();
             eventMap = new Dictionary<string , ApiEvents>();
@@ -46,6 +49,9 @@ namespace ClassSchedulingProject.Controllers
                 institutionEmailSuffixDict.Add(d.InstitutionId, d.EmailSuffix);
                 institutionEmailSuffix = institutionEmailSuffix + d.InstitutionId + ",," + d.EmailSuffix + "--";
             }
+            foreach(CourseOfferingsTemplates course in context.CourseOfferingsTemplates.ToList()){
+                courseTemplates.Add(new CourseOfferedTemplates(course));
+            }
             CryptTool = new CryptTools();
         }
 
@@ -60,6 +66,10 @@ namespace ClassSchedulingProject.Controllers
                     SessionTokens thisToken = context.SessionTokens.FirstOrDefault(e => e.SessionId == cookieValueFromReq);
                     UserInformation thisUser = context.UserInformation.FirstOrDefault(e => e.AccountHash == thisToken.AccountHash);
                     ViewBag.thisUser = thisUser;
+                    if(thisUser.AccountFlag < 3){
+                       
+                        ViewBag.CourseOfferingsTemplates = JsonSerializer.Serialize(courseTemplates);
+                    }
                     return View();
                 }
             return RedirectToAction("Register", "Home");
@@ -78,6 +88,9 @@ namespace ClassSchedulingProject.Controllers
         [HttpGet]
         public IActionResult fetchEvents(string filterterms)
         {
+            if(verifyUser(Request.Cookies["sessionID"]) == 0){
+                return Json("");
+            }
             string[] terms = filterterms.Split(",");
             try
             {
@@ -115,6 +128,7 @@ namespace ClassSchedulingProject.Controllers
                     institutionEvents = institutionEvents + evnt.EventData + " _--__- ";
                 }
             }
+
             return Json(institutionEvents);
         }
         [HttpPost]

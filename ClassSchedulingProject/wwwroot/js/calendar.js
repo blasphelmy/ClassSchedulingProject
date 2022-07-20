@@ -19,6 +19,7 @@
         this.data.firstName = data.firstName;
         this.data.lastName = data.lastName;
         this.data.userAccountID = data.userAccountID;
+        this.data.userAccountLevel = data.userAccountLevel;
         this.data.events = [];
         //console.log(this.data);
         if (data.events) {
@@ -30,6 +31,7 @@
         //console.log(newEventList);
         for (let i in newEventList) {
             newEventList[i] = JSON.parse(newEventList[i]);
+            newEventList[i].overlap = true;
             if (this.usersColors.get(newEventList[i].extendedProps.userAccountID) === undefined) {
                 this.usersColors.set(newEventList[i].extendedProps.userAccountID, this.colorWheel.colors[this.colorWheel.index++]);
                 if (this.colorWheel.index > this.colorWheel.colors.length) {
@@ -53,6 +55,7 @@
         this.data.events = [];
         for (let i in newEventList) {
             newEventList[i] = JSON.parse(newEventList[i]);
+            newEventList[i].overlap = true;
             this.data.events[i] = newEventList[i];
             if (this.EventMap.get(this.data.events[i]) != i) {
                 this.EventMap.set(this.data.events[i].extendedProps.uuid, i);
@@ -75,37 +78,37 @@
         }
         setTimeout(createCalender, 20);
     }
-    addEvent(newEvent, isUpdatingEventList){
-        //console.log("addEventClassMethod");
-        console.log(newEvent);
+    addEvent(newEvent, callback){
+        console.log("addEventClassMethod");
         newEvent.color = this.usersColors.get(newEvent.extendedProps.userAccountID);
-        //console.log(this.permissibleEvents);
-        //console.log(newEvent.extendedProps.uuid)
         if (newEvent.extendedProps.userAccountID === this.data.userAccountID) {
             newEvent.color = this.colorWheel.default;
             if (this.EventMap.get(newEvent.extendedProps.uuid) === 0 || this.EventMap.get(newEvent.extendedProps.uuid)) {
-                if (this.data.events[this.EventMap.get(newEvent.extendedProps.uuid)] !== newEvent) {
+                if (JSON.stringify(this.data.events[this.EventMap.get(newEvent.extendedProps.uuid)]) !== JSON.stringify(newEvent)) {
+                    console.log(this.data.events[this.EventMap.get(newEvent.extendedProps.uuid)], newEvent)
                     console.log("event changes detected..saving event...")
-                    this.saveEvent(newEvent);
+                    this.saveEvent(newEvent, function(){
+                        setTimeout(createCalender, 20);
+                    });
                 }
                 this.data.events[this.EventMap.get(newEvent.extendedProps.uuid)] = newEvent;
-                if (isUpdatingEventList !== 1) setTimeout(createCalender, 20);
+                if(callback) callback();
                 return;
             }
             console.log("new event detected... adding event to calender...")
             this.EventMap.set(newEvent.extendedProps.uuid, this.data.events.length);
             this.data.events[this.data.events.length] = newEvent;
-            this.saveEvent(newEvent);
+            this.saveEvent(newEvent, function(){
+                setTimeout(createCalender, 20);
+            });
         }
 
-        if (isUpdatingEventList != 1) setTimeout(createCalender, 20);
+        if(callback) callback();
         this.isActive = 0;
     }
     checkEventPermmisions(eventUID) {
-        for (let event of this.data.events) {
-            if (eventUID === event.extendedProps.uuid && event.extendedProps.userAccountID === this.data.userAccountID) {
-                return true;
-            }
+        if(this.EventMap.get(eventUID) && this.data.events[this.EventMap.get(eventUID)].extendedProps.userAccountID === this.data.userAccountID ){
+            return true;
         }
         return false;
     }
@@ -149,7 +152,7 @@
         }
     }
     shuffle(array) {
-    let currentIndex = array.length, randomIndex;
+    let currentIndex = array.length, randomIndex = 0;
 
     // While there remain elements to shuffle.
     while (currentIndex != 0) {
@@ -163,6 +166,6 @@
             array[randomIndex], array[currentIndex]];
     }
 
-    return array;
-}
+        return array;
+    }
 }

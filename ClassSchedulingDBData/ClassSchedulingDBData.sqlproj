@@ -69,5 +69,7 @@
     <Build Include="DataTables\Departments.sql" />
     <Build Include="DataTables\SessionDates.sql" />
     <Build Include="DataTables\ValidPrefixes.sql" />
+    <Build Include="DataTables\CourseOfferings.sql" />
+    <Build Include="DataTables\CourseOfferingsTemplates.sql" />
   </ItemGroup>
 </Project>

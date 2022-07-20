@@ -1,4 +1,5 @@
-﻿@{
+﻿@using Newtonsoft.Json
+@{
     ViewData["Title"] = ViewData["Title"];
     UserInformation thisUser = new UserInformation();
     List<int> AvailableYears = new List<int>();
@@ -12,54 +13,7 @@
     }
 }
 <style>
-body {
-     overflow: hidden;
-}
-.fc-timegrid-slot {
-    height: 0px!important;
-    border-bottom: 0 !important;
-}
-.fc-v-event {
-    background-color: rgba(23, 34, 54,.4);
-}
-#eventPopUP {
-    height: 405px;
-    width: 326px;
-}
-#addEventPopUp{
-    height: 505px;
-    width:700px;
-    overflow: hidden;
-}
-.popup {
-    position: absolute;
-    font-size: 14px;
-    top: 0px;
-    left: 0px;
-    background-color: inherit;
-    color: #000;
-    padding: 10px;
-    z-index: 999;
-    -webkit-box-shadow: 0px 2px 10px 5px rgba(0,0,0,0.27); 
-    box-shadow: 0px 2px 10px 5px rgba(0,0,0,0.27);
-    overflow-y: scroll;
-}
-#ptitle {
-    font-size: 20px;
-}
-.pauthor {
-    opacity: .8;
-}
-#pdescription {
-    opacity: .9;
-    font-size: 12px;
-    margin-top: 10px;
-}
-#comments {
-    font-size: 12px;
-    opacity: .8;
-    overflow-y: scroll;
-}
+
 </style>
 
 <div style="padding-left: 20px; overflow:hidden; max-width: 100%">
@@ -69,9 +23,7 @@ body {
             <div>
                 <span>
                     <select id="dptSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
-                      <option selected>Dept</option>
-                      <option value="CSI">CSI</option>
-                      <option value="AUTO">Auto</option>
+                      <option value="@thisUser.Department.DepartmentId" selected>@thisUser.Department.DepartmentName</option>
                     </select>
                     <select id="yearSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
                       <option selected>Select Year</option>
@@ -107,67 +59,60 @@ body {
         </div>
     </div>
     <div style="height: calc(100vh - 200px);" class="row">
-        <div class="col-lg-12">
+        <div class="col-lg-6">
             <div id='calendar'></div>
         </div>
-@*       <div class="col-lg-4">
+        <div class="col-lg-4">
             <div class="row">
-                <p>hello</p>
+                <div class="container">
+                    <p>This Room's Event:</p>
+                </div>
+                <div class="container">
+                    <div id="filteredEvents"></div>
+                </div>
+                <div class="container">
+                    <p>All Events:</p>
+                </div>
+                <div class="container">
+                    <div id="allEvents"></div>
+                </div>
             </div>
-        </div>*@
+        </div>
+       <div class="col-lg-2" style="border-left: solid 1px black">
+            <div class="row">
+                <div class="container">
+                    <p>Program Courses</p>
+                </div>
+                <div class="container">
+                    <div id="EventTemplates"></div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<link rel="stylesheet" href="libCal/main.css" />
-<script src="libCal/main.js"></script>
-<script src="js/app.js"></script>
-<script src="js/calendar.js"></script>
+<link rel="stylesheet" href="/css/calendarAppDefaults.css" />
+<link rel="stylesheet" href="/libCal/main.css" />
+<script src="/libCal/main.js"></script>
+<script src="/js/app.js"></script>
+<script src="/js/calendar.js"></script>
+<script src="/js/popUpRenderer.js"></script>
+<script src="/js/createDraggableElement.js"></script>
+<script src="/js/appHelpers.js"></script>
+<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@@babel/standalone/babel.min.js"></script>
 <script>
 let caldata = {
     firstName: "@thisUser.FirstName",
     lastName: "@thisUser.LastName",
     userAccountID: "@thisUser.AccountHash",
+    userAccountLevel: "@thisUser.AccountFlag",
+    EventTemplates : JSON.parse('@Html.Raw(ViewBag.CourseOfferingsTemplates)')
 }
-function updateTimer(delay) {
-    setTimeout(function () {
-        console.log("update timer set");
-        if (elements.checkNull() && newCalender.isActive === 0 && isFetching === 0) {
-            isFetching = 1;
-            fetchData(new Object);
-        }
-        updateTimer(delay);
-    }, delay);
-}
-
-let fetchData = (e) => {
-    console.log("fetching data...");
-    try {
-        localStorage.setItem(e.id, e.value);
-    } catch {
-    }
-    if (!elements.checkNull()) {
-            return createCalender(caldata);
-        }
-    let filterterms = `${elements.year.val()},${elements.quarter.val()},${elements.building.val()},${elements.room.val()}`;
-    //console.log(filterterms);
-    fetch(`/home/fetchEvents?filterterms=${filterterms}`).then(response => response.json()).then((data) => {
-        if (data !== "error") {
-            if (newCalender.init === 0) {
-                newCalender.parseEvents(data);
-                createCalender(newCalender.data.events);
-            } else {
-                newCalender.updateEvents(data);
-            }
-        } else {
-            console.log("error fetching calendar events...")
-        }
-        setTimeout(function() {
-            isFetching = 0;
-        }, 200);
-    });
-}
-function fetchNewCalendar(element) {
-    newCalender = new CalenderApp(caldata);
-    fetchData(element);
-}
+let data = {
+    message : "Hello World"
+};
 </script>
+<script src="/js/Components.jsx" type="text/babel"></script>
+<script src="/js/main.jsx" type="text/babel"></script>

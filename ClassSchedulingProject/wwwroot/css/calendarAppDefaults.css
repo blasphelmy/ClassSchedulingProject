@@ -1,0 +1,48 @@
+body {
+    overflow-x: hidden;
+}
+.fc-timegrid-slot {
+   height: 0px!important;
+   border-bottom: 0 !important;
+}
+.fc-v-event {
+   background-color: rgba(23, 34, 54,.4);
+}
+#eventPopUP {
+   height: 405px;
+   width: 326px;
+}
+#addEventPopUp{
+   height: 505px;
+   width:700px;
+   overflow: hidden;
+}
+.popup {
+   position: absolute;
+   font-size: 14px;
+   top: 0px;
+   left: 0px;
+   background-color: inherit;
+   color: #000;
+   padding: 10px;
+   z-index: 999;
+   -webkit-box-shadow: 0px 2px 10px 5px rgba(0,0,0,0.27); 
+   box-shadow: 0px 2px 10px 5px rgba(0,0,0,0.27);
+   overflow-y: scroll;
+}
+#ptitle {
+   font-size: 20px;
+}
+.pauthor {
+   opacity: .8;
+}
+#pdescription {
+   opacity: .9;
+   font-size: 12px;
+   margin-top: 10px;
+}
+#comments {
+   font-size: 12px;
+   opacity: .8;
+   overflow-y: scroll;
+}
