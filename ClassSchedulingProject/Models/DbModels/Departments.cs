@@ -9,6 +9,7 @@ namespace ClassSchedulingProject.Models
     {
         public Departments()
         {
+            ProgramOfferings = new HashSet<ProgramOfferings>();
             UserInformation = new HashSet<UserInformation>();
             ValidPrefixes = new HashSet<ValidPrefixes>();
         }
@@ -31,6 +32,7 @@ namespace ClassSchedulingProject.Models
         public string InstitutionId { get; set; }
 
         public virtual InstitutionsRegistry Institution { get; set; }
+        public virtual ICollection<ProgramOfferings> ProgramOfferings { get; set; }
         public virtual ICollection<UserInformation> UserInformation { get; set; }
         public virtual ICollection<ValidPrefixes> ValidPrefixes { get; set; }
     }

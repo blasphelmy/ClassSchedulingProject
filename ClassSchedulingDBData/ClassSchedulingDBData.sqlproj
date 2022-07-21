@@ -71,5 +71,6 @@
     <Build Include="DataTables\ValidPrefixes.sql" />
     <Build Include="DataTables\CourseOfferings.sql" />
     <Build Include="DataTables\CourseOfferingsTemplates.sql" />
+    <Build Include="DataTables\ProgramOfferings.sql" />
   </ItemGroup>
 </Project>

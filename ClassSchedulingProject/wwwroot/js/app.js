@@ -4,7 +4,16 @@ var resources = [
     { id: 'J', building: 'J', title: '111' },
   ];
 var developementMode = 1;
+let filterRoomEvents = function(e){
+    if(e.extendedProps.room === elements.room.val()){
+        return e;
+    }
+    return {};
+}
 document.addEventListener('DOMContentLoaded', function () {
+    caldata.EventTemplates.map(function(o, id){
+        o.Active = false;
+    });
     elements = {
         year: $("#yearSel"),
         quarter: $("#qSel"),
@@ -55,7 +64,7 @@ function createCalender(events) {
         initialView: 'timeGridWeek',
         // initialView : 'resourceTimelineDay',
         duration: { days: 5 },
-        selectable: false,
+        selectable: true,
         slotDuration: slotDuration[Number(document.getElementById("viewSizeRangeSlider").value) - 1],
         snapDuration: '00:05',
         //defaultView: 'basicWeek',
@@ -88,7 +97,9 @@ function createCalender(events) {
         editable: true,
         eventResizableFromStart: true,
         eventOverlap: true,
-        events: events ?? newCalender.data.events ?? [],
+        events: function(){
+            return events ?? newCalender.data?.events ?? [];
+        }().map(filterRoomEvents),
         resources: resources,
         // resourceGroupField: 'building',
         //events: JSON.parse(),
@@ -225,8 +236,8 @@ function generateFormData(info) {
                 return null;
             }
         },
-        start: info.startStr,
-        end: info.endStr,
+        start: info?.startStr,
+        end: info?.endStr,
         overlap: true,
         color: "#cd3",
         daysOfWeek: function () {
@@ -240,7 +251,7 @@ function generateFormData(info) {
             return daysofweek;
         },
             extendedProps: {
-            uuid: info.event?._def.extendedProps.uuid || create_UUID(),
+            uuid: info?.event?._def?.extendedProps.uuid || create_UUID(),
             userAccountID: newCalender.data.userAccountID,
             instructorName: function () {
                 let e = $("#pufInstructor");
@@ -267,7 +278,9 @@ function generateFormData(info) {
                     return null;
                 }
             },
-            coursePrefix: elements.dpt.val(),
+            coursePrefix: function(){
+                return $("#pufCourseNumberPrefix").val();
+            },
             courseNumber: function () {
                 let e = $("#pufCourseNumber");
                 try {
@@ -277,8 +290,12 @@ function generateFormData(info) {
                     return null;
                 }
             },
-            building: elements.building.val(),
-            room: elements.room.val(),
+            building: function(){
+                return $("#pufBuilding").val();
+            },
+            room: function(){
+                return $("#pufRoomNumber").val();
+            },
             component: function () {
                 let e = $("#pufComponent");
                 if (e.val() !== "Component") {
@@ -326,36 +343,5 @@ function pufSelectBoxChange(element) {
             document.getElementById("pufBuilding").value = "na";
             document.getElementById("pufBuilding").disabled = false;
         }
-    }
-}
-function finalizeFormDataAndAdd() {
-    let finalizedEvent = JSON.parse(JSON.stringify(newEvent));
-    if (newEvent.title() &&
-        newEvent.extendedProps.classNumber() &&
-        newEvent.extendedProps.courseNumber() &&
-        newEvent.extendedProps.section() &&
-        newEvent.extendedProps.component() &&
-        newEvent.extendedProps.delivery()) {
-
-        finalizedEvent.title = newEvent.title();
-        finalizedEvent.daysOfWeek = newEvent.daysOfWeek();
-        finalizedEvent.extendedProps.instructorName = newEvent.extendedProps.instructorName();
-        finalizedEvent.extendedProps.eventAuthor = newEvent.extendedProps.eventAuthor;
-        finalizedEvent.extendedProps.classNumber = newEvent.extendedProps.classNumber();
-        finalizedEvent.extendedProps.Session = newEvent.extendedProps.Session();
-        finalizedEvent.extendedProps.section = newEvent.extendedProps.section();
-        finalizedEvent.extendedProps.courseNumber = newEvent.extendedProps.courseNumber();
-        finalizedEvent.extendedProps.component = newEvent.extendedProps.component();
-        finalizedEvent.extendedProps.delivery = newEvent.extendedProps.delivery();
-        finalizedEvent.extendedProps.startTime = newEvent.extendedProps.startTime();
-        finalizedEvent.extendedProps.endTime = newEvent.extendedProps.endTime();
-        finalizedEvent.extendedProps.startDate = newEvent.extendedProps.startDate();
-        finalizedEvent.extendedProps.endDate = newEvent.extendedProps.endDate();
-
-        finalizedEvent.groupId = finalizedEvent.extendedProps.uuid;
-        finalizedEvent.startTime = finalizedEvent.extendedProps.startTime;
-        finalizedEvent.endTime = finalizedEvent.extendedProps.endTime;
-
-        newCalender.addEvent(finalizedEvent, closePopUp);
     }
 }

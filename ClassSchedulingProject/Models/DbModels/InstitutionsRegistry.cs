@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClassSchedulingProject.Models.DbModels;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,6 +15,7 @@ namespace ClassSchedulingProject.Models
             CourseOfferingsTemplates = new HashSet<CourseOfferingsTemplates>();
             Departments = new HashSet<Departments>();
             InstitutionEmailDomains = new HashSet<InstitutionEmailDomains>();
+            ProgramOfferings = new HashSet<ProgramOfferings>();
             SessionDates = new HashSet<SessionDates>();
             UserInformation = new HashSet<UserInformation>();
         }
@@ -32,6 +34,7 @@ namespace ClassSchedulingProject.Models
         public virtual ICollection<CourseOfferingsTemplates> CourseOfferingsTemplates { get; set; }
         public virtual ICollection<Departments> Departments { get; set; }
         public virtual ICollection<InstitutionEmailDomains> InstitutionEmailDomains { get; set; }
+        public virtual ICollection<ProgramOfferings> ProgramOfferings { get; set; }
         public virtual ICollection<SessionDates> SessionDates { get; set; }
         public virtual ICollection<UserInformation> UserInformation { get; set; }
     }

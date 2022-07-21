@@ -24,7 +24,7 @@ namespace ClassSchedulingProject.Controllers
         private IDictionary<string, ApiEvents> eventMap;
         private string instutionNames;
         private string institutionEmailSuffix;
-        private CryptTools CryptTool;
+        //private CryptTools CryptTool;
         private Random rand = new Random();
 
         public HomeController(ClassSchedulerDbContext newContext)
@@ -52,7 +52,10 @@ namespace ClassSchedulingProject.Controllers
             foreach(CourseOfferingsTemplates course in context.CourseOfferingsTemplates.ToList()){
                 courseTemplates.Add(new CourseOfferedTemplates(course));
             }
-            CryptTool = new CryptTools();
+            //CryptTool = new CryptTools();
+            //String token = "112323";
+            //token = token.ComputeSha256Hash();
+            //System.Console.WriteLine(token);
         }
 
         public IActionResult Index(string institution)
@@ -66,7 +69,7 @@ namespace ClassSchedulingProject.Controllers
                     SessionTokens thisToken = context.SessionTokens.FirstOrDefault(e => e.SessionId == cookieValueFromReq);
                     UserInformation thisUser = context.UserInformation.FirstOrDefault(e => e.AccountHash == thisToken.AccountHash);
                     ViewBag.thisUser = thisUser;
-                    if(thisUser.AccountFlag < 3){
+                    if(thisUser.AccountFlag < 2){
                        
                         ViewBag.CourseOfferingsTemplates = JsonSerializer.Serialize(courseTemplates);
                     }
@@ -112,8 +115,7 @@ namespace ClassSchedulingProject.Controllers
                 if (e.InstitutonId == institutionID && 
                     e.Year == int.Parse(terms[0]) && 
                     e.Quarter == int.Parse(terms[1]) &&
-                    e.Building == terms[2] &&
-                    e.Room == terms[3])
+                    e.Building == terms[2])
                     {
                         return true;
                     }
@@ -146,14 +148,14 @@ namespace ClassSchedulingProject.Controllers
                 newUser.LastName = newAccountData.lastName;
                 newUser.FirstName = newAccountData.firstName;
                 newUser.AccountFlag = 2;
-                newUser.AccountHash = CryptTool.ComputeSha256Hash(newUser.PrimaryEmail + newAccountData.password);
+                newUser.AccountHash = $"{newUser.PrimaryEmail + newAccountData.password}".ComputeSha256Hash();
                 try
                 {
                     context.UserInformation.Add(newUser);
                     context.SaveChanges();
                     SessionTokens newSessionToken = new SessionTokens();
                     newSessionToken.AccountHash = newUser.AccountHash;
-                    newSessionToken.SessionId = CryptTool.ComputeSha256Hash(newUser.PrimaryEmail + newAccountData.password + DateTime.Now.ToString() + rand.Next());
+                    newSessionToken.SessionId = $"{newUser.PrimaryEmail + newAccountData.password + DateTime.Now.ToString() + rand.Next()}".ComputeSha256Hash();
                     context.SessionTokens.Add(newSessionToken);
                     context.SaveChanges();
                     SetCookie("sessionID", newSessionToken.SessionId, 99);
@@ -205,11 +207,11 @@ namespace ClassSchedulingProject.Controllers
         {
             if(info.email != null && info.password != null)
             {
-                if(context.UserInformation.FirstOrDefault(e => e.AccountHash == CryptTool.ComputeSha256Hash(info.email + info.password))  != null)
+                if(context.UserInformation.FirstOrDefault(e => e.AccountHash == $"{info.email + info.password}".ComputeSha256Hash())  != null)
                 {
                     SessionTokens newSessionToken = new SessionTokens();
-                    newSessionToken.AccountHash = CryptTool.ComputeSha256Hash(info.email + info.password);
-                    newSessionToken.SessionId = CryptTool.ComputeSha256Hash(info.email + info.password + DateTime.Now.ToString() + rand.Next());
+                    newSessionToken.AccountHash = $"{info.email + info.password}".ComputeSha256Hash();
+                    newSessionToken.SessionId = $"{info.email + info.password + DateTime.Now.ToString() + rand.Next()}".ComputeSha256Hash();
                     context.SessionTokens.Add(newSessionToken);
                     context.SaveChanges();
                     SetCookie("sessionID", newSessionToken.SessionId, 10080);

@@ -1,4 +1,26 @@
 
+function ActivateEvent(element){
+    let data = JSON.parse(element.attr("data"));
+    console.log(data);
+    let info = {
+
+    }
+    let event = {
+        title: data.Title,
+
+        extendedProps : {
+            coursePrefix : data.CoursePrefix,
+            courseNumber : data.CourseNumber,
+            component: data.Component,
+            courseID: data.Id,
+            institutionID: data.InstitutionID,
+            programVersion: data.ProgramVersion,
+        }
+    }
+    generateFormData();
+    createAnEventPopUp(info, event);
+}
+
 function createAnEventPopUp(info, event) {
     $(`
 <div id="addEventPopUp" class="card popup">
@@ -8,24 +30,26 @@ function createAnEventPopUp(info, event) {
             <div class="col">
                 <div class="form-group">
                     <label class="control-label"><b>Course Title</b></label><br />
-                    <input id="pufTitle" class="form-control-xs" placeholder="Database Design" value="${event?.title||""}"/>
+                    <input id="pufTitle" class="form-control-xs" value="${event?.title||""}"/>
                 </div>
                 <div class="form-group">
-                    <label class="control-label"><b>Class Number (If unknown, leave blank)</b></label><br />
-                    <input id="pufClassNumber" class="form-control-xs" placeholder="28964" value="${event?.extendedProps.classNumber || ""}"/>
+                    <label class="control-label"><b>Class Number</b></label><br />
+                    <input id="pufClassNumber" class="form-control-xs" value="${event?.extendedProps.classNumber || ""}"/>
                 </div>
                 <div class="form-group">
                     <label class="control-label" ><b>Instructor</b></label><br />
-                    <input id="pufInstructor" class="form-control-xs" placeholder="${caldata.lastName}" value="${event?.extendedProps.instructorName || ""}"/>
+                    <input id="pufInstructor" class="form-control-xs" value="${event?.extendedProps.instructorName || ""}"/>
                 </div>
                 <div class="form-group">
                     <label class="control-label" ><b>Section</b></label><br />
-                    <input id="pufSection" class="form-control-xs" placeholder="1" value="${event?.extendedProps.section || ""}"/>
+                    <input id="pufSection" class="form-control-xs" value="${event?.extendedProps.section || ""}"/>
                 </div>
                 <div class="form-group">
                     <label class="control-label"><b>Course Number</b></label><br />
                         <select id="pufCourseNumberPrefix" class="custom-select-xs">
-                          <option selected>${event?.extendedProps.coursePrefix || elements.dpt.val()}</option >
+                          <option selected>${event?.extendedProps.coursePrefix}</option >
+                          <option value="CSI">CSI</option>
+                          <option value="CNT">CNT</option>
                         </select>
                     <input id="pufCourseNumber" class="form-control-xs" value="${event?.extendedProps.courseNumber || ""}"/>
                 </div>
@@ -34,7 +58,7 @@ function createAnEventPopUp(info, event) {
 
                 <div class="form-group">
                     <select id="pufDeliveryType" onchange="pufSelectBoxChange(this)" class="custom-select-xs">
-                        <option selected>${event?.extendedProps.delivery || "Delivery"}</option>
+                        <option selected>${event?.extendedProps.delivery || ""}</option>
                         <option value="Flex">Flex</option>
                         <option value="Online">Online</option>
                         <option value="InPerson">In Person</option>
@@ -54,10 +78,12 @@ function createAnEventPopUp(info, event) {
                     <span><b>Room:</b> <span>
 
                     <select id="pufBuilding" class="custom-select-xs">
-                        <option selected>${elements.building.val()}</option>
+                        <option selected></option>
+                        <option value="${elements.building.val()}">${elements.building.val()}</option>
                     </select></span></span>
                     <select id="pufRoomNumber" class="custom-select-xs">
-                        <option selected>${elements.room.val()}</option>
+                        <option selected></option>
+                        <option value="${elements.room.val()}">${elements.room.val()}</option>
                     </select>
                 </div>
 
@@ -76,11 +102,11 @@ function createAnEventPopUp(info, event) {
                     <div class="col">
                         <div class="form-group">
                             <label class="control-label">Start Time</label><br />
-                            <input id="pufStartTime"type="time" class="form-control-xs" value="${info.startStr?.split("T")[1] ?? info.event._def.extendedProps.startTime}"/>
+                            <input id="pufStartTime"type="time" class="form-control-xs" value="${info?.startStr?.split("T")[1] ?? info.event?._def.extendedProps.startTime}"/>
                         </div>
                         <div class="form-group">
                             <label class="control-label">End Time</label><br />
-                            <input id="pufEndTime" type="time" class="form-control-xs" value="${info.endStr?.split("T")[1] ?? info.event._def.extendedProps.endTime}"/>
+                            <input id="pufEndTime" type="time" class="form-control-xs" value="${info?.endStr?.split("T")[1] ?? info?.event?._def.extendedProps.endTime}"/>
                         </div>
                     </div>
                 </div>
@@ -104,14 +130,14 @@ function createAnEventPopUp(info, event) {
     </div>
 </div>
     `).appendTo("body");
-    if (event) {
+    if (event?.daysOfWeek) {
         let checkboxes = document.getElementsByClassName("pufDaysOfWeek");
         for (let i = 0; i < event.daysOfWeek.length; i++) {
             checkboxes[Number(event.daysOfWeek[i])-1].checked = true
         }
     }
     createDraggableElement(document.getElementById("addEventPopUp"));
-    setPopUpPos(document.getElementById("addEventPopUp"), { x: info.jsEvent.clientX, y: info.jsEvent.clientY });
+    // setPopUpPos(document.getElementById("addEventPopUp"), { x: info.jsEvent.clientX, y: info.jsEvent.clientY });
 }
 function renderPopUp(event, info) {
     $(`<div id="eventPopUP" class="card popup">
@@ -173,5 +199,38 @@ var closePopUp = (e) => {
         $('.popup')[0].remove();
     } catch {
 
+    }
+}
+function finalizeFormDataAndAdd() {
+    let finalizedEvent = JSON.parse(JSON.stringify(newEvent));
+    if (newEvent.title() &&
+        newEvent.extendedProps.classNumber() &&
+        newEvent.extendedProps.courseNumber() &&
+        newEvent.extendedProps.section() &&
+        newEvent.extendedProps.component() &&
+        newEvent.extendedProps.delivery()) {
+
+        finalizedEvent.title = newEvent.title();
+        finalizedEvent.daysOfWeek = newEvent.daysOfWeek();
+        finalizedEvent.extendedProps.instructorName = newEvent.extendedProps.instructorName();
+        finalizedEvent.extendedProps.eventAuthor = newEvent.extendedProps.eventAuthor;
+        finalizedEvent.extendedProps.classNumber = newEvent.extendedProps.classNumber();
+        finalizedEvent.extendedProps.Session = newEvent.extendedProps.Session();
+        finalizedEvent.extendedProps.section = newEvent.extendedProps.section();
+        finalizedEvent.extendedProps.courseNumber = newEvent.extendedProps.courseNumber();
+        finalizedEvent.extendedProps.component = newEvent.extendedProps.component();
+        finalizedEvent.extendedProps.delivery = newEvent.extendedProps.delivery();
+        finalizedEvent.extendedProps.startTime = newEvent.extendedProps.startTime();
+        finalizedEvent.extendedProps.endTime = newEvent.extendedProps.endTime();
+        finalizedEvent.extendedProps.startDate = newEvent.extendedProps.startDate();
+        finalizedEvent.extendedProps.endDate = newEvent.extendedProps.endDate();
+        finalizedEvent.extendedProps.room = newEvent.extendedProps.room();
+        finalizedEvent.extendedProps.building = newEvent.extendedProps.building();
+
+        finalizedEvent.groupId = finalizedEvent.extendedProps.uuid;
+        finalizedEvent.startTime = finalizedEvent.extendedProps.startTime;
+        finalizedEvent.endTime = finalizedEvent.extendedProps.endTime;
+        console.log(finalizedEvent);
+        newCalender.addEvent(finalizedEvent, closePopUp);
     }
 }

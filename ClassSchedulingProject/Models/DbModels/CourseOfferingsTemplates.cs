@@ -14,7 +14,8 @@ namespace ClassSchedulingProject.Models
 
         [Key]
         public int Id { get; set; }
-        public int ProgramVersion { get; set; }
+        [Column("ProgramID")]
+        public int ProgramId { get; set; }
         [Required]
         [Column("InstitutionID")]
         [StringLength(64)]
@@ -35,6 +36,9 @@ namespace ClassSchedulingProject.Models
         public int QuarterNumber { get; set; }
 
         public virtual InstitutionsRegistry Institution { get; set; }
+        [ForeignKey(nameof(ProgramId))]
+        [InverseProperty(nameof(ProgramOfferings.CourseOfferingsTemplates))]
+        public virtual ProgramOfferings Program { get; set; }
         [InverseProperty("CourseOffered")]
         public virtual ICollection<CourseOfferings> CourseOfferings { get; set; }
     }

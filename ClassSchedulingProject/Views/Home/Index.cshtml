@@ -58,34 +58,21 @@
             </div>
         </div>
     </div>
-    <div style="height: calc(100vh - 200px);" class="row">
-        <div class="col-lg-6">
+    <div class="row" style="padding-right: 20px;">
+        <div style="height: 100vh;" class="col-lg-7">
             <div id='calendar'></div>
         </div>
-        <div class="col-lg-4">
-            <div class="row">
-                <div class="container">
-                    <p>This Room's Event:</p>
-                </div>
-                <div class="container">
-                    <div id="filteredEvents"></div>
-                </div>
-                <div class="container">
-                    <p>All Events:</p>
-                </div>
-                <div class="container">
-                    <div id="allEvents"></div>
-                </div>
+        <div class="col-lg-5">
+            <div class="accordion" id="accordionFilteredEvents">
+                <div id="filteredEvents"></div>
             </div>
-        </div>
-       <div class="col-lg-2" style="border-left: solid 1px black">
-            <div class="row">
-                <div class="container">
-                    <p>Program Courses</p>
-                </div>
-                <div class="container">
-                    <div id="EventTemplates"></div>
-                </div>
+            <br />
+            <div class="accordion" id="accordionAllEvents">
+                <div id="allEvents"></div>
+            </div>
+            <br />
+            <div class="accordion" id="accordionEventemplates">
+                <div id="EventTemplates"></div>
             </div>
         </div>
     </div>
@@ -99,16 +86,19 @@
 <script src="/js/popUpRenderer.js"></script>
 <script src="/js/createDraggableElement.js"></script>
 <script src="/js/appHelpers.js"></script>
-<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-<script src="https://unpkg.com/@@babel/standalone/babel.min.js"></script>
+<script src="/lib/react/reactDev.js" crossorigin></script>
+<script src="/lib/react/reactDomDev.js" crossorigin></script>
+<script src="/lib/react/babel7189.js"></script>
 <script>
 let caldata = {
     firstName: "@thisUser.FirstName",
     lastName: "@thisUser.LastName",
     userAccountID: "@thisUser.AccountHash",
     userAccountLevel: "@thisUser.AccountFlag",
-    EventTemplates : JSON.parse('@Html.Raw(ViewBag.CourseOfferingsTemplates)')
+    UserAssociatedDepartment: "@thisUser.Department.DepartmentName",
+    ProgramType: "@thisUser.Department.ProgramOfferings.ToList()[0].ProgramType",
+    ProgramName: "@thisUser.Department.ProgramOfferings.ToList()[0].ProgramName",
+    EventTemplates: []
 }
 let data = {
     message : "Hello World"
@@ -116,3 +106,10 @@ let data = {
 </script>
 <script src="/js/Components.jsx" type="text/babel"></script>
 <script src="/js/main.jsx" type="text/babel"></script>
+@if(thisUser.AccountFlag < 2){
+    <script type="text/babel">
+        caldata.EventTemplates = JSON.parse('@Html.Raw(ViewBag.CourseOfferingsTemplates)');
+        const EventTemplates = ReactDOM.createRoot(document.getElementById("EventTemplates"));
+        EventTemplates.render(<EventTemplateComponent CourseOfferings={caldata.EventTemplates} />);
+    </script>
+}

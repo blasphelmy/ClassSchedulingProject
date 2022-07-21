@@ -14,7 +14,7 @@ public struct CourseOfferedTemplates
 
         public CourseOfferedTemplates(CourseOfferingsTemplates course){
             this.Id = course.Id;
-            this.ProgramVersion = course.ProgramVersion;
+            this.ProgramVersion = course.Program.ProgramVersion;
             this.InstitutionId = course.InstitutionId;
             this.Title = course.Title;
             this.CoursePrefix = course.CoursePrefix;

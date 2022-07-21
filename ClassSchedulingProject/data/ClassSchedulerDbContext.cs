@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using ClassSchedulingProject.Models;
+using ClassSchedulingProject.Models.DbModels;
 
 namespace ClassSchedulingProject.data
 {
@@ -23,6 +24,7 @@ namespace ClassSchedulingProject.data
         public virtual DbSet<Departments> Departments { get; set; }
         public virtual DbSet<InstitutionEmailDomains> InstitutionEmailDomains { get; set; }
         public virtual DbSet<InstitutionsRegistry> InstitutionsRegistry { get; set; }
+        public virtual DbSet<ProgramOfferings> ProgramOfferings { get; set; }
         public virtual DbSet<SessionDates> SessionDates { get; set; }
         public virtual DbSet<SessionTokens> SessionTokens { get; set; }
         public virtual DbSet<UserInformation> UserInformation { get; set; }
@@ -115,7 +117,7 @@ namespace ClassSchedulingProject.data
 
             modelBuilder.Entity<CourseOfferingsTemplates>(entity =>
             {
-                entity.HasIndex(e => new { e.InstitutionId, e.CoursePrefix, e.CourseNumber, e.QuarterNumber, e.ProgramVersion, e.Component })
+                entity.HasIndex(e => new { e.InstitutionId, e.CoursePrefix, e.CourseNumber, e.QuarterNumber, e.Component })
                     .HasName("UniqueCourseOffering")
                     .IsUnique();
 
@@ -135,6 +137,12 @@ namespace ClassSchedulingProject.data
                     .HasForeignKey(d => d.InstitutionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("InstitutionCourseOfferings");
+
+                entity.HasOne(d => d.Program)
+                    .WithMany(p => p.CourseOfferingsTemplates)
+                    .HasForeignKey(d => d.ProgramId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("CourseProgramReference");
             });
 
             modelBuilder.Entity<Departments>(entity =>
@@ -184,6 +192,33 @@ namespace ClassSchedulingProject.data
                 entity.Property(e => e.InstitutionId).IsUnicode(false);
 
                 entity.Property(e => e.InstitutionName).IsUnicode(false);
+            });
+
+            modelBuilder.Entity<ProgramOfferings>(entity =>
+            {
+                entity.HasIndex(e => new { e.InstitutionId, e.ProgramType, e.ProgramName, e.ProgramVersion })
+                    .HasName("UniqueProgramOffering")
+                    .IsUnique();
+
+                entity.Property(e => e.InstitutionId).IsUnicode(false);
+
+                entity.Property(e => e.ProgramName).IsUnicode(false);
+
+                entity.Property(e => e.ProgramType).IsUnicode(false);
+
+                entity.HasOne(d => d.AssociatedDepartment)
+                    .WithMany(p => p.ProgramOfferings)
+                    .HasPrincipalKey(p => p.DepartmentId)
+                    .HasForeignKey(d => d.AssociatedDepartmentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("ProgramsDepartment");
+
+                entity.HasOne(d => d.Institution)
+                    .WithMany(p => p.ProgramOfferings)
+                    .HasPrincipalKey(p => p.InstitutionId)
+                    .HasForeignKey(d => d.InstitutionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("InstitutionProgramOfferings");
             });
 
             modelBuilder.Entity<SessionDates>(entity =>
