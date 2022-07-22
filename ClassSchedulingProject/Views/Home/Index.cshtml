@@ -23,7 +23,10 @@
             <div>
                 <span>
                     <select id="dptSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
-                      <option value="@thisUser.Department.DepartmentId" selected>@thisUser.Department.DepartmentName</option>
+                      <option selected></option>
+                      @foreach(ProgramOfferings program in thisUser.Department.ProgramOfferings){
+                        <option value="@program.Id">@program.ProgramName @program.ProgramType</option>
+                      }
                     </select>
                     <select id="yearSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
                       <option selected>Select Year</option>
@@ -51,10 +54,10 @@
                       <option value="114">114</option>
                     </select>
                 </span>
-                <div style="">
-                    <label for="formControlRange" style="position:relative; bottom: 3px">Scale : </label>
-                <input type="range" id="viewSizeRangeSlider" class="form-control-range-sm" step="1" max="5" min="1" value="4" onchange="renderCalendar()">
-            </div>
+                    <div style="">
+                        <label for="formControlRange" style="position:relative; bottom: 3px">Scale : </label>
+                    <input type="range" id="viewSizeRangeSlider" class="form-control-range-sm" step="1" max="5" min="1" value="4" onchange="renderCalendar()">
+                </div>
             </div>
         </div>
     </div>
@@ -79,8 +82,8 @@
 </div>
 
 <link rel="stylesheet" href="/css/calendarAppDefaults.css" />
-<link rel="stylesheet" href="/libCal/main.css" />
-<script src="/libCal/main.js"></script>
+<link rel="stylesheet" href="/libCal_f/main.css" />
+<script src="/libCal_f/main.js"></script>
 <script src="/js/app.js"></script>
 <script src="/js/calendar.js"></script>
 <script src="/js/popUpRenderer.js"></script>

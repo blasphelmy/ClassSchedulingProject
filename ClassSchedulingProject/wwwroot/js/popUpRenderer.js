@@ -206,6 +206,7 @@ function finalizeFormDataAndAdd() {
     if (newEvent.title() &&
         newEvent.extendedProps.classNumber() &&
         newEvent.extendedProps.courseNumber() &&
+        newEvent.extendedProps.coursePrefix() &&
         newEvent.extendedProps.section() &&
         newEvent.extendedProps.component() &&
         newEvent.extendedProps.delivery()) {
@@ -218,6 +219,7 @@ function finalizeFormDataAndAdd() {
         finalizedEvent.extendedProps.Session = newEvent.extendedProps.Session();
         finalizedEvent.extendedProps.section = newEvent.extendedProps.section();
         finalizedEvent.extendedProps.courseNumber = newEvent.extendedProps.courseNumber();
+        finalizedEvent.extendedProps.coursePrefix = newEvent.extendedProps.coursePrefix();
         finalizedEvent.extendedProps.component = newEvent.extendedProps.component();
         finalizedEvent.extendedProps.delivery = newEvent.extendedProps.delivery();
         finalizedEvent.extendedProps.startTime = newEvent.extendedProps.startTime();

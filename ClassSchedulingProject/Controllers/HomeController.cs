@@ -114,8 +114,7 @@ namespace ClassSchedulingProject.Controllers
                 {
                 if (e.InstitutonId == institutionID && 
                     e.Year == int.Parse(terms[0]) && 
-                    e.Quarter == int.Parse(terms[1]) &&
-                    e.Building == terms[2])
+                    e.Quarter == int.Parse(terms[1]))
                     {
                         return true;
                     }

@@ -4,8 +4,19 @@ var resources = [
     { id: 'J', building: 'J', title: '111' },
   ];
 var developementMode = 1;
-let filterRoomEvents = function(e){
-    if(e.extendedProps.room === elements.room.val()){
+let eventBuilder = function(e){
+    caldata.EventTemplates.map(function(o){
+        if(o.CoursePrefix === e.extendedProps.coursePrefix &&
+            (o.CourseNumber) === e.extendedProps.courseNumber + "")
+            {
+                o.activeEvents = new Array();
+                o.activeEvents.push(e);
+                o.Active = true;
+            }
+    })
+
+    if(e.extendedProps.room === elements.room.val() &&
+        e.extendedProps.building === elements.building.val()){
         return e;
     }
     return {};
@@ -23,8 +34,6 @@ document.addEventListener('DOMContentLoaded', function () {
         checkNull: function () {
             if (this.year.val() === "Select Year"
                 || this.quarter.val() === "Select Quarter"
-                || this.building.val() === "Select Building"
-                || this.room.val() === "Select Room"
                 || this.dpt.val() === "Dept") {
                 return false;
             }
@@ -64,7 +73,7 @@ function createCalender(events) {
         initialView: 'timeGridWeek',
         // initialView : 'resourceTimelineDay',
         duration: { days: 5 },
-        selectable: true,
+        selectable: false,
         slotDuration: slotDuration[Number(document.getElementById("viewSizeRangeSlider").value) - 1],
         snapDuration: '00:05',
         //defaultView: 'basicWeek',
@@ -98,8 +107,9 @@ function createCalender(events) {
         eventResizableFromStart: true,
         eventOverlap: true,
         events: function(){
+            caldata.EventTemplates.map(o => o.Active = false);
             return events ?? newCalender.data?.events ?? [];
-        }().map(filterRoomEvents),
+        }().map(eventBuilder),
         resources: resources,
         // resourceGroupField: 'building',
         //events: JSON.parse(),

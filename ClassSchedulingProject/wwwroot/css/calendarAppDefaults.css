@@ -18,7 +18,7 @@ body {
    overflow: hidden;
 }
 .popup {
-   position: absolute;
+   position: fixed;
    font-size: 14px;
    top: 0px;
    left: 0px;
