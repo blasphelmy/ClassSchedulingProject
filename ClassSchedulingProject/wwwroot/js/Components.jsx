@@ -15,8 +15,16 @@ class FilteredEvents extends React.Component {
   }
 
   tick() {
-    this.setState({
-      newCalData : newCalender.data
+    this.setState(function(state){
+      // console.log("changes detected...", JSON.stringify(state.newCalData) !== JSON.stringify(newCalender.data));
+      if(JSON.stringify(state.newCalData) !== JSON.stringify(newCalender.data)){
+        return {
+          newCalData : newCalender.data
+        }
+      }
+      return {
+        
+      }
     });
   }
   render() {
@@ -90,7 +98,7 @@ class EventListComponent extends React.Component {
               {
                 events.map(function(o, key){
                   return (
-                    <div key={`${key}-div`} data={JSON.stringify(o)}>
+                    <div onClick={ () => editEvent($(`#${key}-eventlist`))} key={`${key}-eventlist`} id={`${key}-eventlist`} data={JSON.stringify(o)}>
                       <p key={`${key}-p`}>{o.title}</p>
                     </div>
                   )
@@ -119,10 +127,23 @@ class EventTemplateComponent extends React.Component {
   }
 
   tick() {
-    // console.log(this.state);
-    this.setState({
-      CourseOfferings: caldata.EventTemplates
-    });
+    this.setState(function(state){
+        for(let o of caldata.EventTemplates) o.activeEvents = [];
+
+        newCalender.data.events.map(function(e){
+            caldata.EventTemplates.map(function(o){
+              if(o.CoursePrefix === e.extendedProps.coursePrefix &&
+                  o.CourseNumber === e.extendedProps.courseNumber.toString())
+                  {
+                      o.activeEvents.push(e);
+                      o.Active = true;
+                  }
+          });
+        });
+        return {
+          CourseOfferings: caldata.EventTemplates
+        }
+    })
   }
   render() {
     return (
@@ -141,15 +162,20 @@ class EventTemplateComponent extends React.Component {
               this.state.CourseOfferings.map(function(o, id){
                 if(o.Active){
                   return (
-                    <div key={id+"div"}>
-                      <p key={id}>
+                    <div id={`course-${o.Id}`} data={JSON.stringify(o)} onClick={ () => ActivateEvent($(`#course-${o.Id}`))} key={id+"div"}>
+                      <p key={id} style={{marginBottom: '0'}}>
                       <svg key={id+"svg"} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23FCB" className="bi bi-check" viewBox="0 0 16 16">
                         <path key={id+"path"} d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
                       </svg> 
-                      
                       {o.Title}</p>
+                        {o.activeEvents.map(function(o, i){
+                          return (
+                            <p key={i+"-course"} style={{fontSize: "10px", marginLeft: "15px", color: "#303030", marginBottom: "0"}}>
+                              {o.extendedProps.building + "-" + o.extendedProps.room + " " + o.extendedProps.instructorName + ", " + formatTimeString([o.startTime+":00", o.endTime+":00"])} 
+                            </p>
+                          )
+                        })}
                     </div>
-
                     )
                 }else{
                   return (

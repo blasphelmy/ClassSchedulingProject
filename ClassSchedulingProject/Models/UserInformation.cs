@@ -20,6 +20,10 @@ namespace ClassSchedulingProject.Models
         [StringLength(512)]
         public string AccountHash { get; set; }
         [Required]
+        [Column("eventsAuthorID")]
+        [StringLength(512)]
+        public string EventsAuthorId { get; set; }
+        [Required]
         [Column("firstName")]
         [StringLength(64)]
         public string FirstName { get; set; }

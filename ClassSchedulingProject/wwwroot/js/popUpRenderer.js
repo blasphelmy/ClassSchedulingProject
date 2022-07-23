@@ -15,10 +15,20 @@ function ActivateEvent(element){
             courseID: data.Id,
             institutionID: data.InstitutionID,
             programVersion: data.ProgramVersion,
+
         }
     }
     generateFormData();
     createAnEventPopUp(info, event);
+}
+function editEvent(element){
+    let data = JSON.parse(element.attr("data"));
+    console.log(data);
+    let info = {
+
+    }
+    generateFormData({}, data);
+    createAnEventPopUp(info, data);
 }
 
 function createAnEventPopUp(info, event) {
@@ -34,20 +44,25 @@ function createAnEventPopUp(info, event) {
                 </div>
                 <div class="form-group">
                     <label class="control-label"><b>Class Number</b></label><br />
-                    <input id="pufClassNumber" class="form-control-xs" value="${event?.extendedProps.classNumber || ""}"/>
+                    <input id="pufClassNumber" class="form-control-xs" value="${event?.extendedProps?.classNumber || ""}"/>
                 </div>
                 <div class="form-group">
                     <label class="control-label" ><b>Instructor</b></label><br />
-                    <input id="pufInstructor" class="form-control-xs" value="${event?.extendedProps.instructorName || ""}"/>
+                    <select id="pufInstructor" class="custom-select-xs">
+                    <option selected></option >
+                    ${userList.map(function(user){
+                        return `<option value="${user.EventsAuthorId}">${user.FirstName} ${user.LastName}</option>`
+                    })}
+                  </select>
                 </div>
                 <div class="form-group">
                     <label class="control-label" ><b>Section</b></label><br />
-                    <input id="pufSection" class="form-control-xs" value="${event?.extendedProps.section || ""}"/>
+                    <input id="pufSection" class="form-control-xs" value="${event?.extendedProps?.section || ""}"/>
                 </div>
                 <div class="form-group">
                     <label class="control-label"><b>Course Number</b></label><br />
                         <select id="pufCourseNumberPrefix" class="custom-select-xs">
-                          <option selected>${event?.extendedProps.coursePrefix}</option >
+                          <option selected>${event?.extendedProps?.coursePrefix}</option >
                           <option value="CSI">CSI</option>
                           <option value="CNT">CNT</option>
                         </select>
@@ -78,11 +93,11 @@ function createAnEventPopUp(info, event) {
                     <span><b>Room:</b> <span>
 
                     <select id="pufBuilding" class="custom-select-xs">
-                        <option selected></option>
-                        <option value="${elements.building.val()}">${elements.building.val()}</option>
+                        <option value="${event.extendedProps.building || ""}" selected>${event.extendedProps.building || ""}</option>
+                        <option value="${event.extendedProps.building || elements.building.val()}">${elements.building.val()}</option>
                     </select></span></span>
                     <select id="pufRoomNumber" class="custom-select-xs">
-                        <option selected></option>
+                        <option ${event.extendedProps.room || ""} selected>${event.extendedProps.room || ""}</option>
                         <option value="${elements.room.val()}">${elements.room.val()}</option>
                     </select>
                 </div>
@@ -102,11 +117,11 @@ function createAnEventPopUp(info, event) {
                     <div class="col">
                         <div class="form-group">
                             <label class="control-label">Start Time</label><br />
-                            <input id="pufStartTime"type="time" class="form-control-xs" value="${info?.startStr?.split("T")[1] ?? info.event?._def.extendedProps.startTime}"/>
+                            <input id="pufStartTime"type="time" class="form-control-xs" value="${event.extendedProps.startTime ?? info?.startStr?.split("T")[1] ?? info.event?._def.extendedProps.startTime}"/>
                         </div>
                         <div class="form-group">
                             <label class="control-label">End Time</label><br />
-                            <input id="pufEndTime" type="time" class="form-control-xs" value="${info?.endStr?.split("T")[1] ?? info?.event?._def.extendedProps.endTime}"/>
+                            <input id="pufEndTime" type="time" class="form-control-xs" value="${event.extendedProps.endTime ?? info?.endStr?.split("T")[1] ?? info?.event?._def.extendedProps.endTime}"/>
                         </div>
                     </div>
                 </div>
@@ -126,7 +141,7 @@ function createAnEventPopUp(info, event) {
             </div>
         </div>
         <br />
-            <button onclick="finalizeFormDataAndAdd()" style="position:relative; float:right; margin-right: 30px;" class="btn btn-primary">Submit</button>
+            <button onclick='finalizeFormDataAndAdd("course-${event.extendedProps.courseID}")' style="position:relative; float:right; margin-right: 30px;" class="btn btn-primary">Submit</button>
     </div>
 </div>
     `).appendTo("body");
@@ -201,20 +216,18 @@ var closePopUp = (e) => {
 
     }
 }
-function finalizeFormDataAndAdd() {
+function finalizeFormDataAndAdd(id) {
     let finalizedEvent = JSON.parse(JSON.stringify(newEvent));
     if (newEvent.title() &&
-        newEvent.extendedProps.classNumber() &&
         newEvent.extendedProps.courseNumber() &&
         newEvent.extendedProps.coursePrefix() &&
-        newEvent.extendedProps.section() &&
-        newEvent.extendedProps.component() &&
-        newEvent.extendedProps.delivery()) {
+        newEvent.extendedProps.component()) {
 
         finalizedEvent.title = newEvent.title();
         finalizedEvent.daysOfWeek = newEvent.daysOfWeek();
-        finalizedEvent.extendedProps.instructorName = newEvent.extendedProps.instructorName();
+        finalizedEvent.extendedProps.instructorName = newEvent.extendedProps?.instructorHash()[1];
         finalizedEvent.extendedProps.eventAuthor = newEvent.extendedProps.eventAuthor;
+        finalizedEvent.extendedProps.instructorHash = newEvent.extendedProps?.instructorHash()[0],
         finalizedEvent.extendedProps.classNumber = newEvent.extendedProps.classNumber();
         finalizedEvent.extendedProps.Session = newEvent.extendedProps.Session();
         finalizedEvent.extendedProps.section = newEvent.extendedProps.section();
@@ -232,6 +245,14 @@ function finalizeFormDataAndAdd() {
         finalizedEvent.groupId = finalizedEvent.extendedProps.uuid;
         finalizedEvent.startTime = finalizedEvent.extendedProps.startTime;
         finalizedEvent.endTime = finalizedEvent.extendedProps.endTime;
+        if(id){
+            let e = JSON.parse($(`#${id}`).attr("data"));
+            //console.log(e);
+            finalizedEvent.extendedProps.programVersion = e.ProgramVersion;
+            finalizedEvent.extendedProps.courseID = e.Id;
+            finalizedEvent.extendedProps.ClassQuarterNumber = e.QuarterNumber;
+            finalizedEvent.extendedProps.ProgramId = e.Id;
+        };
         console.log(finalizedEvent);
         newCalender.addEvent(finalizedEvent, closePopUp);
     }

@@ -96,13 +96,15 @@
 let caldata = {
     firstName: "@thisUser.FirstName",
     lastName: "@thisUser.LastName",
-    userAccountID: "@thisUser.AccountHash",
+    userAccountID: "@thisUser.EventsAuthorId",
     userAccountLevel: "@thisUser.AccountFlag",
     UserAssociatedDepartment: "@thisUser.Department.DepartmentName",
     ProgramType: "@thisUser.Department.ProgramOfferings.ToList()[0].ProgramType",
     ProgramName: "@thisUser.Department.ProgramOfferings.ToList()[0].ProgramName",
-    EventTemplates: []
+    EventTemplates: [],
+    institutionID: "@thisUser.PrimaryInstitutionId"
 }
+let userList = JSON.parse('@Html.Raw(ViewBag.userList)')
 let data = {
     message : "Hello World"
 };

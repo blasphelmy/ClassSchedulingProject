@@ -26,6 +26,7 @@ namespace ClassSchedulingProject.Controllers
         private string institutionEmailSuffix;
         //private CryptTools CryptTool;
         private Random rand = new Random();
+        private List<publicUserInformation> userList = new List<publicUserInformation>();
 
         public HomeController(ClassSchedulerDbContext newContext)
         {
@@ -43,6 +44,7 @@ namespace ClassSchedulingProject.Controllers
             foreach (UserInformation i in context.UserInformation)
             {
                 registeredEmailsDict.Add(i.PrimaryEmail, 1);
+                userList.Add(new publicUserInformation(i));
             }
             foreach (InstitutionEmailDomains d in context.InstitutionEmailDomains)
             {
@@ -69,6 +71,7 @@ namespace ClassSchedulingProject.Controllers
                     SessionTokens thisToken = context.SessionTokens.FirstOrDefault(e => e.SessionId == cookieValueFromReq);
                     UserInformation thisUser = context.UserInformation.FirstOrDefault(e => e.AccountHash == thisToken.AccountHash);
                     ViewBag.thisUser = thisUser;
+                    ViewBag.userList = JsonSerializer.Serialize(userList);
                     if(thisUser.AccountFlag < 2){
                        
                         ViewBag.CourseOfferingsTemplates = JsonSerializer.Serialize(courseTemplates);
@@ -146,8 +149,9 @@ namespace ClassSchedulingProject.Controllers
                 newUser.PrimaryEmail = newAccountData.email + institutionEmailSuffixDict[newAccountData.insitutionID];
                 newUser.LastName = newAccountData.lastName;
                 newUser.FirstName = newAccountData.firstName;
-                newUser.AccountFlag = 2;
-                newUser.AccountHash = $"{newUser.PrimaryEmail + newAccountData.password}".ComputeSha256Hash();
+                newUser.AccountFlag = 4;
+                newUser.AccountHash = (newUser.PrimaryEmail + newAccountData.password).ComputeSha256Hash();
+                newUser.EventsAuthorId = (DateTime.Now.ToLongDateString() + newUser.PrimaryEmail + newAccountData.password + rand.Next() + rand.Next()).ComputeSha256Hash();
                 try
                 {
                     context.UserInformation.Add(newUser);
@@ -229,7 +233,7 @@ namespace ClassSchedulingProject.Controllers
                 newEvent.InstitutonId = thisUser.PrimaryInstitutionId;
                 ApiEvents existing = context.ApiEvents.FirstOrDefault(e => e.EventUuid == newEvent.EventUuid);
                 int status = 0;
-                if(existing != null && existing.EventAuthorHash == thisUser.AccountHash)
+                if(existing != null && (existing.EventAuthorHash == thisUser.AccountHash || existing.InstructorHash == thisUser.AccountHash))
                 {
                     context.ApiEvents.Remove(existing);
                     status++;

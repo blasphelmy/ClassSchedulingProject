@@ -2,6 +2,7 @@
 (
 	[Id] INT NOT NULL PRIMARY KEY identity,
 	[accountHash] varchar(512) unique not null,
+	[eventsAuthorID] varchar(512) unique not null,
 	[firstName] varchar(64) not null,
 	[lastName] varchar(64) not null,
 	[primaryEmail] varchar(64) not null,

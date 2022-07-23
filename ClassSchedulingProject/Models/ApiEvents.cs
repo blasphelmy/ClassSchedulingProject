@@ -21,33 +21,31 @@ namespace ClassSchedulingProject.Models
         [Column("eventAuthorHash")]
         [StringLength(512)]
         public string EventAuthorHash { get; set; }
+        [StringLength(64)]
+        public string InstructorHash { get; set; }
         [Required]
         [Column("institutonID")]
         [StringLength(64)]
         public string InstitutonId { get; set; }
+        [Column("classQuarterNumber")]
+        public int ClassQuarterNumber { get; set; }
         [Column("year")]
         public int Year { get; set; }
         [Column("quarter")]
         public int Quarter { get; set; }
-        [Required]
         [Column("building")]
         [StringLength(64)]
         public string Building { get; set; }
-        [Required]
         [Column("room")]
         [StringLength(64)]
         public string Room { get; set; }
+        [Column("programID")]
+        public int ProgramId { get; set; }
         [Required]
         [Column("coursePrefix")]
         [StringLength(24)]
         public string CoursePrefix { get; set; }
-        [Column("deliveryType")]
-        [StringLength(24)]
-        public string DeliveryType { get; set; }
-        [Column("startDate", TypeName = "date")]
-        public DateTime? StartDate { get; set; }
-        [Column("endDate", TypeName = "date")]
-        public DateTime? EndDate { get; set; }
+        [Required]
         [Column("courseNumber")]
         [StringLength(12)]
         public string CourseNumber { get; set; }
@@ -58,5 +56,8 @@ namespace ClassSchedulingProject.Models
 
         public virtual UserInformation EventAuthorHashNavigation { get; set; }
         public virtual InstitutionsRegistry Instituton { get; set; }
+        [ForeignKey(nameof(ProgramId))]
+        [InverseProperty(nameof(ProgramOfferings.ApiEvents))]
+        public virtual ProgramOfferings Program { get; set; }
     }
 }

@@ -9,6 +9,7 @@ namespace ClassSchedulingProject.Models
     {
         public ProgramOfferings()
         {
+            ApiEvents = new HashSet<ApiEvents>();
             CourseOfferingsTemplates = new HashSet<CourseOfferingsTemplates>();
         }
 
@@ -30,6 +31,8 @@ namespace ClassSchedulingProject.Models
 
         public virtual Departments AssociatedDepartment { get; set; }
         public virtual InstitutionsRegistry Institution { get; set; }
+        [InverseProperty("Program")]
+        public virtual ICollection<ApiEvents> ApiEvents { get; set; }
         [InverseProperty("Program")]
         public virtual ICollection<CourseOfferingsTemplates> CourseOfferingsTemplates { get; set; }
     }

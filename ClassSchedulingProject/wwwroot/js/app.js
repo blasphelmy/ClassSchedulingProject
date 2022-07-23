@@ -5,16 +5,6 @@ var resources = [
   ];
 var developementMode = 1;
 let eventBuilder = function(e){
-    caldata.EventTemplates.map(function(o){
-        if(o.CoursePrefix === e.extendedProps.coursePrefix &&
-            (o.CourseNumber) === e.extendedProps.courseNumber + "")
-            {
-                o.activeEvents = new Array();
-                o.activeEvents.push(e);
-                o.Active = true;
-            }
-    })
-
     if(e.extendedProps.room === elements.room.val() &&
         e.extendedProps.building === elements.building.val()){
         return e;
@@ -107,7 +97,7 @@ function createCalender(events) {
         eventResizableFromStart: true,
         eventOverlap: true,
         events: function(){
-            caldata.EventTemplates.map(o => o.Active = false);
+            caldata.EventTemplates.map((o) => {o.Active = false});
             return events ?? newCalender.data?.events ?? [];
         }().map(eventBuilder),
         resources: resources,
@@ -186,10 +176,13 @@ function formatTime(info) {
     let timestamps = {};
     timestamps.start = new Date(info.event._instance.range.start.getTime() + (7 * 1000 * 60 * 60));
     timestamps.end = new Date(info.event._instance.range.end.getTime() + (7 * 1000 * 60 * 60));
-    let iTs = [timestamps.start, timestamps.end];
+    let iTs = [timestamps.start.toTimeString().split(" ")[0], timestamps.end.toTimeString().split(" ")[0]];
+    return formatTimeString(iTs, timestamps);
+}
+function formatTimeString(iTs, timestamps){
+    if(iTs[0] === "" || iTs[1] === "") return "time na";
     let timeStamp = [];
-    for (let date of iTs) {
-        let ts = date.toTimeString().split(" ")[0];
+    for (let ts of iTs){
         ts = ts.split(":");
         ts[0] = Number(ts[0]);
         ts.pop();
@@ -199,10 +192,12 @@ function formatTime(info) {
         } else {
             ts.push("am");
         }
-        ts = `${ts[0]}:${ts[1]}${ts[2]}`;
+        ts = `${ts[0]}:${ts[1]}${ts[3] || ts[2]}`;
         timeStamp.push(ts);
     }
-    return `${timeStamp.join(" - ")} (${getDuration(timestamps).toFixed(2)}hrs)`;
+    let time = `${timeStamp.join(" - ")}`;
+    if(timestamps) time += ` (${getDuration(timestamps).toFixed(2)}hrs)`
+    return time;
 }
 function formatCalendarItem(info) {
     info.event.extendedProps.userAccountID = caldata.userAccountID;
@@ -214,7 +209,7 @@ function formatCalendarItem(info) {
     timestamps.end = new Date(info.event._instance.range.end.getTime() + (7 * 1000 * 60 * 60));
 
     let eventTimeElement = info.el.querySelectorAll('.fc-event-time')[0];
-    try {
+    // try {
         eventTimeElement.innerHTML = `${function () {
             if (info.event._def.extendedProps.userAccountID === newCalender.data.userAccountID) {
                 return `<span id="eventDelete_${info.event._def.extendedProps.uuid}" class="close text-light" style="position:relative;bottom:6px;">&times;</span> <br /> `;
@@ -229,14 +224,14 @@ function formatCalendarItem(info) {
                 newCalender.deleteEvent(element.id.split("_")[1]);
             });
         }
-    } catch {
-        console.log("error formatting time...")
-    }
+    // } catch {
+    //     console.log("error formatting time...")
+    // }
     titleElement.innerHTML = ``;
     return info;
 }
 
-function generateFormData(info) {
+function generateFormData(info, event) {
         newEvent = {
         title: function () {
             let e = $("#pufTitle");
@@ -261,14 +256,14 @@ function generateFormData(info) {
             return daysofweek;
         },
             extendedProps: {
-            uuid: info?.event?._def?.extendedProps.uuid || create_UUID(),
+            uuid: info?.event?._def?.extendedProps.uuid ?? event?.extendedProps?.uuid ?? create_UUID(),
             userAccountID: newCalender.data.userAccountID,
-            instructorName: function () {
+            instructorHash: function () {
                 let e = $("#pufInstructor");
                 if (e.val()) {
-                    return e.val();
+                    return [e.val(), $("#pufInstructor option:selected").text()];
                 }
-                return null;
+                return ["", ""];
             },
             eventAuthor: newCalender.data.firstName + " " + newCalender.data.lastName,
             classNumber: function () {

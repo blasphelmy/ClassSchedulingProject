@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using ClassSchedulingProject.Models;
-using ClassSchedulingProject.Models.DbModels;
 
 namespace ClassSchedulingProject.data
 {
@@ -44,7 +43,7 @@ namespace ClassSchedulingProject.data
             modelBuilder.Entity<ApiEvents>(entity =>
             {
                 entity.HasIndex(e => e.EventUuid)
-                    .HasName("UQ__tmp_ms_x__5E26E5A168AC7C4E")
+                    .HasName("UQ__apiEvent__5E26E5A10E9B8FA3")
                     .IsUnique();
 
                 entity.Property(e => e.Building).IsUnicode(false);
@@ -55,8 +54,6 @@ namespace ClassSchedulingProject.data
 
                 entity.Property(e => e.CoursePrefix).IsUnicode(false);
 
-                entity.Property(e => e.DeliveryType).IsUnicode(false);
-
                 entity.Property(e => e.EventAuthorHash).IsUnicode(false);
 
                 entity.Property(e => e.EventData).IsUnicode(false);
@@ -64,6 +61,8 @@ namespace ClassSchedulingProject.data
                 entity.Property(e => e.EventUuid).IsUnicode(false);
 
                 entity.Property(e => e.InstitutonId).IsUnicode(false);
+
+                entity.Property(e => e.InstructorHash).IsUnicode(false);
 
                 entity.Property(e => e.Room).IsUnicode(false);
 
@@ -82,6 +81,12 @@ namespace ClassSchedulingProject.data
                     .HasForeignKey(d => d.InstitutonId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("eventInstitutionReference");
+
+                entity.HasOne(d => d.Program)
+                    .WithMany(p => p.ApiEvents)
+                    .HasForeignKey(d => d.ProgramId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("eventProgramReference");
             });
 
             modelBuilder.Entity<CalendarBookBackUps>(entity =>
@@ -105,7 +110,7 @@ namespace ClassSchedulingProject.data
             modelBuilder.Entity<CourseOfferings>(entity =>
             {
                 entity.HasIndex(e => e.ClassNumber)
-                    .HasName("UQ__tmp_ms_x__E881B91FCF182157")
+                    .HasName("UQ__CourseOf__E881B91FBD105F63")
                     .IsUnique();
 
                 entity.HasOne(d => d.CourseOffered)
@@ -148,7 +153,7 @@ namespace ClassSchedulingProject.data
             modelBuilder.Entity<Departments>(entity =>
             {
                 entity.HasIndex(e => e.DepartmentId)
-                    .HasName("UQ__Departme__F9B8344C7F25B8FD")
+                    .HasName("UQ__Departme__F9B8344C96E1F5F3")
                     .IsUnique();
 
                 entity.Property(e => e.DepartmentName).IsUnicode(false);
@@ -182,11 +187,11 @@ namespace ClassSchedulingProject.data
             modelBuilder.Entity<InstitutionsRegistry>(entity =>
             {
                 entity.HasIndex(e => e.InstitutionId)
-                    .HasName("UQ__Institut__8DF6B94C97789101")
+                    .HasName("UQ__Institut__8DF6B94C40E2780F")
                     .IsUnique();
 
                 entity.HasIndex(e => e.InstitutionName)
-                    .HasName("UQ__Institut__22547BF48576136F")
+                    .HasName("UQ__Institut__22547BF4CE92ABB1")
                     .IsUnique();
 
                 entity.Property(e => e.InstitutionId).IsUnicode(false);
@@ -224,7 +229,7 @@ namespace ClassSchedulingProject.data
             modelBuilder.Entity<SessionDates>(entity =>
             {
                 entity.HasIndex(e => e.SessionId)
-                    .HasName("UQ__SessionD__23DB12CA881502CD")
+                    .HasName("UQ__SessionD__23DB12CA843D783D")
                     .IsUnique();
 
                 entity.HasIndex(e => new { e.SessionNumber, e.SessionYear, e.InstitutonId })
@@ -246,7 +251,7 @@ namespace ClassSchedulingProject.data
             modelBuilder.Entity<SessionTokens>(entity =>
             {
                 entity.HasIndex(e => e.SessionId)
-                    .HasName("UQ__SessionT__C9F4927133ECF631")
+                    .HasName("UQ__SessionT__C9F492714A49AA3C")
                     .IsUnique();
 
                 entity.Property(e => e.AccountHash).IsUnicode(false);
@@ -264,10 +269,16 @@ namespace ClassSchedulingProject.data
             modelBuilder.Entity<UserInformation>(entity =>
             {
                 entity.HasIndex(e => e.AccountHash)
-                    .HasName("UQ__UserInfo__2EEAD09C1B87A8F2")
+                    .HasName("UQ__UserInfo__2EEAD09C4ABB09CC")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.EventsAuthorId)
+                    .HasName("UQ__UserInfo__8EC816EE44683564")
                     .IsUnique();
 
                 entity.Property(e => e.AccountHash).IsUnicode(false);
+
+                entity.Property(e => e.EventsAuthorId).IsUnicode(false);
 
                 entity.Property(e => e.FirstName).IsUnicode(false);
 
@@ -294,7 +305,7 @@ namespace ClassSchedulingProject.data
             modelBuilder.Entity<ValidPrefixes>(entity =>
             {
                 entity.HasIndex(e => e.Prefix)
-                    .HasName("UQ__ValidPre__1FB4799D31851954")
+                    .HasName("UQ__ValidPre__1FB4799D380740B0")
                     .IsUnique();
 
                 entity.HasIndex(e => new { e.Prefix, e.DepartmentId })

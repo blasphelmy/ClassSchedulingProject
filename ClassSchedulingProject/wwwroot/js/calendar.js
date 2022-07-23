@@ -123,17 +123,22 @@
                 EventData: JSON.stringify(newEvent),
                 EventUuid: newEvent.extendedProps.uuid,
                 Year: Number(elements.year.val()),
+                InstructorHash : newEvent.extendedProps.instructorHash,
+                InstitutonId : caldata.institutionID,
                 Quarter: Number(elements.quarter.val()),
-                Building: elements.building.val(),
-                Room: elements.room.val(),
+                Building: newEvent.extendedProps.building,
+                Room: newEvent.extendedProps.room,
+                ProgramId: Number(elements.dpt.val()),
+                ClassQuarterNumber : newEvent.extendedProps.ClassQuarterNumber,
                 CoursePrefix: newEvent.extendedProps.coursePrefix + "",
                 DeliveryType: newEvent.extendedProps.delivery + "",
                 CourseNumber: newEvent.extendedProps.courseNumber + "",
                 Section: newEvent.extendedProps.section + "",
-                Component: newEvent.extendedProps.component + ""
+                Component: newEvent.extendedProps.component + "",
+
             })
         }
-        //console.log(newPost)
+        console.log(newPost)
         fetch(`/home/SaveEventData`, newPost).then(response => response.json()).then((data) => {
             console.log(data);
             if (callback) callback();
