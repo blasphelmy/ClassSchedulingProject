@@ -17,7 +17,7 @@
 	[Section] varchar(12),
 	[Component] varchar(64), --lecture in study w.e
 	--constraint [EventSession] foreign key (sessionID) references SessionDates(sessionID),
-	constraint [eventAuthorReference] foreign key (eventAuthorHash) references UserInformation(accountHash),
+	constraint [eventAuthorReference] foreign key (eventAuthorHash) references UserInformation(eventsAuthorID),
 	constraint [eventInstitutionReference] foreign key (institutonID) references InstitutionsRegistry(InstitutionID),
 	constraint [eventProgramReference] foreign key (programID) references ProgramOfferings(Id),
 )

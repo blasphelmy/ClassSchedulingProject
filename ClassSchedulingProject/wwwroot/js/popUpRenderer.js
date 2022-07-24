@@ -21,17 +21,18 @@ function ActivateEvent(element){
     generateFormData();
     createAnEventPopUp(info, event);
 }
-function editEvent(element){
+function editEvent(element) {
+    console.log(element);
     let data = JSON.parse(element.attr("data"));
     console.log(data);
     let info = {
 
     }
     generateFormData({}, data);
-    createAnEventPopUp(info, data);
+    createAnEventPopUp(info, data, source = "eventList");
 }
 
-function createAnEventPopUp(info, event) {
+function createAnEventPopUp(info, event, source = "eventTemplates") {
     $(`
 <div id="addEventPopUp" class="card popup">
     <span style="width:20px" id="pclose-UUID" class="close" popupid="addEventPopUp" onclick="closePopUp(this)">&times;</span>
@@ -49,7 +50,7 @@ function createAnEventPopUp(info, event) {
                 <div class="form-group">
                     <label class="control-label" ><b>Instructor</b></label><br />
                     <select id="pufInstructor" class="custom-select-xs">
-                    <option selected></option >
+                    <option value="${event.extendedProps.instructorHash || ""}" selected>${event.extendedProps.instructorName || ""}</option >
                     ${userList.map(function(user){
                         return `<option value="${user.EventsAuthorId}">${user.FirstName} ${user.LastName}</option>`
                     })}
@@ -141,7 +142,14 @@ function createAnEventPopUp(info, event) {
             </div>
         </div>
         <br />
-            <button onclick='finalizeFormDataAndAdd("course-${event.extendedProps.courseID}")' style="position:relative; float:right; margin-right: 30px;" class="btn btn-primary">Submit</button>
+            ${function () {
+        if (source === "eventList") {
+            return `<button onclick='finalizeFormDataAndAdd("class-${event.extendedProps.uuid}")' style="position:relative; float:right; margin-right: 30px;" class="btn btn-primary">Submit</button>`
+        } else {
+            return `<button onclick='finalizeFormDataAndAdd("course-${event.extendedProps.courseID}")' style="position:relative; float:right; margin-right: 30px;" class="btn btn-primary">Submit</button>`
+        }
+
+            }()}
     </div>
 </div>
     `).appendTo("body");
@@ -226,7 +234,7 @@ function finalizeFormDataAndAdd(id) {
         finalizedEvent.title = newEvent.title();
         finalizedEvent.daysOfWeek = newEvent.daysOfWeek();
         finalizedEvent.extendedProps.instructorName = newEvent.extendedProps?.instructorHash()[1];
-        finalizedEvent.extendedProps.eventAuthor = newEvent.extendedProps.eventAuthor;
+        finalizedEvent.extendedProps.userAccountID = newEvent.extendedProps.userAccountID;
         finalizedEvent.extendedProps.instructorHash = newEvent.extendedProps?.instructorHash()[0],
         finalizedEvent.extendedProps.classNumber = newEvent.extendedProps.classNumber();
         finalizedEvent.extendedProps.Session = newEvent.extendedProps.Session();
@@ -247,13 +255,19 @@ function finalizeFormDataAndAdd(id) {
         finalizedEvent.endTime = finalizedEvent.extendedProps.endTime;
         if(id){
             let e = JSON.parse($(`#${id}`).attr("data"));
-            //console.log(e);
-            finalizedEvent.extendedProps.programVersion = e.ProgramVersion;
-            finalizedEvent.extendedProps.courseID = e.Id;
-            finalizedEvent.extendedProps.ClassQuarterNumber = e.QuarterNumber;
-            finalizedEvent.extendedProps.ProgramId = e.Id;
+            if (e.extendedProps) {
+                finalizedEvent.extendedProps.programVersion = e.extendedProps.programVersion;
+                finalizedEvent.extendedProps.courseID = e.extendedProps.courseID;
+                finalizedEvent.extendedProps.ClassQuarterNumber = e.extendedProps.ClassQuarterNumber;
+                finalizedEvent.extendedProps.ProgramId = e.extendedProps.ProgramId;
+            } else {
+                finalizedEvent.extendedProps.programVersion = e.ProgramVersion;
+                finalizedEvent.extendedProps.courseID = e.Id;
+                finalizedEvent.extendedProps.ClassQuarterNumber = e.QuarterNumber;
+                finalizedEvent.extendedProps.ProgramId = e.Id;
+            }
         };
-        console.log(finalizedEvent);
+        console.log("finalized", finalizedEvent);
         newCalender.addEvent(finalizedEvent, closePopUp);
     }
 }

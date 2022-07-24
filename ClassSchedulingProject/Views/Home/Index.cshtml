@@ -20,6 +20,8 @@
     <div class="row">
         <div class="col">
             <h2>@thisUser.PrimaryInstitution.InstitutionName</h2>
+            <p>Welcome, @thisUser.FirstName @thisUser.LastName</p>
+            <p>Role : <span id="role"></span></p>
             <div>
                 <span>
                     <select id="dptSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
@@ -101,20 +103,28 @@ let caldata = {
     UserAssociatedDepartment: "@thisUser.Department.DepartmentName",
     ProgramType: "@thisUser.Department.ProgramOfferings.ToList()[0].ProgramType",
     ProgramName: "@thisUser.Department.ProgramOfferings.ToList()[0].ProgramName",
-    EventTemplates: [],
-    institutionID: "@thisUser.PrimaryInstitutionId"
+    EventTemplates: JSON.parse('@Html.Raw(ViewBag.CourseOfferingsTemplates)'),
+    institutionID: "@thisUser.PrimaryInstitutionId",
+    role: @thisUser.AccountFlag,
 }
 let userList = JSON.parse('@Html.Raw(ViewBag.userList)')
-let data = {
-    message : "Hello World"
-};
+document.getElementById("role").innerText = function() { 
+    switch (caldata.role) {
+        case 0: return "Admin"; break;
+        case 1: return "Admin Assistant"; break;
+        default: return "Professor"; break;
+    }
+}();
 </script>
 <script src="/js/Components.jsx" type="text/babel"></script>
 <script src="/js/main.jsx" type="text/babel"></script>
 @if(thisUser.AccountFlag < 2){
     <script type="text/babel">
-        caldata.EventTemplates = JSON.parse('@Html.Raw(ViewBag.CourseOfferingsTemplates)');
         const EventTemplates = ReactDOM.createRoot(document.getElementById("EventTemplates"));
         EventTemplates.render(<EventTemplateComponent CourseOfferings={caldata.EventTemplates} />);
     </script>
 }
+@*    <script type="text/babel">
+        const EventTemplates = ReactDOM.createRoot(document.getElementById("EventTemplates"));
+        EventTemplates.render(<EventTemplateComponent CourseOfferings={caldata.EventTemplates} />);
+    </script>*@

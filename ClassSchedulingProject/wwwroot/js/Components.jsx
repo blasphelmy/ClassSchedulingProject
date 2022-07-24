@@ -98,7 +98,7 @@ class EventListComponent extends React.Component {
               {
                 events.map(function(o, key){
                   return (
-                    <div onClick={ () => editEvent($(`#${key}-eventlist`))} key={`${key}-eventlist`} id={`${key}-eventlist`} data={JSON.stringify(o)}>
+                      <div onClick={() => editEvent($(`#class-${o.extendedProps.uuid}`))} key={`class-${o.extendedProps.uuid}`} id={`class-${o.extendedProps.uuid}`} data={JSON.stringify(o)}>
                       <p key={`${key}-p`}>{o.title}</p>
                     </div>
                   )

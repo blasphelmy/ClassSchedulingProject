@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
     elements.setItemsFromLocalStorage();
     newCalender = new CalenderApp(caldata);
     fetchData(new Object);
-    updateTimer(30 * 1000);
+    updateTimer(1 * 1000);
 });
 function createCalender(events) {
     //console.log("rendering calendar...");
@@ -256,8 +256,8 @@ function generateFormData(info, event) {
             return daysofweek;
         },
             extendedProps: {
-            uuid: info?.event?._def?.extendedProps.uuid ?? event?.extendedProps?.uuid ?? create_UUID(),
-            userAccountID: newCalender.data.userAccountID,
+                uuid: info?.event?._def?.extendedProps.uuid ?? event?.extendedProps?.uuid ?? create_UUID(),
+                userAccountID: event?.extendedProps?.userAccountID || newCalender.data.userAccountID,
             instructorHash: function () {
                 let e = $("#pufInstructor");
                 if (e.val()) {

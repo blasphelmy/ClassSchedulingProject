@@ -72,10 +72,7 @@ namespace ClassSchedulingProject.Controllers
                     UserInformation thisUser = context.UserInformation.FirstOrDefault(e => e.AccountHash == thisToken.AccountHash);
                     ViewBag.thisUser = thisUser;
                     ViewBag.userList = JsonSerializer.Serialize(userList);
-                    if(thisUser.AccountFlag < 2){
-                       
-                        ViewBag.CourseOfferingsTemplates = JsonSerializer.Serialize(courseTemplates);
-                    }
+                    ViewBag.CourseOfferingsTemplates = JsonSerializer.Serialize(courseTemplates);
                     return View();
                 }
             return RedirectToAction("Register", "Home");
@@ -226,19 +223,20 @@ namespace ClassSchedulingProject.Controllers
         [HttpPost]
         public IActionResult SaveEventData([FromBody] ApiEvents newEvent)
         {
+            if (newEvent.InstructorHash == "") newEvent.InstructorHash = null;
             UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
             if(thisUser != null)
             {
-                newEvent.EventAuthorHash = thisUser.AccountHash;
+                // newEvent.EventAuthorHash = thisUser.AccountHash;
                 newEvent.InstitutonId = thisUser.PrimaryInstitutionId;
                 ApiEvents existing = context.ApiEvents.FirstOrDefault(e => e.EventUuid == newEvent.EventUuid);
                 int status = 0;
-                if(existing != null && (existing.EventAuthorHash == thisUser.AccountHash || existing.InstructorHash == thisUser.AccountHash))
+                if(existing != null && (existing.EventAuthorHash == thisUser.EventsAuthorId || existing.InstructorHash == thisUser.EventsAuthorId))
                 {
                     context.ApiEvents.Remove(existing);
                     status++;
                 }
-                else if(existing != null && existing.EventAuthorHash != thisUser.AccountHash)
+                else if(existing != null && existing.EventAuthorHash != thisUser.EventsAuthorId && existing.InstructorHash != thisUser.EventsAuthorId)
                 {
                     return Json("not authorized to make changes on this event..");
                 }
