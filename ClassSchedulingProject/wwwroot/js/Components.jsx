@@ -1,65 +1,11 @@
-class FilteredEvents extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      newCalData: props.i
-    };
-  }
-
-  componentDidMount() {
-    this.timerID = setInterval(() => this.tick(), 1000);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.timerID);
-  }
-
-  tick() {
-    this.setState(function (state) {
-      // console.log("changes detected...", JSON.stringify(state.newCalData) !== JSON.stringify(newCalender.data));
-      if (JSON.stringify(state.newCalData) !== JSON.stringify(newCalender.data)) {
-        return {
-          newCalData: newCalender.data
-        }
-      }
-      return {
-
-      }
-    });
-  }
-  render() {
-    let events = this.state.newCalData.events.map(eventBuilder);
-    return (
-      <div className="card">
-        <div className="card-header">
-          <a className="collapsed card-link" data-toggle="collapse" href="#collaspeRoomEvents">
-            Courses in this room: {`${elements.building.val()}-${elements.room.val()}`}
-          </a>
-        </div>
-        <div id="collaspeRoomEvents" className="collapse show" data-parent="#accordionFilteredEvents">
-          <div className="card-body">
-            {
-              events.map(function (o, key) {
-                return (
-                  <div key={`${key}-div`} data={JSON.stringify(o)}>
-                    <p key={`${key}-p`}>{o.title}</p>
-                  </div>
-                )
-              })
-            }
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
-
 class EventListComponent extends React.Component {
+  type;
   constructor(props) {
     super(props);
     this.state = {
       newCalData: props.i
     };
+    this.type = props.type;
   }
 
   componentDidMount() {
@@ -77,34 +23,29 @@ class EventListComponent extends React.Component {
   }
   render() {
     let events = this.state.newCalData.events;
+    if(events.length === 0 || events === undefined || events === null){
+      return;
+    }
+    if(this.type === "FilteredEvents") events = events.map(eventBuilder);
     return (
       <div className="card">
         <div className="card-header">
-          <a className="collapsed card-link" data-toggle="collapse" href="#collaspeAllEvents">
-            Active Courses for
-            {elements.quarter.map(function (o, element) {
-              switch (element.value) {
-                case "1": return " Winter"; break;
-                case "2": return " Spring"; break;
-                case "3": return " Summer"; break;
-                case "4": return " Fall"; break;
-              }
-              return "Error";
-            })[0] + " " + elements.year.val()}
-          </a>
+        <AccordianHeader type={this.type} />
         </div>
-        <div id="collaspeAllEvents" className="collapse show" data-parent="#accordionAllEvents">
+        <div id={`collaspe${this.type}`} className="collapse show" data-parent={`#accordion${this.type}`}>
           <div className="card-body">
             {
               events.map(function (o, key) {
+                if(Object.keys(o).length === 0) return "";
+
                 return (
                   <div onClick={() => editEvent($(`#class-${o.extendedProps.uuid}`))} key={`class-${o.extendedProps.uuid}`} id={`class-${o.extendedProps.uuid}`} data={JSON.stringify(o)}>
                     <p style={{ borderColor: `${o.color}` }} key={`${key}-p`} className="ActiveEventsListItem">
-                      <span style={{ color: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.title), colorfilter, .7).join(",")})` }}>
+                      <span style={{ color: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.title), colorFilterBrightness, .75).join(",")})` }}>
                         Q{o.extendedProps.ClassQuarterNumber} {o.title} {" "}#{o.extendedProps.classNumber}</span>
-                      <div style={{ color: `rgb(${HEXtoRGB(o.color, colorfilter, .8).join(",")})`, background: `rgba(${HEXtoRGB(o.color).join(",")}, 0)`, fontSize: "10px", padding: "0" }}>
+                      <div style={{ color: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.title), colorFilterBrightness, .75).join(",")})`, background: `rgba(${HEXtoRGB(o.color).join(",")}, 0)`, fontSize: "10px", padding: "0" }}>
                         {formatdaysOfWeek(o.daysOfWeek)}, {formatTimeString([o.startTime, o.endTime])} @ {o.extendedProps.building + "-" + o.extendedProps.room}
-                        <br />
+                        <br /> 
                         {o.extendedProps.instructorName}
                       </div>
                     </p>
@@ -118,7 +59,34 @@ class EventListComponent extends React.Component {
     );
   }
 }
-
+class AccordianHeader extends React.Component {
+  type;
+  constructor(props){
+    super(props);
+    this.type = props.type;
+  }
+  render(){
+    if(this.type === "FilteredEvents"){
+      return <a className="collapsed card-link" data-toggle="collapse" href="#collaspeRoomEvents">
+        Courses in this room: {`${elements.building.val()}-${elements.room.val()}`}
+      </a>
+    }
+    return (
+        <a className="collapsed card-link" data-toggle="collapse" href={`#collaspe${this.type}`}>
+            Active Courses for
+            {elements.quarter.map(function (o, element) {
+              switch (element.value) {
+                case "1": return " Winter"; break;
+                case "2": return " Spring"; break;
+                case "3": return " Summer"; break;
+                case "4": return " Fall"; break;
+              }
+              return "Error";
+            })[0] + " " + elements.year.val()}
+          </a>
+    );
+  }
+}
 class EventTemplateComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -170,14 +138,14 @@ class EventTemplateComponent extends React.Component {
                 if (o.Active) {
                   return (
                     <div id={`course-${o.Id}`} data={JSON.stringify(o)} onClick={() => ActivateEvent($(`#course-${o.Id}`))} key={id + "div"}>
-                      <p key={id} style={{ marginBottom: '0' }}>
+                      <p key={id} style={{ marginBottom: '0', color: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.Title), colorFilterBrightness, .7).join(",")})`}}>
                         <svg key={id + "svg"} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23FCB" className="bi bi-check" viewBox="0 0 16 16">
                           <path key={id + "path"} d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
                         </svg>
-                        <span style={{ color: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.Title), colorfilter, .7).join(",")})` }}>{o.Title}</span></p>
+                        <span style={{  }}>{o.Title}</span></p>
                       {o.activeEvents.map(function (o, i) {
                         return (
-                          <p key={i + "-course"} style={{ fontSize: "10px", marginLeft: "15px", color: "#303030", marginBottom: "0" }}>
+                          <p key={i + "-course"} style={{ fontSize: "10px", marginLeft: "15px", color: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.title), colorFilterBrightness, .7).join(",")})`, marginBottom: "0" }}>
                             {o.extendedProps.building + "-" + o.extendedProps.room + " " + o.extendedProps.instructorName + ", " + formatTimeString([o.startTime + ":00", o.endTime + ":00"])}
                           </p>
                         )

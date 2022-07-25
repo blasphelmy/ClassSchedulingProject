@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
     elements.setItemsFromLocalStorage();
     newCalender = new CalenderApp(caldata);
     fetchData(new Object);
-    updateTimer(1 * 1000);
+    updateTimer(10 * 1000);
 });
 function createCalender(events) {
     //console.log("rendering calendar...");
@@ -93,7 +93,7 @@ function createCalender(events) {
         displayEventTime: true,
         selectMirror: true,
         slotMinTime: "06:00:00",
-        slotMaxTime: "21:00:00",
+        slotMaxTime: "23:00:00",
         slotLabelInterval: "01:00",
         height: '100%',
         allDaySlot: false,

@@ -84,6 +84,7 @@ function formatdaysOfWeek(daysofweek){
         return array;
     }
     function HEXtoRGB(hex, callback, multiplier) {
+        if(!hex) return [0,0,0];
         hex = hex.replace(/#/g, '');
         if (hex.length === 3) {
             hex = hex.split('').map(function (hex) {
@@ -101,15 +102,15 @@ function formatdaysOfWeek(daysofweek){
             } else{
                 return callback(red, green, blue);
             }
-            return [red, green, blue];
+            return [red % 255, green % 255, blue % 255];
         } else {
           // invalid color
             return null;
         }
     }
-    let colorfilter = function(red, green, blue, mulitplier){
+    let colorFilterBrightness = function(red, green, blue, mulitplier){
         if(!mulitplier) mulitplier = .6;
-        return [red * mulitplier, green * mulitplier, blue * mulitplier]
+        return [(red * mulitplier) % 255, (green * mulitplier) % 255, (blue * mulitplier) % 255]
     }
     let pufDeleteAction = function(UUID){
         newCalender.deleteEvent(UUID);

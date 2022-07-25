@@ -137,3 +137,7 @@ ClassSchedulingProject/obj/Debug/netcoreapp3.1/ClassSchedulingProject.Views.pdb
 ClassSchedulingProject/obj/Debug/netcoreapp3.1/project.razor.json
 ClassSchedulingProject/obj/Debug/netcoreapp3.1/Razor/Views/Home/Index.cshtml.g.cs
 *.dbmdl
+*.vsidx
+ClassSchedulingProject/obj/ClassSchedulingProject.csproj.nuget.dgspec.json
+ClassSchedulingProject/obj/ClassSchedulingProject.csproj.nuget.g.props
+ClassSchedulingProject/obj/Debug/netcoreapp3.1/ClassSchedulingProject.assets.cache
