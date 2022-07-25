@@ -11,9 +11,15 @@ let eventBuilder = function(e){
     }
     return {};
 }
+let EventTemplatesColorMap = new Map();
+let colors = "#3587e9 #ff8700 #c87a17 #5e4fa2 #00ea2f #1fb976 #ee66a8 #79a2ed".split(" ");
 document.addEventListener('DOMContentLoaded', function () {
+    var colorIndex = 0;
     caldata.EventTemplates.map(function(o, id){
+        let color = colors[colorIndex++ % colors.length];
         o.Active = false;
+        o.EventTemplateColor = color;
+        EventTemplatesColorMap.set(o.Title, color);
     });
     elements = {
         year: $("#yearSel"),
@@ -124,11 +130,11 @@ let EventMountAction = (info) => {
 }
 let EventClickAction = (info) => {
     console.log("event click action...");
-    if (info.event._def.extendedProps.userAccountID === newCalender.data.userAccountID) {
+    if (newCalender.checkPermissions(info.event._def)) {
         let event = newCalender.data.events[newCalender.EventMap.get(info.event._def.extendedProps.uuid)];
         closePopUp();
-        generateFormData(info);
-        createAnEventPopUp(info, event);
+        generateFormData(info, event);
+        createAnEventPopUp(info, event, "eventList");
     } else {
         createPopUp(info);
     }
@@ -180,15 +186,15 @@ function formatTime(info) {
     return formatTimeString(iTs, timestamps);
 }
 function formatTimeString(iTs, timestamps){
-    if(iTs[0] === "" || iTs[1] === "") return "time na";
+    if(iTs[0] === "" || iTs[1] === "") return "time to be scheduled...";
     let timeStamp = [];
     for (let ts of iTs){
         ts = ts.split(":");
         ts[0] = Number(ts[0]);
         ts.pop();
-        if (ts[0] > 12) {
+        if (ts[0] >= 12) {
             ts.push("pm");
-            ts[0] = ts[0] % 12;
+            if (ts[0] !== 12) ts[0] = ts[0] % 12;
         } else {
             ts.push("am");
         }
@@ -215,7 +221,7 @@ function formatCalendarItem(info) {
                 return `<span id="eventDelete_${info.event._def.extendedProps.uuid}" class="close text-light" style="position:relative;bottom:6px;">&times;</span> <br /> `;
             }
             return ``;
-        }()}<span>${info.event._def.title} - ${info.event._def.extendedProps.instructorName}</span><br />${formatTime(info)}`;
+        }()}<span>${info.event._def.title} <br /> ${info.event._def.extendedProps.instructorName}</span><br />${formatTime(info)}`;
         if (info.event._def.extendedProps.userAccountID === newCalender.data.userAccountID) {
             document.getElementById(`eventDelete_${info.event._def.extendedProps.uuid}`).addEventListener("click", function (e) {
                 closePopUp();

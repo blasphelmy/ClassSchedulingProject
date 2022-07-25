@@ -46,3 +46,13 @@ body {
    opacity: .8;
    overflow-y: scroll;
 }
+.ActiveEventsListItem {
+   border-left: solid 5px;
+   padding-left: 10px;
+   color: white;
+   transition: all .2s;
+   cursor: pointer;
+}
+.ActiveEventsListItem:hover {
+   padding-left: 15px;
+}

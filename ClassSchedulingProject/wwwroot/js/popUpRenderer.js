@@ -1,5 +1,6 @@
 
 function ActivateEvent(element){
+    if(caldata.role > 2) return;
     let data = JSON.parse(element.attr("data"));
     console.log(data);
     let info = {
@@ -41,15 +42,15 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
             <div class="col">
                 <div class="form-group">
                     <label class="control-label"><b>Course Title</b></label><br />
-                    <input id="pufTitle" class="form-control-xs" value="${event?.title||""}"/>
+                    <input style="width:100%" id="pufTitle" class="form-control-xs" value="${event?.title||""}" readonly/>
                 </div>
                 <div class="form-group">
                     <label class="control-label"><b>Class Number</b></label><br />
-                    <input id="pufClassNumber" class="form-control-xs" value="${event?.extendedProps?.classNumber || ""}"/>
+                    <input style="width:100%" id="pufClassNumber" class="form-control-xs" value="${event?.extendedProps?.classNumber || ""}"/>
                 </div>
                 <div class="form-group">
                     <label class="control-label" ><b>Instructor</b></label><br />
-                    <select id="pufInstructor" class="custom-select-xs">
+                    <select style="width:100%" id="pufInstructor" class="custom-select-xs">
                     <option value="${event.extendedProps.instructorHash || ""}" selected>${event.extendedProps.instructorName || ""}</option >
                     ${userList.map(function(user){
                         return `<option value="${user.EventsAuthorId}">${user.FirstName} ${user.LastName}</option>`
@@ -58,7 +59,7 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
                 </div>
                 <div class="form-group">
                     <label class="control-label" ><b>Section</b></label><br />
-                    <input id="pufSection" class="form-control-xs" value="${event?.extendedProps?.section || ""}"/>
+                    <input style="width:100%" id="pufSection" class="form-control-xs" value="${event?.extendedProps?.section || ""}"/>
                 </div>
                 <div class="form-group">
                     <label class="control-label"><b>Course Number</b></label><br />
@@ -144,7 +145,8 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
         <br />
             ${function () {
         if (source === "eventList") {
-            return `<button onclick='finalizeFormDataAndAdd("class-${event.extendedProps.uuid}")' style="position:relative; float:right; margin-right: 30px;" class="btn btn-primary">Submit</button>`
+            return `<button onclick='finalizeFormDataAndAdd("class-${event.extendedProps.uuid}")' style="position:relative; float:right; margin-right: 30px;" class="btn btn-primary">Submit</button>
+            <button onclick='pufDeleteAction("${event.extendedProps.uuid}")' style="position:relative; float:right; margin-right: 10px;" class="btn btn-danger">Delete</button>`
         } else {
             return `<button onclick='finalizeFormDataAndAdd("course-${event.extendedProps.courseID}")' style="position:relative; float:right; margin-right: 30px;" class="btn btn-primary">Submit</button>`
         }

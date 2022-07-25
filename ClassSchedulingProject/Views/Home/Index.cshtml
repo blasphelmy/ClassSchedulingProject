@@ -118,13 +118,13 @@ document.getElementById("role").innerText = function() {
 </script>
 <script src="/js/Components.jsx" type="text/babel"></script>
 <script src="/js/main.jsx" type="text/babel"></script>
-@if(thisUser.AccountFlag < 2){
+@* @if(thisUser.AccountFlag < 2){
     <script type="text/babel">
         const EventTemplates = ReactDOM.createRoot(document.getElementById("EventTemplates"));
         EventTemplates.render(<EventTemplateComponent CourseOfferings={caldata.EventTemplates} />);
     </script>
-}
-@*    <script type="text/babel">
+} *@
+   <script type="text/babel">
         const EventTemplates = ReactDOM.createRoot(document.getElementById("EventTemplates"));
         EventTemplates.render(<EventTemplateComponent CourseOfferings={caldata.EventTemplates} />);
-    </script>*@
+    </script>

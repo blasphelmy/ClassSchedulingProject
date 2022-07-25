@@ -11,7 +11,7 @@
         this.usersColors = new Map();
         this.EventMap = new Map();
         this.colorWheel = {
-            colors: this.shuffle("#90BE6D #507DBC #F4C095 #C3ACCE #2271B3".split(" ")),
+            colors: ("#abdda4 #ee8a29 #66c2a5 #abc71d #3288bd #5e4fa2".split(" ").reverse()),
             default: "#ab4e68",
             index: 0
         }
@@ -163,22 +163,5 @@
                 }
             });
         }
-    }
-    shuffle(array) {
-    let currentIndex = array.length, randomIndex = 0;
-
-    // While there remain elements to shuffle.
-    while (currentIndex != 0) {
-
-        // Pick a remaining element.
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-
-        // And swap it with the current element.
-        [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
-    }
-
-        return array;
     }
 }
