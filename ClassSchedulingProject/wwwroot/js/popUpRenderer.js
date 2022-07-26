@@ -1,6 +1,7 @@
 
-function ActivateEvent(element){
-    if(caldata.role > 2) return;
+function ActivateEvent(element) {
+    if (caldata.role > 2) return;
+    closePopUp();
     let data = JSON.parse(element.attr("data"));
     console.log(data);
     let info = {
@@ -9,22 +10,23 @@ function ActivateEvent(element){
     let event = {
         title: data.Title,
 
-        extendedProps : {
-            coursePrefix : data.CoursePrefix,
-            courseNumber : data.CourseNumber,
+        extendedProps: {
+            coursePrefix: data.CoursePrefix,
+            courseNumber: data.CourseNumber,
             component: data.Component,
             courseID: data.Id,
             institutionID: data.InstitutionID,
-            programVersion: data.ProgramVersion,
-
+            ProgramId: data.ProgramId,
+            ClassQuarterNumber: data.QuarterNumber
         }
     }
-    generateFormData();
+    generateFormData(undefined, event);
     createAnEventPopUp(info, event);
 }
 function editEvent(element) {
-    console.log(element);
+    closePopUp();
     let data = JSON.parse(element.attr("data"));
+    //goToEvent(data.extendedProps.building, data.extendedProps.room);
     console.log(data);
     let info = {
 
@@ -42,7 +44,7 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
             <div class="col">
                 <div class="form-group">
                     <label class="control-label"><b>Course Title</b></label><br />
-                    <input style="width:100%" id="pufTitle" class="form-control-xs" value="${event?.title||""}" readonly/>
+                    <input style="width:100%" id="pufTitle" class="form-control-xs" value="${event?.title || ""}" readonly/>
                 </div>
                 <div class="form-group">
                     <label class="control-label"><b>Class Number</b></label><br />
@@ -52,9 +54,9 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
                     <label class="control-label" ><b>Instructor</b></label><br />
                     <select style="width:100%" id="pufInstructor" class="custom-select-xs">
                     <option value="${event.extendedProps.instructorHash || ""}" selected>${event.extendedProps.instructorName || ""}</option >
-                    ${userList.map(function(user){
-                        return `<option value="${user.EventsAuthorId}">${user.FirstName} ${user.LastName}</option>`
-                    })}
+                    ${userList.map(function (user) {
+        return `<option value="${user.EventsAuthorId}">${user.FirstName} ${user.LastName}</option>`
+    })}
                   </select>
                 </div>
                 <div class="form-group">
@@ -144,23 +146,24 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
         </div>
         <br />
             ${function () {
-        if (source === "eventList") {
-            return `<button onclick='finalizeFormDataAndAdd("class-${event.extendedProps.uuid}")' style="position:relative; float:right; margin-right: 30px;" class="btn btn-primary">Submit</button>
+            if (source === "eventList") {
+                return `<button onclick='finalizeFormDataAndAdd("class-${event.extendedProps.uuid}")' style="position:relative; float:right; margin-right: 30px;" class="btn btn-primary">Submit</button>
             <button onclick='pufDeleteAction("${event.extendedProps.uuid}")' style="position:relative; float:right; margin-right: 10px;" class="btn btn-danger">Delete</button>`
-        } else {
-            return `<button onclick='finalizeFormDataAndAdd("course-${event.extendedProps.courseID}")' style="position:relative; float:right; margin-right: 30px;" class="btn btn-primary">Submit</button>`
-        }
+            } else {
+                return `<button onclick='finalizeFormDataAndAdd("course-${event.extendedProps.courseID}")' style="position:relative; float:right; margin-right: 30px;" class="btn btn-primary">Submit</button>`
+            }
 
-            }()}
+        }()}
     </div>
 </div>
     `).appendTo("body");
     if (event?.daysOfWeek) {
         let checkboxes = document.getElementsByClassName("pufDaysOfWeek");
         for (let i = 0; i < event.daysOfWeek.length; i++) {
-            checkboxes[Number(event.daysOfWeek[i])-1].checked = true
+            checkboxes[Number(event.daysOfWeek[i]) - 1].checked = true
         }
     }
+    centerWindow(document.getElementById("addEventPopUp"));
     createDraggableElement(document.getElementById("addEventPopUp"));
     // setPopUpPos(document.getElementById("addEventPopUp"), { x: info.jsEvent.clientX, y: info.jsEvent.clientY });
 }
@@ -171,19 +174,19 @@ function renderPopUp(event, info) {
         <div id="ptime">${formatTime(info)} <i>room ${event.extendedProps.building}-${event.extendedProps.room}</i></div>
             <div class="pauthor">
                 <div>Recurs : <b>${function () {
-                    let eventDaysOfWeek = "";
-                    for (let i = 0; i < event.daysOfWeek.length; i++) {
-                        switch (event.daysOfWeek[i]) {
-                            case "1": eventDaysOfWeek = eventDaysOfWeek + "Mon "; break;
-                            case "2": eventDaysOfWeek = eventDaysOfWeek + "Tues "; break;
-                            case "3": eventDaysOfWeek = eventDaysOfWeek + "Wed "; break;
-                            case "4": eventDaysOfWeek = eventDaysOfWeek + "Thu "; break;
-                            case "5": eventDaysOfWeek = eventDaysOfWeek + "Fri "; break;
-                        }
-                    }
-                return eventDaysOfWeek;
-                    
-                }()}</b></div>
+            let eventDaysOfWeek = "";
+            for (let i = 0; i < event.daysOfWeek.length; i++) {
+                switch (event.daysOfWeek[i]) {
+                    case "1": eventDaysOfWeek = eventDaysOfWeek + "Mon "; break;
+                    case "2": eventDaysOfWeek = eventDaysOfWeek + "Tues "; break;
+                    case "3": eventDaysOfWeek = eventDaysOfWeek + "Wed "; break;
+                    case "4": eventDaysOfWeek = eventDaysOfWeek + "Thu "; break;
+                    case "5": eventDaysOfWeek = eventDaysOfWeek + "Fri "; break;
+                }
+            }
+            return eventDaysOfWeek;
+
+        }()}</b></div>
                 <div>Instructor : <b>${event.extendedProps.instructorName}</b></div>
                 <div>Component : <b>${event.extendedProps.component}</b></div>
                 <div>Delivery : <b>${event.extendedProps.delivery}</b></div>
@@ -212,7 +215,7 @@ function setPopUpPos(popupElement, mouseClickData) {
     let popUpElementHeight = popupElement.offsetHeight;
     popupElement.style.setProperty("top", mouseClickData.y + "px");
     popupElement.style.setProperty("left", mouseClickData.x + "px");
-    if (mouseClickData.x > (screenWidth - popUpElementWidth)) { 
+    if (mouseClickData.x > (screenWidth - popUpElementWidth)) {
         popupElement.style.setProperty("left", (mouseClickData.x - popUpElementWidth) + "px");
     }
     if (screenHeight - mouseClickData.y < (popUpElementHeight)) {
@@ -221,13 +224,124 @@ function setPopUpPos(popupElement, mouseClickData) {
 }
 var closePopUp = (e) => {
     try {
-        $('.popup')[0].remove();
+        $('.popup').map(function (i, e) {
+            console.log(e);
+            e.remove();
+        });
     } catch {
 
     }
 }
+function generateFormData(info, event) {
+    newEvent = {
+    title: function () {
+        let e = $("#pufTitle");
+        if (e.val()) {
+            return e.val();
+        } else {
+            return null;
+        }
+    },
+    start: info?.startStr,
+    end: info?.endStr,
+    overlap: true,
+    color: "#cd3",
+    daysOfWeek: function () {
+        let elementCheckboxes = document.getElementsByClassName("pufDaysOfWeek");
+        let daysofweek = [];
+        for (e of elementCheckboxes) {
+            if (e.checked) {
+                daysofweek.push(e.value);
+            }
+        }
+        return daysofweek;
+    },
+        extendedProps: {
+            uuid: info?.event?._def?.extendedProps.uuid ?? event?.extendedProps?.uuid ?? create_UUID(),
+            userAccountID: event?.extendedProps?.userAccountID || newCalender.data.userAccountID,
+        instructorHash: function () {
+            let e = $("#pufInstructor");
+            if (e.val()) {
+                return [e.val(), $("#pufInstructor option:selected").text()];
+            }
+            return ["", ""];
+        },
+        eventAuthor: newCalender.data.firstName + " " + newCalender.data.lastName,
+        classNumber: function () {
+            let e = $("#pufClassNumber");
+            try {
+                Number(e.val());
+                return Number(e.val());
+            } catch {
+                return null;
+            }
+        },
+        section: function () {
+            let e = $("#pufSection");
+            if (e.val()) {
+                return e.val();
+            } else {
+                return null;
+            }
+        },
+        coursePrefix: function(){
+            return $("#pufCourseNumberPrefix").val();
+        },
+        courseNumber: function () {
+            let e = $("#pufCourseNumber");
+            try {
+                Number(e.val());
+                return Number(e.val());
+            } catch {
+                return null;
+            }
+        },
+        building: function(){
+            return $("#pufBuilding").val();
+        },
+        room: function(){
+            return $("#pufRoomNumber").val();
+        },
+        component: function () {
+            let e = $("#pufComponent");
+            if (e.val() !== "Component") {
+                return e.val();
+            } else {
+                return null;
+            }
+        },
+        delivery: function () {
+            let e = $("#pufDeliveryType");
+            if (e.val() !== "Delivery") {
+                return e.val();
+            } else {
+                return null;
+            }
+        },
+        Session: function () {
+            return $("#pufSession").val();
+        },
+        startDate: function () {
+            return $("#pufStartDate").val();
+        },
+        endDate: function () {
+            return $("#pufEndDate").val();
+        },
+        startTime: function () {
+            return $("#pufStartTime").val();
+        },
+        endTime: function () {
+            return $("#pufEndTime").val();
+        }, 
+        ProgramId : event.extendedProps.ProgramId,
+        ClassQuarterNumber : event.extendedProps.ClassQuarterNumber
+        
+    }
+}
+}
 function finalizeFormDataAndAdd(id) {
     let finalizedEvent = JSON.parse(JSON.stringify(newEvent));
+    // console.log(finalizedEvent);
     if (newEvent.title() &&
         newEvent.extendedProps.courseNumber() &&
         newEvent.extendedProps.coursePrefix() &&
@@ -251,11 +365,14 @@ function finalizeFormDataAndAdd(id) {
         finalizedEvent.extendedProps.endDate = newEvent.extendedProps.endDate();
         finalizedEvent.extendedProps.room = newEvent.extendedProps.room();
         finalizedEvent.extendedProps.building = newEvent.extendedProps.building();
+        finalizedEvent.extendedProps.ClassQuarterNumber = newEvent.extendedProps.ClassQuarterNumber;
+        finalizedEvent.extendedProps.ProgramId = newEvent.extendedProps.ProgramId,
 
         finalizedEvent.groupId = finalizedEvent.extendedProps.uuid;
         finalizedEvent.startTime = finalizedEvent.extendedProps.startTime;
         finalizedEvent.endTime = finalizedEvent.extendedProps.endTime;
-        if(id){
+
+        if (id) {
             let e = JSON.parse($(`#${id}`).attr("data"));
             if (e.extendedProps) {
                 finalizedEvent.extendedProps.programVersion = e.extendedProps.programVersion;
@@ -263,13 +380,11 @@ function finalizeFormDataAndAdd(id) {
                 finalizedEvent.extendedProps.ClassQuarterNumber = e.extendedProps.ClassQuarterNumber;
                 finalizedEvent.extendedProps.ProgramId = e.extendedProps.ProgramId;
             } else {
-                finalizedEvent.extendedProps.programVersion = e.ProgramVersion;
+                finalizedEvent.extendedProps.ProgramId = e.ProgramId;
                 finalizedEvent.extendedProps.courseID = e.Id;
-                finalizedEvent.extendedProps.ClassQuarterNumber = e.QuarterNumber;
-                finalizedEvent.extendedProps.ProgramId = e.Id;
             }
         };
-        console.log("finalized", finalizedEvent);
+        // console.log("finalized", finalizedEvent);
         newCalender.addEvent(finalizedEvent, closePopUp);
     }
 }

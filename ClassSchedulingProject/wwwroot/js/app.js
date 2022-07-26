@@ -14,13 +14,6 @@ let eventBuilder = function(e){
 let EventTemplatesColorMap = new Map();
 let colors = "#3587e9 #ff8700 #c87a17 #5e4fa2 #00ea2f #1fb976 #ee66a8 #79a2ed".split(" ");
 document.addEventListener('DOMContentLoaded', function () {
-    var colorIndex = 0;
-    caldata.EventTemplates.map(function(o, id){
-        let color = colors[colorIndex++ % colors.length];
-        o.Active = false;
-        o.EventTemplateColor = color;
-        EventTemplatesColorMap.set(o.Title, color);
-    });
     elements = {
         year: $("#yearSel"),
         quarter: $("#qSel"),
@@ -56,8 +49,9 @@ document.addEventListener('DOMContentLoaded', function () {
     generateResourceGroups();
     elements.setItemsFromLocalStorage();
     newCalender = new CalenderApp(caldata);
-    fetchData(new Object);
-    updateTimer(10 * 1000);
+    fetchEventTemplates(document.getElementById("dptSel"), function(){
+        updateTimer(10 * 1000);
+    });
 });
 function createCalender(events) {
     //console.log("rendering calendar...");
@@ -185,26 +179,6 @@ function formatTime(info) {
     let iTs = [timestamps.start.toTimeString().split(" ")[0], timestamps.end.toTimeString().split(" ")[0]];
     return formatTimeString(iTs, timestamps);
 }
-function formatTimeString(iTs, timestamps){
-    if(iTs[0] === "" || iTs[1] === "") return "time to be scheduled...";
-    let timeStamp = [];
-    for (let ts of iTs){
-        ts = ts.split(":");
-        ts[0] = Number(ts[0]);
-        ts.pop();
-        if (ts[0] >= 12) {
-            ts.push("pm");
-            if (ts[0] !== 12) ts[0] = ts[0] % 12;
-        } else {
-            ts.push("am");
-        }
-        ts = `${ts[0]}:${ts[1]}${ts[3] || ts[2]}`;
-        timeStamp.push(ts);
-    }
-    let time = `${timeStamp.join(" - ")}`;
-    if(timestamps) time += ` (${getDuration(timestamps).toFixed(2)}hrs)`
-    return time;
-}
 function formatCalendarItem(info) {
     info.event.extendedProps.userAccountID = caldata.userAccountID;
     let titleElement = info.el.querySelectorAll('.fc-event-title.fc-sticky')[0];
@@ -237,110 +211,6 @@ function formatCalendarItem(info) {
     return info;
 }
 
-function generateFormData(info, event) {
-        newEvent = {
-        title: function () {
-            let e = $("#pufTitle");
-            if (e.val()) {
-                return e.val();
-            } else {
-                return null;
-            }
-        },
-        start: info?.startStr,
-        end: info?.endStr,
-        overlap: true,
-        color: "#cd3",
-        daysOfWeek: function () {
-            let elementCheckboxes = document.getElementsByClassName("pufDaysOfWeek");
-            let daysofweek = [];
-            for (e of elementCheckboxes) {
-                if (e.checked) {
-                    daysofweek.push(e.value);
-                }
-            }
-            return daysofweek;
-        },
-            extendedProps: {
-                uuid: info?.event?._def?.extendedProps.uuid ?? event?.extendedProps?.uuid ?? create_UUID(),
-                userAccountID: event?.extendedProps?.userAccountID || newCalender.data.userAccountID,
-            instructorHash: function () {
-                let e = $("#pufInstructor");
-                if (e.val()) {
-                    return [e.val(), $("#pufInstructor option:selected").text()];
-                }
-                return ["", ""];
-            },
-            eventAuthor: newCalender.data.firstName + " " + newCalender.data.lastName,
-            classNumber: function () {
-                let e = $("#pufClassNumber");
-                try {
-                    Number(e.val());
-                    return Number(e.val());
-                } catch {
-                    return null;
-                }
-            },
-            section: function () {
-                let e = $("#pufSection");
-                if (e.val()) {
-                    return e.val();
-                } else {
-                    return null;
-                }
-            },
-            coursePrefix: function(){
-                return $("#pufCourseNumberPrefix").val();
-            },
-            courseNumber: function () {
-                let e = $("#pufCourseNumber");
-                try {
-                    Number(e.val());
-                    return Number(e.val());
-                } catch {
-                    return null;
-                }
-            },
-            building: function(){
-                return $("#pufBuilding").val();
-            },
-            room: function(){
-                return $("#pufRoomNumber").val();
-            },
-            component: function () {
-                let e = $("#pufComponent");
-                if (e.val() !== "Component") {
-                    return e.val();
-                } else {
-                    return null;
-                }
-            },
-            delivery: function () {
-                let e = $("#pufDeliveryType");
-                if (e.val() !== "Delivery") {
-                    return e.val();
-                } else {
-                    return null;
-                }
-            },
-            Session: function () {
-                return $("#pufSession").val();
-            },
-            startDate: function () {
-                return $("#pufStartDate").val();
-            },
-            endDate: function () {
-                return $("#pufEndDate").val();
-            },
-            startTime: function () {
-                return $("#pufStartTime").val();
-            },
-            endTime: function () {
-                return $("#pufEndTime").val();
-            }
-        }
-    }
-}
 function pufSelectBoxChange(element) {
     if (element.id === "pufDeliveryType") {
         if (element.value === "Online") {

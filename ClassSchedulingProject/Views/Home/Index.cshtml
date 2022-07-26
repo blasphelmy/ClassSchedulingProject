@@ -21,10 +21,10 @@
         <div class="col">
             <h2>@thisUser.PrimaryInstitution.InstitutionName</h2>
             <p>Welcome, @thisUser.FirstName @thisUser.LastName</p>
-            <p>Role : <span id="role"></span></p>
+            <p>Your department: @thisUser.Department.DepartmentName, Role : <span id="role"></span></p>
             <div>
                 <span>
-                    <select id="dptSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
+                    <select id="dptSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchEventTemplates(this)">
                       <option selected></option>
                       @foreach(ProgramOfferings program in thisUser.Department.ProgramOfferings){
                         <option value="@program.Id">@program.ProgramName @program.ProgramType</option>
@@ -101,9 +101,9 @@ let caldata = {
     userAccountID: "@thisUser.EventsAuthorId",
     userAccountLevel: "@thisUser.AccountFlag",
     UserAssociatedDepartment: "@thisUser.Department.DepartmentName",
-    ProgramType: "@thisUser.Department.ProgramOfferings.ToList()[0].ProgramType",
-    ProgramName: "@thisUser.Department.ProgramOfferings.ToList()[0].ProgramName",
-    EventTemplates: JSON.parse('@Html.Raw(ViewBag.CourseOfferingsTemplates)'),
+    ProgramType: "",
+    ProgramName: "",
+    EventTemplates: [],
     institutionID: "@thisUser.PrimaryInstitutionId",
     role: @thisUser.AccountFlag,
 }

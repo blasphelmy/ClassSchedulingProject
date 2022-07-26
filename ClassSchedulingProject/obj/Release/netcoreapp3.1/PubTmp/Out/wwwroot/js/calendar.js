@@ -1,6 +1,6 @@
 ﻿class CalenderApp {
     data;
-    EventMap;
+    EventMap; //{eventUUID, index i in data.events[i]}
     colorWheel;
     usersColors;
     isActive;
@@ -11,7 +11,7 @@
         this.usersColors = new Map();
         this.EventMap = new Map();
         this.colorWheel = {
-            colors: this.shuffle("#90BE6D #507DBC #F4C095 #C3ACCE #2271B3".split(" ")),
+            colors: ("#abdda4 #ee8a29 #66c2a5 #abc71d #3288bd #5e4fa2".split(" ").reverse()),
             default: "#ab4e68",
             index: 0
         }
@@ -19,27 +19,38 @@
         this.data.firstName = data.firstName;
         this.data.lastName = data.lastName;
         this.data.userAccountID = data.userAccountID;
+        this.data.userAccountLevel = data.userAccountLevel;
         this.data.events = [];
         //console.log(this.data);
         if (data.events) {
             this.parseEvents(data.events);
         }
     }
+    checkPermissions(event){
+        if (event.extendedProps.userAccountID === this.data.userAccountID
+            || event.extendedProps.instructorHash === this.data.userAccountID) {
+            return true;
+        }
+        return false;
+
+    }
     parseEvents(eventString) {
         let newEventList = eventString.split(" _--__- ").filter(e => e !== "");
         //console.log(newEventList);
+        this.data.events = [];
         for (let i in newEventList) {
             newEventList[i] = JSON.parse(newEventList[i]);
-            if (this.usersColors.get(newEventList[i].extendedProps.userAccountID) === undefined) {
-                this.usersColors.set(newEventList[i].extendedProps.userAccountID, this.colorWheel.colors[this.colorWheel.index++]);
+            newEventList[i].overlap = true;
+            if (this.usersColors.get(newEventList[i].extendedProps.instructorHash) === undefined) {
+                this.usersColors.set(newEventList[i].extendedProps.instructorHash, this.colorWheel.colors[this.colorWheel.index++]);
                 if (this.colorWheel.index > this.colorWheel.colors.length) {
                     this.colorWheel.index = 0;
                 }
             }
-            if (newEventList[i].extendedProps.userAccountID === this.data.userAccountID) {
+            if (this.checkPermissions(newEventList[i])) {
                 newEventList[i].color = this.colorWheel.default;
             } else {
-                newEventList[i].color = this.usersColors.get(newEventList[i].extendedProps.userAccountID);
+                newEventList[i].color = this.usersColors.get(newEventList[i].extendedProps.instructorHash);
             }
             this.data.events.push(newEventList[i]);
             this.EventMap.set(this.data.events[i].extendedProps.uuid, i);
@@ -53,63 +64,63 @@
         this.data.events = [];
         for (let i in newEventList) {
             newEventList[i] = JSON.parse(newEventList[i]);
+            newEventList[i].overlap = true;
             this.data.events[i] = newEventList[i];
             if (this.EventMap.get(this.data.events[i]) != i) {
                 this.EventMap.set(this.data.events[i].extendedProps.uuid, i);
             }
-            if (!this.usersColors.get(this.data.events[i].extendedProps.userAccountID) && this.data.events[i].extendedProps.userAccountID !== caldata.userAccountID) {
+            //if usersColor return undefined and 
+            if (!this.usersColors.get(this.data.events[i].extendedProps.instructorHash) && this.data.events[i].extendedProps.instructorHash !== caldata.userAccountID) {
                 console.log("new user detected");
-                console.log(this.data.events[i].extendedProps.userAccountID !== caldata.userAccountID);
-                this.usersColors.set(this.data.events[i].extendedProps.userAccountID, this.colorWheel.colors[this.colorWheel.index++]);
+                this.usersColors.set(this.data.events[i].extendedProps.instructorHash, this.colorWheel.colors[this.colorWheel.index++]);
                 if (this.colorWheel.index > this.colorWheel.colors.length) {
                     this.colorWheel.index = 0;
                 }
             }
 
-            if (this.data.events[i].extendedProps.userAccountID === this.data.userAccountID) {
+            if (this.checkPermissions(newEventList[i])) {
                 this.data.events[i].color = this.colorWheel.default;
             } else {
-                this.data.events[i].color = this.usersColors.get(this.data.events[i].extendedProps.userAccountID);
+                this.data.events[i].color = this.usersColors.get(this.data.events[i].extendedProps.instructorHash);
             }
             //this.addEvent(newEventList[i], 1);
         }
         setTimeout(createCalender, 20);
     }
-    addEvent(newEvent, isUpdatingEventList){
-        //console.log("addEventClassMethod");
-        console.log(newEvent);
+    addEvent(newEvent, callback){
+        console.log("addEventClassMethod");
         newEvent.color = this.usersColors.get(newEvent.extendedProps.userAccountID);
-        //console.log(this.permissibleEvents);
-        //console.log(newEvent.extendedProps.uuid)
-        if (newEvent.extendedProps.userAccountID === this.data.userAccountID) {
+        if (this.checkPermissions(newEvent)) {
             newEvent.color = this.colorWheel.default;
+            //if(0) returns false
             if (this.EventMap.get(newEvent.extendedProps.uuid) === 0 || this.EventMap.get(newEvent.extendedProps.uuid)) {
-                if (this.data.events[this.EventMap.get(newEvent.extendedProps.uuid)] !== newEvent) {
-                    console.log("event changes detected..saving event...")
-                    this.saveEvent(newEvent);
-                }
+                console.log("event changes detected..saving event...")
+                this.saveEvent(newEvent, function(){
+                    setTimeout(createCalender, 20);
+                });
                 this.data.events[this.EventMap.get(newEvent.extendedProps.uuid)] = newEvent;
-                if (isUpdatingEventList !== 1) setTimeout(createCalender, 20);
+                if(callback) callback();
                 return;
             }
             console.log("new event detected... adding event to calender...")
             this.EventMap.set(newEvent.extendedProps.uuid, this.data.events.length);
             this.data.events[this.data.events.length] = newEvent;
-            this.saveEvent(newEvent);
+            this.saveEvent(newEvent, function(){
+                setTimeout(createCalender, 20);
+            });
         }
 
-        if (isUpdatingEventList != 1) setTimeout(createCalender, 20);
+        if(callback) callback();
         this.isActive = 0;
     }
     checkEventPermmisions(eventUID) {
-        for (let event of this.data.events) {
-            if (eventUID === event.extendedProps.uuid && event.extendedProps.userAccountID === this.data.userAccountID) {
-                return true;
-            }
+        if(this.EventMap.get(eventUID) && this.data.events[this.EventMap.get(eventUID)].extendedProps.userAccountID === this.data.userAccountID ){
+            return true;
         }
         return false;
     }
     saveEvent(newEvent, callback) {
+        console.log(newEvent);
         let newPost = {
             method: "POST",
             headers: {
@@ -119,17 +130,22 @@
                 EventData: JSON.stringify(newEvent),
                 EventUuid: newEvent.extendedProps.uuid,
                 Year: Number(elements.year.val()),
+                InstructorHash : newEvent.extendedProps.instructorHash,
+                EventAuthorHash: newEvent.extendedProps.userAccountID || caldata.userAccountID,
+                InstitutonId : caldata.institutionID,
                 Quarter: Number(elements.quarter.val()),
-                Building: elements.building.val(),
-                Room: elements.room.val(),
+                Building: newEvent.extendedProps.building + "",
+                Room: newEvent.extendedProps.room + "",
+                ProgramId: Number(elements.dpt.val()),
+                ClassQuarterNumber : Number(newEvent.extendedProps.ClassQuarterNumber),
                 CoursePrefix: newEvent.extendedProps.coursePrefix + "",
                 DeliveryType: newEvent.extendedProps.delivery + "",
                 CourseNumber: newEvent.extendedProps.courseNumber + "",
                 Section: newEvent.extendedProps.section + "",
-                Component: newEvent.extendedProps.component + ""
+                Component: newEvent.extendedProps.component + "",
+
             })
         }
-        //console.log(newPost)
         fetch(`/home/SaveEventData`, newPost).then(response => response.json()).then((data) => {
             console.log(data);
             if (callback) callback();
@@ -148,21 +164,4 @@
             });
         }
     }
-    shuffle(array) {
-    let currentIndex = array.length, randomIndex;
-
-    // While there remain elements to shuffle.
-    while (currentIndex != 0) {
-
-        // Pick a remaining element.
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-
-        // And swap it with the current element.
-        [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
-    }
-
-    return array;
-}
 }

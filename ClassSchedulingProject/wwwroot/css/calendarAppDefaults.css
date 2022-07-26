@@ -47,12 +47,22 @@ body {
    overflow-y: scroll;
 }
 .ActiveEventsListItem {
-   border-left: solid 5px;
+   border-left: solid 1px;
    padding-left: 10px;
    color: white;
    transition: all .2s;
-   cursor: pointer;
 }
 .ActiveEventsListItem:hover {
-   padding-left: 15px;
+   padding-left: 13px;
+   border-left: solid 3px;
+}
+.close {
+   cursor: pointer;
+}
+.underlineText {
+   cursor: pointer;
+   text-decoration: underline!important;
+}
+.underlineText:hover {
+   color: rgb(0, 68, 255);
 }

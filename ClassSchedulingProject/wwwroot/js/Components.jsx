@@ -39,12 +39,12 @@ class EventListComponent extends React.Component {
                 if(Object.keys(o).length === 0) return "";
 
                 return (
-                  <div onClick={() => editEvent($(`#class-${o.extendedProps.uuid}`))} key={`class-${o.extendedProps.uuid}`} id={`class-${o.extendedProps.uuid}`} data={JSON.stringify(o)}>
-                    <p style={{ borderColor: `${o.color}` }} key={`${key}-p`} className="ActiveEventsListItem">
-                      <span style={{ color: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.title), colorFilterBrightness, .75).join(",")})` }}>
-                        Q{o.extendedProps.ClassQuarterNumber} {o.title} {" "}#{o.extendedProps.classNumber}</span>
-                      <div style={{ color: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.title), colorFilterBrightness, .75).join(",")})`, background: `rgba(${HEXtoRGB(o.color).join(",")}, 0)`, fontSize: "10px", padding: "0" }}>
-                        {formatdaysOfWeek(o.daysOfWeek)}, {formatTimeString([o.startTime, o.endTime])} @ {o.extendedProps.building + "-" + o.extendedProps.room}
+                  <div key={`class-${o.extendedProps.uuid}`} id={`class-${o.extendedProps.uuid}`} data={JSON.stringify(o)}>
+                    <p style={{ borderColor: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.title), colorFilterBrightness, .8).join(",")})` }} key={`${key}-p`} className="ActiveEventsListItem">
+                      <span style={{ color: `rgb(${HEXtoRGB(o.color, colorFilterBrightness, .9).join(",")})` }}>
+                        <span className="underlineText" onClick={() => editEvent($(`#class-${o.extendedProps.uuid}`))}>Q{o.extendedProps.ClassQuarterNumber} {o.title} {" "}#{o.extendedProps.classNumber}</span></span>
+                      <div style={{ color: `rgb(${HEXtoRGB(o.color, colorFilterBrightness, .9).join(",")})`, background: `rgba(${HEXtoRGB(o.color).join(",")}, 0)`, fontSize: "10px", padding: "0" }}>
+                        {formatdaysOfWeek(o.daysOfWeek)}, {formatTimeString([o.startTime, o.endTime])} <span onClick={() => goToEvent(o.extendedProps.building, o.extendedProps.room)} className="underlineText">@{o.extendedProps.building + "-" + o.extendedProps.room}</span>
                         <br /> 
                         {o.extendedProps.instructorName}
                       </div>
@@ -67,7 +67,7 @@ class AccordianHeader extends React.Component {
   }
   render(){
     if(this.type === "FilteredEvents"){
-      return <a className="collapsed card-link" data-toggle="collapse" href="#collaspeRoomEvents">
+      return <a className="collapsed card-link" data-toggle="collapse" href={`#collaspe${this.type}`}>
         Courses in this room: {`${elements.building.val()}-${elements.room.val()}`}
       </a>
     }

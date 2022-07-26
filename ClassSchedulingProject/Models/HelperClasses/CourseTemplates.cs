@@ -4,7 +4,7 @@ namespace ClassSchedulingProject.Structs
 public struct CourseOfferedTemplates
     {
         public int Id { get; set; }
-        public int ProgramVersion { get; set; }
+        public int ProgramId { get; set; }
         public string InstitutionId { get; set; }
         public string Title { get; set; }
         public string CoursePrefix { get; set; }
@@ -14,7 +14,7 @@ public struct CourseOfferedTemplates
 
         public CourseOfferedTemplates(CourseOfferingsTemplates course){
             this.Id = course.Id;
-            this.ProgramVersion = course.Program.ProgramVersion;
+            this.ProgramId = course.Program.Id;
             this.InstitutionId = course.InstitutionId;
             this.Title = course.Title;
             this.CoursePrefix = course.CoursePrefix;

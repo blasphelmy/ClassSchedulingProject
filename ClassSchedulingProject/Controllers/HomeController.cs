@@ -104,7 +104,8 @@ namespace ClassSchedulingProject.Controllers
             {
                 return Json("error");
             }
-            string institutionID = getUser(Request.Cookies["sessionID"]).PrimaryInstitutionId;
+            UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
+            string institutionID = thisUser.PrimaryInstitutionId;
             string institutionEvents = "";
 
             List<ApiEvents> eventList = context.ApiEvents.ToList();
@@ -116,7 +117,11 @@ namespace ClassSchedulingProject.Controllers
                     e.Year == int.Parse(terms[0]) && 
                     e.Quarter == int.Parse(terms[1]))
                     {
-                        return true;
+                        foreach(ProgramOfferings program in thisUser.Department.ProgramOfferings){
+                            if(e.ProgramId == program.Id){
+                                return true;
+                            }
+                        }
                     }
                     return false;
                 });
@@ -167,6 +172,24 @@ namespace ClassSchedulingProject.Controllers
                 }
             }
             return Json(0);
+        }
+        [HttpGet]
+        public IActionResult fetchEventTemplates(int programID){
+            EventTemplateResponse newRes = new EventTemplateResponse();
+            List<CourseOfferedTemplates> coursesOffered = new List<CourseOfferedTemplates>();
+            ProgramOfferings program = context.ProgramOfferings.FirstOrDefault(e => e.Id == programID);
+            
+            newRes.ProgramName = program.ProgramName;
+            newRes.ProgramType = program.ProgramType;
+            newRes.ProgramID = program.Id;
+
+            if(program != null){
+                foreach(CourseOfferingsTemplates course in program.CourseOfferingsTemplates){
+                    coursesOffered.Add(new CourseOfferedTemplates(course));
+                }
+            }
+            newRes.programTemplates = JsonSerializer.Serialize(coursesOffered);
+            return Json(newRes);
         }
         [HttpGet]
         public IActionResult emailCheck(string email)
@@ -230,6 +253,9 @@ namespace ClassSchedulingProject.Controllers
                 // newEvent.EventAuthorHash = thisUser.AccountHash;
                 newEvent.InstitutonId = thisUser.PrimaryInstitutionId;
                 ApiEvents existing = context.ApiEvents.FirstOrDefault(e => e.EventUuid == newEvent.EventUuid);
+                if(existing != null && existing.EventAuthorHash != newEvent.EventAuthorHash){
+                    return Json("Error: mismatched hash");
+                }
                 int status = 0;
                 if(existing != null && (existing.EventAuthorHash == thisUser.EventsAuthorId || existing.InstructorHash == thisUser.EventsAuthorId))
                 {

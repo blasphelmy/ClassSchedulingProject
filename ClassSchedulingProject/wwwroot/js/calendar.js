@@ -52,6 +52,7 @@
             } else {
                 newEventList[i].color = this.usersColors.get(newEventList[i].extendedProps.instructorHash);
             }
+            if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#333"
             this.data.events.push(newEventList[i]);
             this.EventMap.set(this.data.events[i].extendedProps.uuid, i);
         }
@@ -83,6 +84,7 @@
             } else {
                 this.data.events[i].color = this.usersColors.get(this.data.events[i].extendedProps.instructorHash);
             }
+            if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#333";
             //this.addEvent(newEventList[i], 1);
         }
         setTimeout(createCalender, 20);
@@ -120,7 +122,6 @@
         return false;
     }
     saveEvent(newEvent, callback) {
-        console.log(newEvent);
         let newPost = {
             method: "POST",
             headers: {
@@ -136,7 +137,7 @@
                 Quarter: Number(elements.quarter.val()),
                 Building: newEvent.extendedProps.building + "",
                 Room: newEvent.extendedProps.room + "",
-                ProgramId: Number(elements.dpt.val()),
+                ProgramId: Number(newEvent.extendedProps.ProgramId),
                 ClassQuarterNumber : Number(newEvent.extendedProps.ClassQuarterNumber),
                 CoursePrefix: newEvent.extendedProps.coursePrefix + "",
                 DeliveryType: newEvent.extendedProps.delivery + "",
@@ -147,8 +148,8 @@
             })
         }
         fetch(`/home/SaveEventData`, newPost).then(response => response.json()).then((data) => {
-            console.log(data);
-            if (callback) callback();
+           console.log(data);
+           if (callback) callback();
         });
     }
     deleteEvent(uuid) {
@@ -158,7 +159,6 @@
                 console.log(data);
                 if (data === 1) {
                     this.data.events = this.data.events.splice(Number(this.EventMap.get(uuid)), 1);
-                    console.log(this.data.events);
                     fetchData(new Object);
                 }
             });
