@@ -611,3 +611,9 @@ ClassSchedulingDBData/.vs/ClassSchedulingDBData/v17/.suo
 ClassSchedulingDBData/.vs/ClassSchedulingDBData/v16/.suo
 *.dll
 ClassSchedulingProject/bin/Debug/netcoreapp3.1/ClassSchedulingProject.pdb
+ClassSchedulingProject/.vs/ClassSchedulingProject/v17/.suo
+ClassSchedulingProject/bin/Debug/netcoreapp3.1/ClassSchedulingProject.exe
+ClassSchedulingProject/obj/Debug/netcoreapp3.1/apphost.exe
+ClassSchedulingProject/obj/Debug/netcoreapp3.1/ClassSchedulingProject.assets.cache
+ClassSchedulingProject/obj/Debug/netcoreapp3.1/project.razor.json
+ClassSchedulingProjectElectron/root/css/calendarAppDefaults.css
