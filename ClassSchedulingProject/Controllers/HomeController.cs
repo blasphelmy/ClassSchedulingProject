@@ -89,10 +89,11 @@ namespace ClassSchedulingProject.Controllers
             return View();
         }
         [HttpGet]
-        public IActionResult fetchEvents(string filterterms)
+        public IActionResult fetchEvents(string filterterms, string sessionID)
         {
-            if(verifyUser(Request.Cookies["sessionID"]) == 0){
-                return Json("");
+            // System.Console.WriteLine(sessionID);
+            if(verifyUser(Request.Cookies["sessionID"] ?? sessionID) == 0){
+                return Json("sessionIDNotFound");
             }
             string[] terms = filterterms.Split(",");
             try
@@ -104,7 +105,7 @@ namespace ClassSchedulingProject.Controllers
             {
                 return Json("error");
             }
-            UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
+            UserInformation thisUser = getUser(Request.Cookies["sessionID"] ?? sessionID);
             string institutionID = thisUser.PrimaryInstitutionId;
             string institutionEvents = "";
 
@@ -238,16 +239,17 @@ namespace ClassSchedulingProject.Controllers
                     context.SessionTokens.Add(newSessionToken);
                     context.SaveChanges();
                     SetCookie("sessionID", newSessionToken.SessionId, 10080);
-                    return Json(1); 
+                    return Json(newSessionToken.SessionId); 
                 } 
             }
             return Json(0);
         }
         [HttpPost]
-        public IActionResult SaveEventData([FromBody] ApiEvents newEvent)
+        public IActionResult SaveEventData([FromBody] ApiEvents newEvent, [FromHeader] String sessionID)
         {
+            // System.Console.WriteLine("sessionID = " + sessionID);
             if (newEvent.InstructorHash == "") newEvent.InstructorHash = null;
-            UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
+            UserInformation thisUser = getUser(Request.Cookies["sessionID"] ?? sessionID);
             if(thisUser != null)
             {
                 // newEvent.EventAuthorHash = thisUser.AccountHash;
@@ -321,6 +323,26 @@ namespace ClassSchedulingProject.Controllers
                 option.Expires = DateTime.Now.AddMilliseconds(10);
 
             Response.Cookies.Append(key, value, option);
+        }
+        [HttpGet]
+        public IActionResult checkLoginStatus(string sessionID){
+            int status = 0;
+            SessionTokens token = context.SessionTokens.FirstOrDefault(e => e.SessionId == sessionID);
+            if(token != null){
+                status++;
+            }
+            return Json(status);
+        }
+        [HttpGet]
+        public IActionResult caldata(string sessionID){
+            // System.Console.WriteLine(sessionID);
+            UserInformation thisUser = getUser(sessionID);
+            if(thisUser != null){
+                CalenderData newCalData = new CalenderData(thisUser);
+                newCalData.userList = JsonSerializer.Serialize(userList);
+                return Json(newCalData);
+            }
+            return Json(0);
         }
     }
 }

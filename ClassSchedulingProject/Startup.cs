@@ -34,6 +34,11 @@ namespace ClassSchedulingProject
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             );
+            services.AddCors(options => {
+                options.AddPolicy("_myAllowSpecificOrigins", policy => {
+                    policy.WithOrigins("*");
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,7 +60,7 @@ namespace ClassSchedulingProject
             app.UseRouting();
 
             app.UseAuthorization();
-
+            app.UseCors("_myAllowSpecificOrigins");
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

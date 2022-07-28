@@ -27,8 +27,9 @@
         }
     }
     checkPermissions(event){
-        if (event.extendedProps.userAccountID === this.data.userAccountID
-            || event.extendedProps.instructorHash === this.data.userAccountID) {
+        console.log(event.extendedProps.ProgramId === caldata.ProgramID )
+        if (event.extendedProps.ProgramId === caldata.ProgramID && (event.extendedProps.userAccountID === this.data.userAccountID
+            || event.extendedProps.instructorHash === this.data.userAccountID)) {
             return true;
         }
         return false;
@@ -52,7 +53,7 @@
             } else {
                 newEventList[i].color = this.usersColors.get(newEventList[i].extendedProps.instructorHash);
             }
-            if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#333"
+            if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#666"
             this.data.events.push(newEventList[i]);
             this.EventMap.set(this.data.events[i].extendedProps.uuid, i);
         }
@@ -84,7 +85,7 @@
             } else {
                 this.data.events[i].color = this.usersColors.get(this.data.events[i].extendedProps.instructorHash);
             }
-            if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#333";
+            if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#666";
             //this.addEvent(newEventList[i], 1);
         }
         setTimeout(createCalender, 20);
@@ -122,6 +123,7 @@
         return false;
     }
     saveEvent(newEvent, callback) {
+        if(!this.checkPermissions(newEvent)) return fetchData();
         let newPost = {
             method: "POST",
             headers: {

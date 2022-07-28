@@ -65,3 +65,6 @@ C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingPro
 C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingProject\obj\Release\netcoreapp3.1\ClassSchedulingProject.dll
 C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingProject\obj\Release\netcoreapp3.1\ClassSchedulingProject.pdb
 C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingProject\obj\Release\netcoreapp3.1\ClassSchedulingProject.genruntimeconfig.cache
+C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingProject\bin\Release\netcoreapp3.1\Microsoft.AspNetCore.JsonPatch.dll
+C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingProject\bin\Release\netcoreapp3.1\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+C:\Users\David Nguyen\Desktop\gitHub\Class-Scheduling-Project\ClassSchedulingProject\bin\Release\netcoreapp3.1\Newtonsoft.Json.Bson.dll

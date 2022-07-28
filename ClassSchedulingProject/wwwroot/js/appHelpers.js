@@ -18,7 +18,7 @@ function updateTimer(delay) {
     }, delay);
 }
 
-let fetchData = (e) => {
+let fetchData = (e, callback) => {
     console.log("fetching data...");
     try {
         localStorage.setItem(e.id, e.value);

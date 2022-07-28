@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+    <title>Class Scheduler</title>
+  </head>
+<style>
+.status {
+    padding-left: 8px;
+    opacity: .7;
+    font-size: 12px;
+}
+.sLoading {
+    display: inline-block;
+    position: relative;
+    background-image: url("./img/animation.gif");
+    background-size: contain;
+    /* background: blue; */
+    top: 4px;
+    left: 4px;
+    height: 18px;
+    width: 18px;
+    z-index: 2;
+ }
+</style>
+<body>
+    <div id="titleBar">
+        <div class="drag-region"></div>
+        <span style="position:relative; top: 4px; left: 10px;">Class Scheduler</span>
+    </div>
+    <div id="menuBar">
+        <span id="s1" class="status"></span>
+        <span id="s2" class="status"></span><span id="s3" class="status"></span>
+        <span style="position:absolute; right:20px;bottom:0px;">
+        <input type="range" id="viewSizeRangeSlider"  step="1" max="5" min="1" value="4" onchange="renderCalendar()"></span>
+    </div>
+    <div style="padding-left: 20px; overflow:hidden; max-width: 100%">
+        <div class="row">
+            <div class="col">
+                <br />
+                <br />
+                <h2 id="institutionHeader"></h2>
+                <p>Welcome, <span id="thisUsersName"></span></p>
+                <p>Your department: <span id="thisUsersDepartment"></span>, Role : <span id="role"></span></p>
+                <div>
+                    <span>
+                        <select id="dptSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchEventTemplates(this)">
+                          <option selected></option>
+                        </select>
+                        <select id="yearSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
+                          <option selected>Select Year</option>
+                        </select>
+                        <select id="qSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
+                          <option selected>Select Quarter</option>
+                          <option value="1">Winter</option>
+                          <option value="2">Spring</option>
+                          <option value="3">Summer</option>
+                          <option value="4">Fall</option>
+                        </select>
+                        <select id="building" class="custom-select-sm" style="margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
+                          <option selected>Select Building</option>
+                          <option value="J">J</option>
+                        </select>
+                        <select id="room" class="custom-select-sm" style="margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
+                          <option selected>Select Room</option>
+                          <option value="108">108</option>
+                          <option value="111">111</option>
+                          <option value="112">112</option>
+                          <option value="114">114</option>
+                        </select>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="padding-right: 20px;">
+            <div style="height: 100vh;" class="col-lg-7">
+                <div id='calendar'></div>
+            </div>
+            <div class="col-lg-5">
+                <div class="accordion" id="accordionFilteredEvents">
+                    <div id="filteredEvents"></div>
+                </div>
+                <br />
+                <div class="accordion" id="accordionEventList">
+                    <div id="allEvents"></div>
+                </div>
+                <br />
+                <div class="accordion" id="accordionEventemplates">
+                    <div id="EventTemplates"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<link rel="stylesheet" href="./css/calendarAppDefaults.css" />
+<link rel="stylesheet" href="./libCal_f/main.css" />
+
+<link rel="stylesheet" href="./lib/bootstrap/dist/css/bootstrap.min.css" />
+<script src="./lib/jquery/dist/jquery.min.js"></script>
+<script src="./lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="./js/site.js" asp-append-version="true"></script>
+<script src="./lib/react/reactDev.js" crossorigin></script>
+<script src="./lib/react/reactDomDev.js" crossorigin></script>
+<script src="./lib/react/babel7189.js"></script>
+
+
+<script src="./libCal_f/main.js"></script>
+<script src="./js/app.js"></script>
+<script src="./js/calendar.js"></script>
+<script src="./js/popUpRenderer.js"></script>
+<script src="./js/appHelpers.js"></script>
+<script src="./js/createDraggableElement.js"></script>
+<script src="./js/Components.jsx" type="text/babel"></script>
+<script src="./js/main.jsx" type="text/babel"></script>
+<script type="text/babel">
+    const EventTemplates = ReactDOM.createRoot(document.getElementById("EventTemplates"));
+    EventTemplates.render(<EventTemplateComponent CourseOfferings={caldata.EventTemplates} />);
+</script>
+<script>
+</script>
+</html>

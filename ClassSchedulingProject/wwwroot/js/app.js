@@ -65,7 +65,7 @@ function createCalender(events) {
         duration: { days: 5 },
         selectable: false,
         slotDuration: slotDuration[Number(document.getElementById("viewSizeRangeSlider").value) - 1],
-        snapDuration: '00:05',
+        snapDuration: '00:01',
         //defaultView: 'basicWeek',
         select: SelectAction,
         eventDidMount: EventMountAction,
