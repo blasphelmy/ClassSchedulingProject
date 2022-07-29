@@ -27,17 +27,14 @@
         }
     }
     checkPermissions(event){
-        console.log(event.extendedProps.ProgramId === caldata.ProgramID )
         if (event.extendedProps.ProgramId === caldata.ProgramID && (event.extendedProps.userAccountID === this.data.userAccountID
             || event.extendedProps.instructorHash === this.data.userAccountID)) {
             return true;
         }
         return false;
-
     }
     parseEvents(eventString) {
         let newEventList = eventString.split(" _--__- ").filter(e => e !== "");
-        //console.log(newEventList);
         this.data.events = [];
         for (let i in newEventList) {
             newEventList[i] = JSON.parse(newEventList[i]);
@@ -58,7 +55,6 @@
             this.EventMap.set(this.data.events[i].extendedProps.uuid, i);
         }
         this.init = 1;
-        //console.log(this.data.events);
     }
     updateEvents(eventString) {
         let newEventList = eventString.split(" _--__- ").filter(e => e !== "");
@@ -111,6 +107,8 @@
             this.saveEvent(newEvent, function(){
                 setTimeout(createCalender, 20);
             });
+        }else{
+            $("#s3").text("not authorized to make changes to this event")
         }
 
         if(callback) callback();
@@ -123,7 +121,11 @@
         return false;
     }
     saveEvent(newEvent, callback) {
-        if(!this.checkPermissions(newEvent)) return fetchData();
+        if(!this.checkPermissions(newEvent)){
+            $("#s3").text(`not authorized to make changes to this event`)
+            return fetchData();
+        } 
+        $("#s3").text(`saving event ${newEvent.extendedProps.uuid}`);
         let newPost = {
             method: "POST",
             headers: {
@@ -146,24 +148,32 @@
                 CourseNumber: newEvent.extendedProps.courseNumber + "",
                 Section: newEvent.extendedProps.section + "",
                 Component: newEvent.extendedProps.component + "",
-
             })
         }
         fetch(`/home/SaveEventData`, newPost).then(response => response.json()).then((data) => {
-           console.log(data);
+           if(data === 1 || data === 2){
+                if(data === 1) $("#s3").text(`${newEvent.title} added!`); 
+                else $("#s3").text(`${newEvent.title} saved!`);
+           }else{
+                $("#s3").text(`error saving event, server responded with : ${data}`);
+           }
            if (callback) callback();
         });
     }
     deleteEvent(uuid) {
-        console.log(this.data.events[this.EventMap.get(uuid)]);
         if (this.data.events[this.EventMap.get(uuid)] && this.data.events[this.EventMap.get(uuid)].extendedProps.userAccountID === this.data.userAccountID) {
+            $("#s3").text("deleting event...")
             fetch(`/home/deleteEvent?uuid=${uuid}`).then(response => response.json()).then((data) => {
-                console.log(data);
                 if (data === 1) {
+                    let title = this.data.events[this.EventMap.get(uuid)].title;
                     this.data.events = this.data.events.splice(Number(this.EventMap.get(uuid)), 1);
-                    fetchData(new Object);
+                    fetchData(new Object, function(){
+                        $("#s3").text(`${title} deleted...`)
+                    });
                 }
             });
+        }else{
+            $("#s3").text(`not authorized to delete or modify event ${this.data.events[this.EventMap.get(uuid)].title}`)
         }
     }
 }

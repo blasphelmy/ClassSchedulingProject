@@ -1,4 +1,4 @@
-﻿var newCalender, calendar, init = 0, elements = {}, isFetching = 0, calEvents = [], newEvent = {};
+﻿var calendar, init = 0, elements = {}, isFetching = 0, calEvents = [], newEvent = {};
 var slotDuration = `00:05 00:10 00:15 00:30 01:00)`.split(" ");
 var resources = [
     { id: 'J', building: 'J', title: '111' },
@@ -11,6 +11,7 @@ let eventBuilder = function(e){
     }
     return {};
 }
+let ua = 5;
 let EventTemplatesColorMap = new Map();
 let colors = "#3587e9 #ff8700 #c87a17 #5e4fa2 #00ea2f #1fb976 #ee66a8 #79a2ed".split(" ");
 document.addEventListener('DOMContentLoaded', function () {
@@ -135,14 +136,11 @@ let EventClickAction = (info) => {
 }
 let EventResizeAction = (info) => {
     info.el.id = info.event.extendedProps.uuid ?? "error - " + create_UUID();
-    console.log("ResizeAction");
     closePopUp();
     EventDropAction(info);
     formatTime(info);
 }
 let EventDropAction = (info) => {
-    console.log("event drop action");
-    console.log(info);
     let newEvent = newCalender.data.events[newCalender.EventMap.get(info.event._def.groupId)];
     newEvent.startTime = new Date(info.event._instance.range.start.getTime() + (7 * 1000 * 60 * 60)).toTimeString().split(" ")[0];
     newEvent.endTime = new Date(info.event._instance.range.end.getTime() + (7 * 1000 * 60 * 60)).toTimeString().split(" ")[0];

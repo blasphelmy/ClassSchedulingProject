@@ -7,19 +7,30 @@ function create_UUID() {
     });
     return uuid;
 }
+window.addEventListener('click', (event) => {
+    ua = ua * 1.1
+    if(ua > 5) ua = 5;
+  })
+  window.addEventListener('mousemove', function(){
+      ua = ua + 0.0008;
+      if(ua > 4) ua = 4;
+  }, false);
 function updateTimer(delay) {
     setTimeout(function () {
         console.log("update timer set");
         if (elements.checkNull() && newCalender.isActive === 0 && isFetching === 0) {
             isFetching = 1;
             fetchData(new Object);
+            ua = ua - 1;
+            if(ua < 1) ua = 1;
         }
         updateTimer(delay);
-    }, delay);
+    }, delay / ua);
 }
 
 let fetchData = (e, callback) => {
-    console.log("fetching data...");
+    document.getElementById("s1").classList.add("sLoading");
+    $("#s2").text("fetching data...");
     try {
         localStorage.setItem(e.id, e.value);
     } catch {
@@ -37,11 +48,20 @@ let fetchData = (e, callback) => {
             } else {
                 newCalender.updateEvents(data);
             }
+            setTimeout(() => {
+                document.getElementById("s1").classList.remove("sLoading");
+                $("#s2").text(`Last fetched at ${new Date().toLocaleTimeString()}`);
+            }, 500);
         } else {
             console.log("error fetching calendar events...")
+            setTimeout(() => {
+                document.getElementById("s1").classList.remove("sLoading");
+                $("#s2").text(`error fetching calendar events...`);
+            }, 1000);
         }
         setTimeout(function () {
             isFetching = 0;
+            if(callback) callback();
         }, 200);
     });
 }
@@ -50,6 +70,7 @@ function fetchEventTemplates(e, callback){
         localStorage.setItem(e.id, e.value);
     } catch {
     }
+    //caldata.ProgramID = e.value;
     fetch(`/home/fetchEventTemplates?programID=${e.value}`).then(res => res.json()).then(data => {
         console.log(data);
         if(data){
@@ -73,15 +94,15 @@ function fetchNewCalendar(element) {
     newCalender = new CalenderApp(caldata);
     fetchData(element);
 }
-function formatdaysOfWeek(daysofweek) {
+function formatdaysOfWeek(daysofweek, option = "Mon Tues Wed Thur Fri".split(" ")) {
     let days = [];
     for (let d of daysofweek) {
         switch (d) {
-            case "1": days.push("Mon"); break;
-            case "2": days.push("Tue"); break;
-            case "3": days.push("Wed"); break;
-            case "4": days.push("Thu"); break;
-            case "5": days.push("Fri"); break;
+            case "1": days.push(option[0]); break;
+            case "2": days.push(option[1]); break;
+            case "3": days.push(option[2]); break;
+            case "4": days.push(option[3]); break;
+            case "5": days.push(option[4]); break;
         }
     }
     if (days.length === 0) {
@@ -163,5 +184,15 @@ function formatTimeString(iTs, timestamps) {
 function goToEvent(building, roomNumber) {
     elements.room.val(roomNumber.toString());
     elements.building.val(building.toString());
+    try{
+        localStorage.setItem(elements.room.attr("id"), roomNumber.toString());
+    }catch{
+
+    }
+    try{
+        localStorage.setItem(elements.building.attr("id"), elements.building.val());
+    }catch{
+
+    }
     fetchData(elements.room);
 }

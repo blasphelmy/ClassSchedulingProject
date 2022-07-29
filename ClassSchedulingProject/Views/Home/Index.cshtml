@@ -13,9 +13,44 @@
     }
 }
 <style>
-
+ #menuBar {
+   display: block;
+   position: fixed;
+   height: 28px;
+   width: calc(100% - 2px); /*Compensate for body 1px border*/
+   background: #f3f3f3;
+   z-index: 100;
+   width: 100%;
+   bottom: 0;
+ }
+ .status {
+    padding-left: 8px;
+    opacity: .7;
+    font-size: 12px;
+}
+.sLoading {
+    display: inline-block;
+    position: relative;
+    background-image: url("./img/animation.gif");
+    background-size: contain;
+    /* background: blue; */
+    top: 4px;
+    left: 4px;
+    height: 18px;
+    width: 18px;
+    z-index: 2;
+ }
 </style>
-
+<div id="menuBar">
+    <span id="s1" class="status"></span>
+    <span id="s2" class="status"></span>
+    <span class="status">|</span>
+    <span id="s3" class="status"></span>
+    <span style="position:absolute; right:20px;bottom:0px; width:205px">
+        <span class="status" style="position:relative; top: -3px;">Scale :</span> 
+        <input style="position:relative;width: 150px;top: 2px" type="range" id="viewSizeRangeSlider"  step="1" max="5" min="1" value="4" onchange="renderCalendar()">
+    </span>
+</div>
 <div style="padding-left: 20px; overflow:hidden; max-width: 100%">
     <div class="row">
         <div class="col">
@@ -24,6 +59,10 @@
             <p>Your department: @thisUser.Department.DepartmentName, Role : <span id="role"></span></p>
             <div>
                 <span>
+                    <select id="viewStyle" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="changeView(this)">
+                      <option value="1" selected>Calendar</option>
+                      <option value="2">List View</option>
+                    </select>
                     <select id="dptSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchEventTemplates(this)">
                       <option selected></option>
                       @foreach(ProgramOfferings program in thisUser.Department.ProgramOfferings){
@@ -57,17 +96,19 @@
                     </select>
                 </span>
                     <div style="">
-                        <label for="formControlRange" style="position:relative; bottom: 3px">Scale : </label>
-                    <input type="range" id="viewSizeRangeSlider" class="form-control-range-sm" step="1" max="5" min="1" value="4" onchange="renderCalendar()">
+                        @* <label for="formControlRange" style="position:relative; bottom: 3px">Scale : </label> *@
+                    @* <input type="range" id="viewSizeRangeSlider" class="form-control-range-sm" step="1" max="5" min="1" value="4" onchange="renderCalendar()"> *@
                 </div>
             </div>
         </div>
     </div>
-    <div class="row" style="padding-right: 20px;">
-        <div style="height: 100vh;" class="col-lg-7">
+    <div class="row" style="padding-right: 20px; padding-bottom: 20px">
+        <div id="panel1" style="height: 100vh;" class="col-lg-7">
             <div id='calendar'></div>
+            <div id='listView' style="display: none" class="table-responsive"></div>
+            <br />
         </div>
-        <div class="col-lg-5">
+        <div id="panel2"  class="col-lg-5">
             <div class="accordion" id="accordionFilteredEvents">
                 <div id="filteredEvents"></div>
             </div>
@@ -95,6 +136,7 @@
 <script src="/lib/react/reactDomDev.js" crossorigin></script>
 <script src="/lib/react/babel7189.js"></script>
 <script>
+var newCalender;
 let caldata = {
     firstName: "@thisUser.FirstName",
     lastName: "@thisUser.LastName",
@@ -124,7 +166,6 @@ document.getElementById("role").innerText = function() {
         EventTemplates.render(<EventTemplateComponent CourseOfferings={caldata.EventTemplates} />);
     </script>
 } *@
-   <script type="text/babel">
-        const EventTemplates = ReactDOM.createRoot(document.getElementById("EventTemplates"));
-        EventTemplates.render(<EventTemplateComponent CourseOfferings={caldata.EventTemplates} />);
-    </script>
+<script type="text/babel">
+
+</script>

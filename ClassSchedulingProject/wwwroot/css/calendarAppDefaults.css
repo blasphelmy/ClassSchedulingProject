@@ -1,6 +1,47 @@
 body {
     overflow-x: hidden;
 }
+input[type=range] {
+   box-sizing: border-box;
+   font-size: 16px;
+   line-height: 1;
+   height: 2em;
+   background: transparent;
+   cursor: pointer;
+   -webkit-appearance: none;
+   width: 100%;
+ }
+ input[type=range]::-webkit-slider-thumb {
+   -webkit-appearance: none;
+ }
+ input[type=range]:focus {
+   outline: none !important;
+   border: none;
+   box-shadow:none;
+ }
+ input[type=range]::-webkit-slider-thumb {
+   -webkit-appearance: none;
+   width: 2px;
+   height: 20px;
+   margin-top: 5px;
+   background-color: #3f3f3f;
+   border-radius: 1em;
+   border: 2px solid rgba(255, 255, 255, 0.5);
+   cursor: pointer;
+ }
+ input[type=range]:hover::-webkit-slider-thumb {
+   border-color: rgba(255, 255, 255, 0.7);
+ }
+ input[type=range]:active::-webkit-slider-thumb {
+   border-color: #5a5a5a;
+ }
+ input[type=range]::-webkit-slider-runnable-track {
+   width: 100%;
+   cursor: pointer;
+   height: 1em;
+   border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+   background-color: transparent;
+ }
 .fc-timegrid-slot {
    height: 0px!important;
    border-bottom: 0 !important;
@@ -47,14 +88,14 @@ body {
    overflow-y: scroll;
 }
 .ActiveEventsListItem {
-   border-left: solid 1px;
+   border-left: solid 4px;
    padding-left: 10px;
    color: white;
    transition: all .2s;
 }
 .ActiveEventsListItem:hover {
    padding-left: 13px;
-   border-left: solid 3px;
+   border-left: solid 7px;
 }
 .close {
    cursor: pointer;
@@ -65,4 +106,7 @@ body {
 }
 .underlineText:hover {
    color: rgb(0, 68, 255);
+}
+.listViewTable {
+   font-size: 12px;
 }

@@ -112,6 +112,7 @@ body {
    background-color: rgba(23, 34, 54,.4);
 }
 #eventPopUP {
+   position: fixed;
    height: 405px;
    width: 326px;
 }
@@ -151,14 +152,14 @@ body {
    overflow-y: scroll;
 }
 .ActiveEventsListItem {
-   border-left: solid 1px;
+   border-left: solid 4px;
    padding-left: 10px;
    color: white;
    transition: all .2s;
 }
 .ActiveEventsListItem:hover {
    padding-left: 13px;
-   border-left: solid 3px;
+   border-left: solid 7px;
 }
 .close {
    cursor: pointer;

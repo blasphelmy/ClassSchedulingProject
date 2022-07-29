@@ -10,5 +10,5 @@
 	[quarterNumber] int not null, -- 1-6 
 	constraint [InstitutionCourseOfferings] foreign key (institutionID) references InstitutionsRegistry(institutionID),
 	constraint [CourseProgramReference] foreign key (ProgramID) references ProgramOfferings(Id),
-	constraint [UniqueCourseOffering] unique(institutionID, CoursePrefix, CourseNumber, quarterNumber, Component)
+	constraint [UniqueCourseOffering] unique(institutionID, CoursePrefix, CourseNumber, quarterNumber, Component, ProgramID)
 )

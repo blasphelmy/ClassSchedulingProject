@@ -1,3 +1,86 @@
+class ListViewComponent extends React.Component{
+  constructor(props) {
+    super(props);
+    this.state = {
+      newCalData: props.i
+    };
+  }
+
+  componentDidMount() {
+    this.timerID = setInterval(() => this.tick(), 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  tick() {
+    this.setState({
+      newCalData: newCalender.data
+    });
+  }
+  render() {
+    let events = this.state.newCalData.events.map(function(o){
+      if(o.extendedProps.ProgramId === caldata.ProgramID) return o;
+    })
+    if(events.length === 0 || events === undefined || events === null){
+      return;
+    }
+    return (
+          <table className="table table-bordered listViewTable">
+            <thead>
+              <tr>
+                <th>Class#</th>
+                <th>Course</th>
+                <th>Number</th>
+                <th>Title</th>
+                <th>Session</th>
+                <th>Section</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Component</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Room-Loc</th>
+                <th>Days</th>
+                <th>Delivery</th>
+                <th>Instructor</th>
+                <th>Edit</th>
+              </tr>
+            </thead>
+            <tbody>
+                {events.map(function(o){
+                  if(!o) return;
+                  let iTs = [o.extendedProps.startTime, o.extendedProps.endTime];
+                  return (
+                    <tr style={{color : o.color}}>
+                      <td>{o.extendedProps.classNumber || "not set"}{"\t"}</td>
+                      <td>{o.extendedProps.coursePrefix}{"\t"}</td>
+                      <td>{o.extendedProps.courseNumber}{"\t"}</td>
+                      <td>{o.title}{"\t"}</td>
+                      <td>{o.extendedProps.Session}{"\t"}</td>
+                      <td>{o.extendedProps.section || "null"}{"\t"}</td>
+                      <td>{o.extendedProps.startDate || "null"}{"\t"}</td>
+                      <td>{o.extendedProps.endDate || "null"}{"\t"}</td>
+                      <td>{o.extendedProps.component || "null"}{"\t"}</td>
+                      <td>{formatTimeString(iTs).split(" - ")[0] || "null"}{"\t"}</td>
+                      <td>{formatTimeString(iTs).split(" - ")[1] || "null"}{"\t"}</td>
+                      <td>{function(){
+                          if(o.extendedProps.room && o.extendedProps.building) return o.extendedProps.building + "-" + o.extendedProps.room
+                          return "Online/Not set"
+                      }()}{"\t"}</td>
+                      <td>{formatdaysOfWeek(o.daysOfWeek, "M T W TH F".split(" "))}{"\t"}</td>
+                      <td>{o.extendedProps.delivery || "null"}{"\t"}</td>
+                      <td>{o.extendedProps.instructorName || "Staff"}{"\t"}</td>
+                      <td><a id={`table-${o.extendedProps.uuid}`} href="#" data={JSON.stringify(o)} onClick={() => editEvent($(`#table-${o.extendedProps.uuid}`))}>Edit{"\t"}</a></td>
+                    </tr>
+                  )
+                })}
+            </tbody>
+          </table>
+        );
+  }
+} 
 class EventListComponent extends React.Component {
   type;
   constructor(props) {
@@ -36,7 +119,8 @@ class EventListComponent extends React.Component {
           <div className="card-body">
             {
               events.map(function (o, key) {
-                if(Object.keys(o).length === 0) return "";
+                  if (Object.keys(o).length === 0) return "";
+                  if (o.extendedProps.ProgramId !== caldata.ProgramID) EventTemplatesColorMap.set(o.title, "#666")
 
                 return (
                   <div key={`class-${o.extendedProps.uuid}`} id={`class-${o.extendedProps.uuid}`} data={JSON.stringify(o)}>
@@ -109,7 +193,8 @@ class EventTemplateComponent extends React.Component {
       newCalender.data.events.map(function (e) {
         caldata.EventTemplates.map(function (o) {
           if (o.CoursePrefix === e.extendedProps.coursePrefix &&
-            o.CourseNumber === e.extendedProps.courseNumber.toString()) {
+              o.CourseNumber === e.extendedProps.courseNumber.toString() &&
+              o.ProgramId === e.extendedProps.ProgramId) {
             o.activeEvents.push(e);
             o.Active = true;
           }
