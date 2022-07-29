@@ -22,7 +22,6 @@ namespace ClassSchedulingProject.Models
         [StringLength(512)]
         public string EventAuthorHash { get; set; }
         [StringLength(64)]
-        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string InstructorHash { get; set; }
         [Required]
         [Column("institutonID")]
@@ -35,11 +34,9 @@ namespace ClassSchedulingProject.Models
         [Column("quarter")]
         public int Quarter { get; set; }
         [Column("building")]
-        [DisplayFormat(ConvertEmptyStringToNull = false)]
         [StringLength(64)]
         public string Building { get; set; }
         [Column("room")]
-        [DisplayFormat(ConvertEmptyStringToNull = false)]
         [StringLength(64)]
         public string Room { get; set; }
         [Column("programID")]
@@ -53,10 +50,8 @@ namespace ClassSchedulingProject.Models
         [StringLength(12)]
         public string CourseNumber { get; set; }
         [StringLength(12)]
-        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string Section { get; set; }
         [StringLength(64)]
-        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string Component { get; set; }
 
         public virtual UserInformation EventAuthorHashNavigation { get; set; }

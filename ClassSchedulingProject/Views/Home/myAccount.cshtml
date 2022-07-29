@@ -1,0 +1,39 @@
+﻿@model UserInformation
+@{
+}
+<div class="container">
+    <h4>Current Sessions</h4>
+    <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Ip</th>
+          <th>Device</th>
+          <th>Last Used</th>
+          <th>Login Date</th>
+          <th>Logout</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach(SessionTokens session in Model.SessionTokens)
+        {
+            <tr>
+                <td>@session.Ip</td>
+                <td>@session.Device</td>
+                <td>@session.LastUsed.ToString()</td>
+                <td>@session.Created.ToString()</td>
+                <td><a href="#" id="@session.Id" onclick="logout(this)">Logout</a></td>
+            </tr>       
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+function logout(e) {
+    console.log(e);
+    fetch(`/home/logout?id=${e.id}`).then(data => data.json()).then(function() {
+        window.location.href = "/myaccount"
+    })
+}
+</script>

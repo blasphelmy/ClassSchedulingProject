@@ -53,10 +53,11 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
                 <div class="form-group">
                     <label class="control-label" ><b>Instructor</b></label><br />
                     <select style="width:100%" id="pufInstructor" class="custom-select-xs">
-                    <option value="${event.extendedProps.instructorHash || ""}" selected>${event.extendedProps.instructorName || ""}</option >
+                    <option value="${event.extendedProps.instructorHash || "STAFF"}" selected>${event.extendedProps.instructorName || "STAFF"}</option >
                     ${userList.map(function (user) {
         return `<option value="${user.EventsAuthorId}">${user.FirstName} ${user.LastName}</option>`
     })}
+                  <option value="staff">STAFF</option>
                   </select>
                 </div>
                 <div class="form-group">

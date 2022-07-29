@@ -70,7 +70,7 @@ namespace ClassSchedulingProject.data
 
                 entity.HasOne(d => d.EventAuthorHashNavigation)
                     .WithMany(p => p.ApiEvents)
-                    .HasPrincipalKey(p => p.AccountHash)
+                    .HasPrincipalKey(p => p.EventsAuthorId)
                     .HasForeignKey(d => d.EventAuthorHash)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("eventAuthorReference");
@@ -122,7 +122,7 @@ namespace ClassSchedulingProject.data
 
             modelBuilder.Entity<CourseOfferingsTemplates>(entity =>
             {
-                entity.HasIndex(e => new { e.InstitutionId, e.CoursePrefix, e.CourseNumber, e.QuarterNumber, e.Component })
+                entity.HasIndex(e => new { e.InstitutionId, e.CoursePrefix, e.CourseNumber, e.QuarterNumber, e.Component, e.ProgramId })
                     .HasName("UniqueCourseOffering")
                     .IsUnique();
 
@@ -251,10 +251,14 @@ namespace ClassSchedulingProject.data
             modelBuilder.Entity<SessionTokens>(entity =>
             {
                 entity.HasIndex(e => e.SessionId)
-                    .HasName("UQ__SessionT__C9F492714A49AA3C")
+                    .HasName("UQ__SessionT__C9F492718C38EB7B")
                     .IsUnique();
 
                 entity.Property(e => e.AccountHash).IsUnicode(false);
+
+                entity.Property(e => e.Device).IsUnicode(false);
+
+                entity.Property(e => e.Ip).IsUnicode(false);
 
                 entity.Property(e => e.SessionId).IsUnicode(false);
 

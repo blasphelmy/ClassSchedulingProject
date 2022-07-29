@@ -41,7 +41,11 @@
                 </div>
                 <span id="emailWarning" asp-validation-for="email" class="text-danger"></span>
                 <span id="emailconfirm" class="text-success"></span>
-
+                <div class="form-group">
+                    <label asp-for="Device" class="control-label"></label>
+                    <input id="device" asp-for="Device" class="form-control" />
+                    <span  asp-validation-for="Device" class="text-danger"></span>
+                </div>
                 <div class="form-group">
                     <label asp-for="password" class="control-label"></label>
                     <input asp-for="password" class="form-control" />
@@ -75,13 +79,11 @@
                 body: JSON.stringify({
                     email: document.getElementById("email").value + iseDict.get(document.getElementById("instSelection").value),
                     password: document.getElementById("password").value,
+                    device: document.getElementById("device").value,
                 })
             }
             fetch("/Home/Login", newPost).then((response) => response.json()).then(function (data) {
-                console.log(data);
-                if (data === 1) {
-                    window.location.href = "/";
-                }
+                window.location.href = "/";
             })
         }
         </script>

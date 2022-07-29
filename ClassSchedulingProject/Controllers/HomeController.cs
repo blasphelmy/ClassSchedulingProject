@@ -62,7 +62,6 @@ namespace ClassSchedulingProject.Controllers
 
         public IActionResult Index(string institution)
         {
-            ViewData["Title"] = institution + " Home";
             string cookieValueFromReq = Request.Cookies["sessionID"];
 
                 if (verifyUser(cookieValueFromReq) == 1)
@@ -70,12 +69,29 @@ namespace ClassSchedulingProject.Controllers
                     ViewBag.isAuthorized = 1;
                     SessionTokens thisToken = context.SessionTokens.FirstOrDefault(e => e.SessionId == cookieValueFromReq);
                     UserInformation thisUser = context.UserInformation.FirstOrDefault(e => e.AccountHash == thisToken.AccountHash);
+                    ViewData["Title"] = thisUser.PrimaryInstitutionId + " Home";
                     ViewBag.thisUser = thisUser;
                     ViewBag.userList = JsonSerializer.Serialize(userList);
                     ViewBag.CourseOfferingsTemplates = JsonSerializer.Serialize(courseTemplates);
                     return View();
                 }
             return RedirectToAction("Register", "Home");
+        }
+        [HttpGet]
+        public IActionResult myAccount()
+        {
+            string cookieValueFromReq = Request.Cookies["sessionID"];
+
+            if (verifyUser(cookieValueFromReq) == 1)
+            {
+                ViewBag.isAuthorized = 1;
+                SessionTokens thisToken = context.SessionTokens.FirstOrDefault(e => e.SessionId == cookieValueFromReq);
+                UserInformation thisUser = context.UserInformation.FirstOrDefault(e => e.AccountHash == thisToken.AccountHash);
+                ViewBag.thisUser = thisUser;
+                ViewData["Title"] = thisUser.PrimaryInstitutionId + " myAccount";
+                return View(thisUser);
+            }
+            return RedirectToAction("Index", "Home");
         }
 
         public IActionResult Register()
@@ -226,6 +242,23 @@ namespace ClassSchedulingProject.Controllers
             ViewBag.institutionEmailSuffix = institutionEmailSuffix;
             return View();
         }
+        [HttpGet]
+        public IActionResult Logout(int id)
+        {
+            string cookieValueFromReq = Request.Cookies["sessionID"];
+
+            if (verifyUser(cookieValueFromReq) == 1)
+            {
+                ViewBag.isAuthorized = 1;
+                SessionTokens thisToken = context.SessionTokens.FirstOrDefault(e => e.SessionId == cookieValueFromReq);
+                UserInformation thisUser = context.UserInformation.FirstOrDefault(e => e.AccountHash == thisToken.AccountHash);
+                SessionTokens deleteQeue = thisUser.SessionTokens.FirstOrDefault(o => o.Id == id);
+                if(deleteQeue != null) context.SessionTokens.Remove(deleteQeue);
+                context.SaveChanges();
+            }
+
+            return Json(0);
+        }
         [HttpPost]
         public IActionResult Login([FromBody] Login info)
         {
@@ -236,6 +269,10 @@ namespace ClassSchedulingProject.Controllers
                     SessionTokens newSessionToken = new SessionTokens();
                     newSessionToken.AccountHash = $"{info.email + info.password}".ComputeSha256Hash();
                     newSessionToken.SessionId = $"{info.email + info.password + DateTime.Now.ToString() + rand.Next()}".ComputeSha256Hash();
+                    newSessionToken.Device = info.Device;
+                    newSessionToken.Created = DateTime.Now;
+                    newSessionToken.LastUsed = DateTime.Now;
+                    newSessionToken.Ip = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                     context.SessionTokens.Add(newSessionToken);
                     context.SaveChanges();
                     SetCookie("sessionID", newSessionToken.SessionId, 10080);
@@ -301,6 +338,7 @@ namespace ClassSchedulingProject.Controllers
             SessionTokens token = context.SessionTokens.FirstOrDefault(o => o.SessionId == hash);
             if (token != null)
             {
+                token.LastUsed = DateTime.Now;
                 if (token.AccountHashNavigation != null)
                 {
                     return 1;
