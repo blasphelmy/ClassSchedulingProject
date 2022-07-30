@@ -7,7 +7,8 @@ const FilteredEventsList = ReactDOM.createRoot(document.getElementById("filtered
 FilteredEventsList.render(<EventListComponent i={newCalender.data} type={"FilteredEvents"} />);
 const EventTemplates = ReactDOM.createRoot(document.getElementById("EventTemplates"));
 EventTemplates.render(<EventTemplateComponent CourseOfferings={caldata.EventTemplates} />);
-function changeView(e){
+function changeView(e, callback){
+    if(developerMode) console.log("hello");
     if(e.value === "2"){
         document.getElementById("calendar").style.setProperty("display", "none");
         document.getElementById("panel2").style.setProperty("display", "none");
@@ -15,7 +16,7 @@ function changeView(e){
         document.getElementById("panel1").classList.add("col-lg-12");
         document.getElementById("listView").style.setProperty("display", "block");
         const listViewRoot = ReactDOM.createRoot(document.getElementById("listView"));
-        console.log(newCalender.data.events);
+        if(developerMode) console.log(newCalender.data.events);
         listViewRoot.render(<ListViewComponent i={newCalender.data} />);
     }else{
         document.getElementById("listView").style.setProperty("display", "none");
@@ -26,6 +27,7 @@ function changeView(e){
         fetchData(new Object, function(){
             document.getElementById("panel2").style.setProperty("display", "");
             document.getElementById("calendar").style.setProperty("opacity", "1");
+            if(callback) callback();
         });
     }
 }

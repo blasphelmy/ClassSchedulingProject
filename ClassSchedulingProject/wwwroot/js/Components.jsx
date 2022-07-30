@@ -66,7 +66,9 @@ class ListViewComponent extends React.Component{
                       <td>{formatTimeString(iTs).split(" - ")[0] || "null"}{"\t"}</td>
                       <td>{formatTimeString(iTs).split(" - ")[1] || "null"}{"\t"}</td>
                       <td>{function(){
-                          if(o.extendedProps.room && o.extendedProps.building) return o.extendedProps.building + "-" + o.extendedProps.room
+                          if(o.extendedProps.room && o.extendedProps.building) return (<a href="#" onClick={() => changeBackToCalendarThenGoToEvent(o.extendedProps.building, o.extendedProps.room)}>
+                            {o.extendedProps.room + "-" + o.extendedProps.building}
+                          </a>)
                           return "Online/Not set"
                       }()}{"\t"}</td>
                       <td>{formatdaysOfWeek(o.daysOfWeek, "M T W TH F".split(" "))}{"\t"}</td>
@@ -81,6 +83,12 @@ class ListViewComponent extends React.Component{
         );
   }
 } 
+function changeBackToCalendarThenGoToEvent(building, room){
+  document.getElementById("viewStyle").value = "1";
+  changeView(document.getElementById("viewStyle"), function(){
+      goToEvent(building, room);
+  })
+}
 class EventListComponent extends React.Component {
   type;
   constructor(props) {

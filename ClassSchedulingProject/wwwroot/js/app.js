@@ -3,7 +3,7 @@ var slotDuration = `00:05 00:10 00:15 00:30 01:00)`.split(" ");
 var resources = [
     { id: 'J', building: 'J', title: '111' },
   ];
-var developementMode = 1;
+var developerMode = false;
 let eventBuilder = function(e){
     if(e.extendedProps.room === elements.room.val() &&
         e.extendedProps.building === elements.building.val()){
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 function createCalender(events) {
-    //console.log("rendering calendar...");
+    //if(developerMode) console.log("rendering calendar...");
     var calendarEl = document.getElementById('calendar');
     let scroll = document.querySelectorAll('.fc-scroller.fc-scroller-liquid-absolute')[0]?.scrollTop ?? 0;
     calendar = new FullCalendar.Calendar(calendarEl, {
@@ -112,7 +112,7 @@ function createCalender(events) {
     document.querySelectorAll('.fc-scroller.fc-scroller-liquid-absolute')[0].scrollTop = scroll;
 }
 let SelectAction = (info) => {
-    console.log("selectaction");
+    if(developerMode) console.log("selectaction");
     closePopUp();
     if (!elements.checkNull()) return;
     createAnEventPopUp(info);
@@ -120,11 +120,11 @@ let SelectAction = (info) => {
     //newCalender.addEvent(newEvent);
 }
 let EventMountAction = (info) => {
-    console.log("event mount action")
+    if(developerMode) console.log("event mount action")
     formatCalendarItem(info);
 }
 let EventClickAction = (info) => {
-    console.log("event click action...");
+    if(developerMode) console.log("event click action...");
     if (newCalender.checkPermissions(info.event._def)) {
         let event = newCalender.data.events[newCalender.EventMap.get(info.event._def.extendedProps.uuid)];
         closePopUp();
@@ -153,11 +153,11 @@ let EventDragStartAction = (info) => {
     newCalender.isActive = 1;
 }
 let EventDragStopAction = (info) => {
-    console.log("event drag stop action")
+    if(developerMode) console.log("event drag stop action")
     newCalender.isActive = 0;
 }
 let eventResourceChange = (info) => {
-    console.log("event render action...");
+    if(developerMode) console.log("event render action...");
 }
 function renderCalendar() {
     createCalender();
@@ -203,7 +203,7 @@ function formatCalendarItem(info) {
             });
         }
     // } catch {
-    //     console.log("error formatting time...")
+    //     if(developerMode) console.log("error formatting time...")
     // }
     titleElement.innerHTML = ``;
     return info;

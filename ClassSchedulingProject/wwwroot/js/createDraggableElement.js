@@ -65,7 +65,7 @@ function centerWindow(element) {
     let elementWidth = element.getBoundingClientRect().width;
     let elementHeight = element.getBoundingClientRect().height;
 
-    console.log(w + " " + h + " " + elementWidth);
+    if(developerMode) console.log(w + " " + h + " " + elementWidth);
 
     element.style.top = (innerHeight * .25) + "px";
     element.style.left = ((innerWidth - elementWidth) * .5) + "px";

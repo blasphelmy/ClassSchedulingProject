@@ -10,14 +10,23 @@ function create_UUID() {
 window.addEventListener('click', (event) => {
     ua = ua * 1.1
     if(ua > 5) ua = 5;
-  })
-  window.addEventListener('mousemove', function(){
-      ua = ua + 0.0008;
-      if(ua > 4) ua = 4;
-  }, false);
+    if(developerMode) console.log(ua)
+})
+window.addEventListener('mousemove', function(){
+    ua = ua + 0.0008;
+    if(ua > 4) ua = 4;
+    if(developerMode) console.log(ua)
+}, false);
+
+window.addEventListener("keyup", function(){
+    ua = ua * 1.01
+    if(ua > 5) ua = 5;
+    if(developerMode) console.log(ua)
+})
+
 function updateTimer(delay) {
     setTimeout(function () {
-        console.log("update timer set");
+        if(developerMode) console.log("update timer set");
         if (elements.checkNull() && newCalender.isActive === 0 && isFetching === 0) {
             isFetching = 1;
             fetchData(new Object);
@@ -39,7 +48,7 @@ let fetchData = (e, callback) => {
         return createCalender(caldata);
     }
     let filterterms = `${elements.year.val()},${elements.quarter.val()},${elements.building.val()},${elements.room.val()}`;
-    //console.log(filterterms);
+    //if(developerMode) console.log(filterterms);
     fetch(`/home/fetchEvents?filterterms=${filterterms}`).then(response => response.json()).then((data) => {
         if (data !== "error") {
             if (newCalender.init === 0) {
@@ -53,7 +62,7 @@ let fetchData = (e, callback) => {
                 $("#s2").text(`Last fetched at ${new Date().toLocaleTimeString()}`);
             }, 500);
         } else {
-            console.log("error fetching calendar events...")
+            if(developerMode) console.log("error fetching calendar events...")
             setTimeout(() => {
                 document.getElementById("s1").classList.remove("sLoading");
                 $("#s2").text(`error fetching calendar events...`);
@@ -72,7 +81,7 @@ function fetchEventTemplates(e, callback){
     }
     //caldata.ProgramID = e.value;
     fetch(`/home/fetchEventTemplates?programID=${e.value}`).then(res => res.json()).then(data => {
-        console.log(data);
+        if(developerMode) console.log(data);
         if(data){
             caldata.ProgramName = data.programName;
             caldata.ProgramType = data.programType;

@@ -9,7 +9,7 @@ document.getElementById("submitBtn").addEventListener("click", function (e) {
 
 
 function post() {
-    console.log(document.getElementById("instSelection").value)
+    if(developerMode) console.log(document.getElementById("instSelection").value)
     var newPost = {
         method: 'POST',
         headers: {
@@ -25,7 +25,7 @@ function post() {
         })
     }
     fetch("/Home/createAccount", newPost).then((response) => response.json()).then(function (data) {
-        console.log(data);
+        if(developerMode) console.log(data);
         window.location.href = "/";
     })
 }
@@ -36,7 +36,7 @@ document.getElementById("registration").addEventListener("keyup", function () {
     } else {
         if (document.getElementById("email").value !== "") {
             fetch(`/home/emailCheck?email=${document.getElementById("email").value + iseDict.get(document.getElementById("instSelection").value) }`).then((response) => response.json()).then(function (data) {
-                console.log(data);
+                if(developerMode) console.log(data);
                 if (data === 1) {
                     document.getElementById("emailconfirm").innerText = "";
                     document.getElementById("emailWarning").innerText = "Email already exists!";

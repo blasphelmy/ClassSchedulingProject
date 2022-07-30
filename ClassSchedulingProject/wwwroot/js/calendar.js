@@ -21,7 +21,7 @@
         this.data.userAccountID = data.userAccountID;
         this.data.userAccountLevel = data.userAccountLevel;
         this.data.events = [];
-        //console.log(this.data);
+        //if(developerMode) console.log(this.data);
         if (data.events) {
             this.parseEvents(data.events);
         }
@@ -58,7 +58,7 @@
     }
     updateEvents(eventString) {
         let newEventList = eventString.split(" _--__- ").filter(e => e !== "");
-        //console.log(newEventList);
+        //if(developerMode) console.log(newEventList);
         this.data.events = [];
         for (let i in newEventList) {
             newEventList[i] = JSON.parse(newEventList[i]);
@@ -69,7 +69,7 @@
             }
             //if usersColor return undefined and 
             if (!this.usersColors.get(this.data.events[i].extendedProps.instructorHash) && this.data.events[i].extendedProps.instructorHash !== caldata.userAccountID) {
-                console.log("new user detected");
+                if(developerMode) console.log("new user detected");
                 this.usersColors.set(this.data.events[i].extendedProps.instructorHash, this.colorWheel.colors[this.colorWheel.index++]);
                 if (this.colorWheel.index > this.colorWheel.colors.length) {
                     this.colorWheel.index = 0;
@@ -87,13 +87,13 @@
         setTimeout(createCalender, 20);
     }
     addEvent(newEvent, callback){
-        console.log("addEventClassMethod");
+        if(developerMode) console.log("addEventClassMethod");
         newEvent.color = this.usersColors.get(newEvent.extendedProps.userAccountID);
         if (this.checkPermissions(newEvent)) {
             newEvent.color = this.colorWheel.default;
             //if(0) returns false
             if (this.EventMap.get(newEvent.extendedProps.uuid) === 0 || this.EventMap.get(newEvent.extendedProps.uuid)) {
-                console.log("event changes detected..saving event...")
+                if(developerMode) console.log("event changes detected..saving event...")
                 this.saveEvent(newEvent, function(){
                     setTimeout(createCalender, 20);
                 });
@@ -101,7 +101,7 @@
                 if(callback) callback();
                 return;
             }
-            console.log("new event detected... adding event to calender...")
+            if(developerMode) console.log("new event detected... adding event to calender...")
             this.EventMap.set(newEvent.extendedProps.uuid, this.data.events.length);
             this.data.events[this.data.events.length] = newEvent;
             this.saveEvent(newEvent, function(){

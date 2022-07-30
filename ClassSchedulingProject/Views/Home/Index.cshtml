@@ -51,32 +51,31 @@
         <input style="position:relative;width: 150px;top: 2px" type="range" id="viewSizeRangeSlider"  step="1" max="5" min="1" value="4" onchange="renderCalendar()">
     </span>
 </div>
-<div style="padding-left: 20px; overflow:hidden; max-width: 100%">
+<div style="padding-left: 20px; overflow:hidden; max-width: 100%;">
     <div class="row">
         <div class="col">
             <h2>@thisUser.PrimaryInstitution.InstitutionName</h2>
             <p>Welcome, @thisUser.FirstName @thisUser.LastName</p>
             <p>Your department: @thisUser.Department.DepartmentName, Role : <span id="role"></span></p>
-            <div>
                 <span>
-                    <select id="viewStyle" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="changeView(this)">
+                    <select id="viewStyle" class="custom-select-sm" style="margin-top: 0px; margin-bottom: 25px;" onchange="changeView(this)">
                       <option value="1" selected>Calendar</option>
                       <option value="2">List View</option>
                     </select>
-                    <select id="dptSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchEventTemplates(this)">
+                    <select id="dptSel" class="custom-select-sm" style="margin-top: 0px; margin-bottom: 25px;" onchange="fetchEventTemplates(this)">
                       <option selected></option>
                       @foreach(ProgramOfferings program in thisUser.Department.ProgramOfferings){
                         <option value="@program.Id">@program.ProgramName @program.ProgramType</option>
                       }
                     </select>
-                    <select id="yearSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
+                    <select id="yearSel" class="custom-select-sm" style="margin-top: 0px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
                       <option selected>Select Year</option>
                         @foreach(int year in AvailableYears)
                         {
                             <option value="@year">@year</option>
                         }
                     </select>
-                    <select id="qSel" class="custom-select-sm" style="margin-top: 25px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
+                    <select id="qSel" class="custom-select-sm" style="margin-top: 0px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
                       <option selected>Select Quarter</option>
                       <option value="1">Winter</option>
                       <option value="2">Spring</option>
@@ -95,11 +94,6 @@
                       <option value="114">114</option>
                     </select>
                 </span>
-                    <div style="">
-                        @* <label for="formControlRange" style="position:relative; bottom: 3px">Scale : </label> *@
-                    @* <input type="range" id="viewSizeRangeSlider" class="form-control-range-sm" step="1" max="5" min="1" value="4" onchange="renderCalendar()"> *@
-                </div>
-            </div>
         </div>
     </div>
     <div class="row" style="padding-right: 20px; padding-bottom: 20px">
