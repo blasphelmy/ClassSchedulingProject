@@ -176,7 +176,7 @@ function formatTimeString(iTs, timestamps) {
     for (let ts of iTs) {
         ts = ts.split(":");
         ts[0] = Number(ts[0]);
-        ts.pop();
+        // ts.pop();
         if (ts[0] >= 12) {
             ts.push("pm");
             if (ts[0] !== 12) ts[0] = ts[0] % 12;
@@ -204,4 +204,10 @@ function goToEvent(building, roomNumber) {
 
     }
     fetchData(elements.room);
+}
+function changeBackToCalendarThenGoToEvent(building, room) {
+    document.getElementById("viewStyle").value = "1";
+    changeView(document.getElementById("viewStyle"), function () {
+        goToEvent(building, room);
+    })
 }

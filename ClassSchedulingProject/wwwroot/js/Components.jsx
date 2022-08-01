@@ -27,68 +27,68 @@ class ListViewComponent extends React.Component{
       return;
     }
     return (
-          <table className="table table-bordered listViewTable">
-            <thead>
-              <tr>
-                <th>Class#</th>
-                <th>Course</th>
-                <th>Number</th>
-                <th>Title</th>
-                <th>Session</th>
-                <th>Section</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Component</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Room-Loc</th>
-                <th>Days</th>
-                <th>Delivery</th>
-                <th>Instructor</th>
-                <th>Edit</th>
-              </tr>
-            </thead>
-            <tbody>
-                {events.map(function(o){
-                  if(!o) return;
-                  let iTs = [o.extendedProps.startTime, o.extendedProps.endTime];
-                  return (
-                    <tr style={{color : o.color}}>
-                      <td>{o.extendedProps.classNumber || "not set"}{"\t"}</td>
-                      <td>{o.extendedProps.coursePrefix}{"\t"}</td>
-                      <td>{o.extendedProps.courseNumber}{"\t"}</td>
-                      <td>{o.title}{"\t"}</td>
-                      <td>{o.extendedProps.Session}{"\t"}</td>
-                      <td>{o.extendedProps.section || "null"}{"\t"}</td>
-                      <td>{o.extendedProps.startDate || "null"}{"\t"}</td>
-                      <td>{o.extendedProps.endDate || "null"}{"\t"}</td>
-                      <td>{o.extendedProps.component || "null"}{"\t"}</td>
-                      <td>{formatTimeString(iTs).split(" - ")[0] || "null"}{"\t"}</td>
-                      <td>{formatTimeString(iTs).split(" - ")[1] || "null"}{"\t"}</td>
-                      <td>{function(){
-                          if(o.extendedProps.room && o.extendedProps.building) return (<a href="#" onClick={() => changeBackToCalendarThenGoToEvent(o.extendedProps.building, o.extendedProps.room)}>
-                            {o.extendedProps.room + "-" + o.extendedProps.building}
-                          </a>)
-                          return "Online/Not set"
-                      }()}{"\t"}</td>
-                      <td>{formatdaysOfWeek(o.daysOfWeek, "M T W TH F".split(" "))}{"\t"}</td>
-                      <td>{o.extendedProps.delivery || "null"}{"\t"}</td>
-                      <td>{o.extendedProps.instructorName || "Staff"}{"\t"}</td>
-                      <td><a id={`table-${o.extendedProps.uuid}`} href="#" data={JSON.stringify(o)} onClick={() => editEvent($(`#table-${o.extendedProps.uuid}`))}>Edit{"\t"}</a></td>
-                    </tr>
-                  )
-                })}
-            </tbody>
-          </table>
+          <div>
+            <button className="btn" onClick={() => downloadFile()}><svg style={{position: "relative", top : "-2px"}} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+</svg> Download</button>
+            <table id="tableListView" className="table table-bordered listViewTable">
+              <thead>
+                <tr>
+                  <th>Class #</th>
+                  <th>Course</th>
+                  <th>Number</th>
+                  <th>Title</th>
+                  <th>Session</th>
+                  <th>Section</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Component</th>
+                  <th>Start Time</th>
+                  <th>End Time</th>
+                  <th>Room-Loc</th>
+                  <th>Days</th>
+                  <th>Delivery</th>
+                  <th>Instructor</th>
+                  <th>Edit</th>
+                </tr>
+              </thead>
+              <tbody>
+                  {events.map(function(o){
+                    if(!o) return;
+                    let iTs = [o.extendedProps.startTime, o.extendedProps.endTime];
+                    return (
+                      <tr style={{color : o.color}}>
+                        <td>{o.extendedProps.classNumber || "not set"}{"\t"}</td>
+                        <td>{o.extendedProps.coursePrefix}{"\t"}</td>
+                        <td>{o.extendedProps.courseNumber}{"\t"}</td>
+                        <td>{o.title}{"\t"}</td>
+                        <td>{o.extendedProps.Session}{"\t"}</td>
+                        <td>{o.extendedProps.section || "null"}{"\t"}</td>
+                        <td>{o.extendedProps.startDate || "null"}{"\t"}</td>
+                        <td>{o.extendedProps.endDate || "null"}{"\t"}</td>
+                        <td>{o.extendedProps.component || "null"}{"\t"}</td>
+                        <td>{formatTimeString(iTs).split(" - ")[0] || "null"}{"\t"}</td>
+                        <td>{formatTimeString(iTs).split(" - ")[1] || "null"}{"\t"}</td>
+                        <td>{function(){
+                            if(o.extendedProps.room && o.extendedProps.building) return (<a href="#" onClick={() => changeBackToCalendarThenGoToEvent(o.extendedProps.building, o.extendedProps.room)}>
+                              {o.extendedProps.building + "-" + o.extendedProps.room}
+                            </a>)
+                            return "Online/Not set"
+                        }()}{"\t"}</td>
+                        <td>{formatdaysOfWeek(o.daysOfWeek, "M T W TH F".split(" "))}{"\t"}</td>
+                        <td>{o.extendedProps.delivery || "null"}{"\t"}</td>
+                        <td>{o.extendedProps.instructorName || "Staff"}{"\t"}</td>
+                        <td><a id={`table-${o.extendedProps.uuid}`} href="#" data={JSON.stringify(o)} onClick={() => editEvent($(`#table-${o.extendedProps.uuid}`))}>Edit{"\t"}</a></td>
+                      </tr>
+                    )
+                  })}
+              </tbody>
+            </table>
+          </div>
         );
   }
 } 
-function changeBackToCalendarThenGoToEvent(building, room){
-  document.getElementById("viewStyle").value = "1";
-  changeView(document.getElementById("viewStyle"), function(){
-      goToEvent(building, room);
-  })
-}
 class EventListComponent extends React.Component {
   type;
   constructor(props) {
@@ -114,6 +114,10 @@ class EventListComponent extends React.Component {
   }
   render() {
     let events = this.state.newCalData.events;
+    events = events.map(function(o){
+      if(o.extendedProps.ProgramId === caldata.ProgramID) return o;
+    }).filter(e => e != undefined || e != null);
+    if(developerMode) console.log("events after room filter", events)
     if(events.length === 0 || events === undefined || events === null){
       return;
     }
