@@ -1,9 +1,9 @@
 ﻿var calendar, init = 0, elements = {}, isFetching = 0, calEvents = [], newEvent = {};
-var slotDuration = `00:05 00:10 00:15 00:20 00:30 01:00)`.split(" ");
+const slotDuration = `00:05 00:10 00:15 00:20 00:30 01:00)`.split(" "), colors = "#3587e9 #ff8700 #c87a17 #5e4fa2 #00ea2f #1fb976 #ee66a8 #79a2ed".split(" "), timeoffset = (7 * 1000 * 60 * 60)
 var resources = [
     { id: 'J', building: 'J', title: '111' },
   ];
-var developerMode = false;
+const developerMode = false;
 let eventBuilder = function(e){
     if(e.extendedProps.room === elements.room.val() &&
         e.extendedProps.building === elements.building.val()){
@@ -13,7 +13,6 @@ let eventBuilder = function(e){
 }
 let ua = 5;
 let EventTemplatesColorMap = new Map();
-let colors = "#3587e9 #ff8700 #c87a17 #5e4fa2 #00ea2f #1fb976 #ee66a8 #79a2ed".split(" ");
 document.addEventListener('DOMContentLoaded', function () {
     elements = {
         year: $("#yearSel"),
@@ -59,7 +58,6 @@ function createCalender(events) {
     var calendarEl = document.getElementById('calendar');
     let scroll = document.querySelectorAll('.fc-scroller.fc-scroller-liquid-absolute')[0]?.scrollTop ?? 0;
     calendar = new FullCalendar.Calendar(calendarEl, {
-        schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
         timeZone: 'America/Los_Angeles',
         initialView: 'timeGridWeek',
         // initialView : 'resourceTimelineDay',
@@ -75,7 +73,6 @@ function createCalender(events) {
         eventDrop: EventDropAction,
         eventDragStart: EventDragStartAction,
         eventDragStop: EventDragStopAction,
-        resourceChange: eventResourceChange,
         eventResizeStart: function (info) {
             newCalender.isActive = 1;
         },
@@ -101,9 +98,6 @@ function createCalender(events) {
             caldata.EventTemplates.map((o) => {o.Active = false});
             return events ?? newCalender.data?.events ?? [];
         }().map(eventBuilder),
-        resources: resources,
-        // resourceGroupField: 'building',
-        //events: JSON.parse(),
         contentHeight: 1,
         initialDate: "2022-07-04"
     });
@@ -135,15 +129,15 @@ let EventClickAction = (info) => {
     }
 }
 let EventResizeAction = (info) => {
-    info.el.id = info.event.extendedProps.uuid ?? "error - " + create_UUID();
+    info.el.id = info.event.extendedProps.uuid;
     closePopUp();
     EventDropAction(info);
     formatTime(info);
 }
 let EventDropAction = (info) => {
     let newEvent = newCalender.data.events[newCalender.EventMap.get(info.event._def.groupId)];
-    newEvent.startTime = new Date(info.event._instance.range.start.getTime() + (7 * 1000 * 60 * 60)).toTimeString().split(" ")[0];
-    newEvent.endTime = new Date(info.event._instance.range.end.getTime() + (7 * 1000 * 60 * 60)).toTimeString().split(" ")[0];
+    newEvent.startTime = new Date(info.event._instance.range.start.getTime() + timeoffset).toTimeString().split(" ")[0];
+    newEvent.endTime = new Date(info.event._instance.range.end.getTime() + timeoffset).toTimeString().split(" ")[0];
     newEvent.extendedProps.endTime = newEvent.endTime;
     newEvent.extendedProps.startTime = newEvent.startTime;
     newCalender.saveEvent(newEvent, fetchData);
@@ -172,22 +166,16 @@ function getDuration(timestamps) {
 }
 function formatTime(info) {
     let timestamps = {};
-    timestamps.start = new Date(info.event._instance.range.start.getTime() + (7 * 1000 * 60 * 60));
-    timestamps.end = new Date(info.event._instance.range.end.getTime() + (7 * 1000 * 60 * 60));
+    timestamps.start = new Date(info.event._instance.range.start.getTime() + timeoffset);
+    timestamps.end = new Date(info.event._instance.range.end.getTime() + timeoffset);
     let iTs = [timestamps.start.toTimeString().split(" ")[0], timestamps.end.toTimeString().split(" ")[0]];
     return formatTimeString(iTs, timestamps);
 }
 function formatCalendarItem(info) {
     info.event.extendedProps.userAccountID = caldata.userAccountID;
     let titleElement = info.el.querySelectorAll('.fc-event-title.fc-sticky')[0];
-    let mainContainerElement = info.el.querySelectorAll('.fc-event-title-container')[0];
-    let timestamps = {};
-    let extendedProps = info.event.extendedProps;
-    timestamps.start = new Date(info.event._instance.range.start.getTime() + (7 * 1000 * 60 * 60));
-    timestamps.end = new Date(info.event._instance.range.end.getTime() + (7 * 1000 * 60 * 60));
-
     let eventTimeElement = info.el.querySelectorAll('.fc-event-time')[0];
-    // try {
+    try {
         eventTimeElement.innerHTML = `${function () {
             if (info.event._def.extendedProps.userAccountID === newCalender.data.userAccountID) {
                 return `<span id="eventDelete_${info.event._def.extendedProps.uuid}" class="close text-light" style="position:relative;bottom:6px;">&times;</span> <br /> `;
@@ -202,9 +190,9 @@ function formatCalendarItem(info) {
                 newCalender.deleteEvent(element.id.split("_")[1]);
             });
         }
-    // } catch {
-    //     if(developerMode) console.log("error formatting time...")
-    // }
+    } catch {
+        if(developerMode) console.log("error formatting time...")
+    }
     titleElement.innerHTML = ``;
     return info;
 }

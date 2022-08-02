@@ -174,10 +174,10 @@ input[type=range] {
    } 
    .status {
       position: relative;
-      top: 4px;
+      top: 2px;
       padding-left: 3px;
       opacity: .9;
-      font-size: 8px;
+      font-size: 6px;
       letter-spacing: 0px;
   }
   .scaleContainer {
@@ -194,11 +194,23 @@ input[type=range] {
       max-width: calc(100% - 75px)!important;
       overflow-x: scroll!important;
    }
-   #s2{
+   /* #s2{
       display: none;
-   }
-   #rightGroupingSep{
+   } */
+   /* #rightGroupingSep{
       display: none;
+   } */
+   .sLoading {
+      display: inline-block;
+      position: relative;
+      background-image: url("/img/animation.gif");
+      background-size: contain;
+      /* background: blue; */
+      top: 4px;
+      left: 4px;
+      height: 8px;
+      width: 8px;
+      z-index: 2;
    }
  }
  @media only screen and (max-width: 991px){

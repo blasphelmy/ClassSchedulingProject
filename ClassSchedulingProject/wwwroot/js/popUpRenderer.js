@@ -41,7 +41,7 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
     <span style="width:20px" id="pclose-UUID" class="close" popupid="addEventPopUp" onclick="closePopUp(this)">&times;</span>
     <div class="container" style="position:relative;top: 20px; left: 25px;">
         <div class="row">
-            <div class="col">
+            <div class="col-sm-6">
                 <div class="form-group">
                     <label class="control-label"><b>Course Title</b></label><br />
                     <input style="width:100%" id="pufTitle" class="form-control-xs" value="${event?.title || ""}" disabled/>
@@ -74,7 +74,7 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
                     <input id="pufCourseNumber" class="form-control-xs" value="${event?.extendedProps.courseNumber || ""}" disabled/>
                 </div>
             </div>
-            <div class="col">
+            <div class="col-sm-6">
 
                 <div class="form-group">
                     <select id="pufDeliveryType" onchange="pufSelectBoxChange(this)" class="custom-select-xs">

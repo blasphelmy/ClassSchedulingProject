@@ -624,3 +624,4 @@ ClassSchedulingProject/obj/Debug/netcoreapp3.1/ClassSchedulingProject.Views.pdb
 ClassSchedulingProject/obj/Debug/netcoreapp3.1/ClassSchedulingProject.Views.dll
 ClassSchedulingProject/bin/Debug/netcoreapp3.1/ClassSchedulingProject.Views.pdb
 ClassSchedulingProject/bin/Debug/netcoreapp3.1/ClassSchedulingProject.Views.dll
+*.json
