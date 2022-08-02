@@ -165,7 +165,7 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
         }
     }
     centerWindow(document.getElementById("addEventPopUp"));
-    createDraggableElement(document.getElementById("addEventPopUp"));
+    if(!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) createDraggableElement(document.getElementById("addEventPopUp"));
     // setPopUpPos(document.getElementById("addEventPopUp"), { x: info.jsEvent.clientX, y: info.jsEvent.clientY });
 }
 function renderPopUp(event, info) {

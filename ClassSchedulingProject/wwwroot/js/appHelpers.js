@@ -211,3 +211,6 @@ function changeBackToCalendarThenGoToEvent(building, room) {
         goToEvent(building, room);
     })
 }
+function stopPropagation(e){
+    e.stopPropagation();
+}

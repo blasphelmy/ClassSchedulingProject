@@ -7,7 +7,7 @@ function createDraggableElement(element) {
     element.ontouchstart = touchStart;
 
         function dragMouseDown(e) {
-            e = e || window.event;
+        e = e || window.event;
         // get the mouse cursor position at startup:
         x2 = e.clientX;
         y2 = e.clientY;
@@ -17,7 +17,7 @@ function createDraggableElement(element) {
     }
 
         function touchStart(e) {
-            e = e || window.event;
+        e = e || window.event;
         x1 = e.targetTouches[0].clientX;
         y1 = e.targetTouches[0].clientY;
         document.ontouchend = closeTouchAndDragElement;
@@ -25,8 +25,7 @@ function createDraggableElement(element) {
     }
 
         function elementDrag(e) {
-            e = e || window.event;
-        e.preventDefault();
+        e = e || window.event;
         // calculate the new cursor position:
         x1 = x2 - e.clientX;
         y1 = y2 - e.clientY;
@@ -38,7 +37,7 @@ function createDraggableElement(element) {
     }
 
         function dragElement(e) {
-            e = e || window.event;
+        e = e || window.event;
         x2 = x1 - e.targetTouches[0].clientX;
         y2 = y1 - e.targetTouches[0].clientY;
         x1 = e.targetTouches[0].clientX;

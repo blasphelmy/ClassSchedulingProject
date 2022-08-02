@@ -243,7 +243,7 @@ class EventTemplateComponent extends React.Component {
                       {o.activeEvents.map(function (o, i) {
                         return (
                           <p key={i + "-course"} style={{ fontSize: "10px", marginLeft: "15px", color: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.title), colorFilterBrightness, .7).join(",")})`, marginBottom: "0" }}>
-                            {o.extendedProps.building + "-" + o.extendedProps.room + " " + o.extendedProps.instructorName + ", " + formatTimeString([o.startTime + ":00", o.endTime + ":00"])}
+                            {o.extendedProps.building + "-" + o.extendedProps.room + " " + o.extendedProps.instructorName + ", " + formatTimeString([o.startTime, o.endTime])}
                           </p>
                         )
                       })}
