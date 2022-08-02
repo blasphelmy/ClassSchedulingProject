@@ -296,14 +296,14 @@ namespace ClassSchedulingProject.Controllers
                     return Json("Error: mismatched hash");
                 }
                 int status = 0;
-                if(existing != null && (existing.EventAuthorHash == thisUser.EventsAuthorId || existing.InstructorHash == thisUser.EventsAuthorId))
+                if(existing != null && (existing.EventAuthorHash == thisUser.EventsAuthorId || existing.InstructorHash == thisUser.EventsAuthorId || thisUser.AccountFlag < 3))
                 {
                     context.ApiEvents.Remove(existing);
                     status++;
                 }
-                else if(existing != null && existing.EventAuthorHash != thisUser.EventsAuthorId && existing.InstructorHash != thisUser.EventsAuthorId)
+                else if(thisUser.AccountFlag > 2 && existing != null && existing.EventAuthorHash != thisUser.EventsAuthorId && existing.InstructorHash != thisUser.EventsAuthorId)
                 {
-                    return Json("not authorized to make changes on this event..");
+                    return Json("not authorized to make changes to this event..");
                 }
                 context.ApiEvents.Add(newEvent);
                 status++;

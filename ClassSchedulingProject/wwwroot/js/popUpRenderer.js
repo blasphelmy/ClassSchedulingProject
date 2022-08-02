@@ -3,7 +3,7 @@ function ActivateEvent(element) {
     if (caldata.role > 2) return;
     closePopUp();
     let data = JSON.parse(element.attr("data"));
-    console.log(data);
+    if(developerMode) console.log(data);
     let info = {
 
     }
@@ -27,7 +27,7 @@ function editEvent(element) {
     closePopUp();
     let data = JSON.parse(element.attr("data"));
     //goToEvent(data.extendedProps.building, data.extendedProps.room);
-    console.log(data);
+    if(developerMode) console.log(data);
     let info = {
 
     }
@@ -44,7 +44,7 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
             <div class="col">
                 <div class="form-group">
                     <label class="control-label"><b>Course Title</b></label><br />
-                    <input style="width:100%" id="pufTitle" class="form-control-xs" value="${event?.title || ""}" readonly/>
+                    <input style="width:100%" id="pufTitle" class="form-control-xs" value="${event?.title || ""}" disabled/>
                 </div>
                 <div class="form-group">
                     <label class="control-label"><b>Class Number</b></label><br />
@@ -66,12 +66,12 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
                 </div>
                 <div class="form-group">
                     <label class="control-label"><b>Course Number</b></label><br />
-                        <select id="pufCourseNumberPrefix" class="custom-select-xs">
+                        <select id="pufCourseNumberPrefix" class="custom-select-xs" disabled>
                           <option selected>${event?.extendedProps?.coursePrefix}</option >
                           <option value="CSI">CSI</option>
                           <option value="CNT">CNT</option>
                         </select>
-                    <input id="pufCourseNumber" class="form-control-xs" value="${event?.extendedProps.courseNumber || ""}"/>
+                    <input id="pufCourseNumber" class="form-control-xs" value="${event?.extendedProps.courseNumber || ""}" disabled/>
                 </div>
             </div>
             <div class="col">
@@ -226,7 +226,7 @@ function setPopUpPos(popupElement, mouseClickData) {
 var closePopUp = (e) => {
     try {
         $('.popup').map(function (i, e) {
-            console.log(e);
+            if(developerMode) console.log(e);
             e.remove();
         });
     } catch {
@@ -342,7 +342,7 @@ function generateFormData(info, event) {
 }
 function finalizeFormDataAndAdd(id) {
     let finalizedEvent = JSON.parse(JSON.stringify(newEvent));
-    // console.log(finalizedEvent);
+    // if(developerMode) console.log(finalizedEvent);
     if (newEvent.title() &&
         newEvent.extendedProps.courseNumber() &&
         newEvent.extendedProps.coursePrefix() &&
@@ -385,7 +385,7 @@ function finalizeFormDataAndAdd(id) {
                 finalizedEvent.extendedProps.courseID = e.Id;
             }
         };
-        // console.log("finalized", finalizedEvent);
+        // if(developerMode) console.log("finalized", finalizedEvent);
         newCalender.addEvent(finalizedEvent, closePopUp);
     }
 }

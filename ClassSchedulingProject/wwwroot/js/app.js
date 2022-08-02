@@ -1,5 +1,5 @@
 ﻿var calendar, init = 0, elements = {}, isFetching = 0, calEvents = [], newEvent = {};
-var slotDuration = `00:05 00:10 00:15 00:30 01:00)`.split(" ");
+var slotDuration = `00:05 00:10 00:15 00:20 00:30 01:00)`.split(" ");
 var resources = [
     { id: 'J', building: 'J', title: '111' },
   ];
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 function createCalender(events) {
-    //if(developerMode) console.log("rendering calendar...");
+    if(developerMode) console.log("rendering calendar...");
     var calendarEl = document.getElementById('calendar');
     let scroll = document.querySelectorAll('.fc-scroller.fc-scroller-liquid-absolute')[0]?.scrollTop ?? 0;
     calendar = new FullCalendar.Calendar(calendarEl, {

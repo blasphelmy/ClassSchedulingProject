@@ -27,6 +27,7 @@
         }
     }
     checkPermissions(event){
+        if(caldata.role < 3) return true;
         if (event.extendedProps.ProgramId === caldata.ProgramID && (event.extendedProps.userAccountID === this.data.userAccountID
             || event.extendedProps.instructorHash === this.data.userAccountID)) {
             return true;
