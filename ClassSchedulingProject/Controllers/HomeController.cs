@@ -54,10 +54,6 @@ namespace ClassSchedulingProject.Controllers
             foreach(CourseOfferingsTemplates course in context.CourseOfferingsTemplates.ToList()){
                 courseTemplates.Add(new CourseOfferedTemplates(course));
             }
-            //CryptTool = new CryptTools();
-            //String token = "112323";
-            //token = token.ComputeSha256Hash();
-            //System.Console.WriteLine(token);
         }
 
         public IActionResult Index(string institution)

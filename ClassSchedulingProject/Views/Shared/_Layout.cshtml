@@ -55,8 +55,7 @@
     <script>
         function changeTheme(){
             fetch("/home/toggleTheme").then(data => data.json).then(function(){
-                window.location.href = `/`;
-                console.log("dfdf")
+                window.location.reload()
             })
         }
     </script>

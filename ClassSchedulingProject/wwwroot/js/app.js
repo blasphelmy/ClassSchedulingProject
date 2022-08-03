@@ -60,7 +60,6 @@ function createCalender(events) {
     calendar = new FullCalendar.Calendar(calendarEl, {
         timeZone: 'America/Los_Angeles',
         initialView: 'timeGridWeek',
-        // initialView : 'resourceTimelineDay',
         duration: { days: 5 },
         selectable: false,
         slotDuration: slotDuration[Number(document.getElementById("viewSizeRangeSlider").value) - 1],
@@ -79,9 +78,6 @@ function createCalender(events) {
         eventResizeStop: function (info) {
             newCalender.isActive = 0;
         },
-        //week: {
-        //    columnFormat: 'ddd'
-        //},
         displayEventTime: true,
         selectMirror: true,
         slotMinTime: "06:00:00",

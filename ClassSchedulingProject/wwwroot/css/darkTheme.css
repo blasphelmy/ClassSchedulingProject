@@ -1,48 +1,61 @@
  /* dark theme */
+ :root {
+    --dark-1: rgb(39, 45, 52);
+    --dark-2: rgb(30, 40, 45);
+    --textcolor-1: rgb(177, 174, 169);
+    --linkColor : skyblue;
+ }
  body {
-    background-color: rgb(49, 54, 58);
-    color: rgb(196, 188, 177)!important;
+    background-color: var(--dark-2);
+    color: var(--textcolor-1)!important;
  }
  .navbar {
-    background: rgb(39, 43, 46)!important;
+    background: var(--dark-1)!important;
     border-color: rgb(46, 46, 46)!important;
  }
  .navbar a {
     color: rgb(238, 229, 217)!important;
  }
  .navbar a:hover {
-    color: skyblue!important;
+    color: var(--linkColor)!important;
  }
  .card {
-    background: rgb(39, 43, 46);
-    color: rgb(196, 188, 177)!important;
+    background: var(--dark-1);
+    color: var(--textcolor-1)!important;
  }
  .underlineText:hover {
-    color: skyblue!important;
+    color: var(--linkColor)!important;
  }
- #EventsByUserPopUp{
-    background-color: rgb(39, 43, 46);
+ .popup{
+    background-color: var(--dark-2)!important;
  }
  select option{
-    background: rgb(39, 43, 46);
-    color: rgb(196, 188, 177)!important;
+    background: var(--dark-1);
+    color: var(--textcolor-1)!important;
     border-color: rgba(31, 31, 31, 0.61)!important;
+ }
+ .collapsed, .card-link {
+    color: rgb(85, 164, 238);
  }
  select {
     border-radius: 3px;
-    background: rgb(39, 43, 46);
+    background: var(--dark-1);
     border-color: rgba(31, 31, 31, 0.61)!important;
-    color: rgb(196, 188, 177)!important;
+    color: var(--textcolor-1)!important;
  }
  #menuBar {
-    background: rgb(39, 43, 46)!important;
+    background: var(--dark-1)!important;
     border-top: rgba(31, 31, 31, 0.61) solid 1px;
  }
  table {
-    color: rgb(196, 188, 177)!important;
+    color: var(--textcolor-1)!important;
  }
  table, tr, th, td{
     border-color: rgba(31, 31, 31, 0.61)!important;
+    background-color: var(--dark-1);
+ }
+ tbody > tr > td > a:hover {
+    color: var(--linkColor)!important;
  }
  .fc-timegrid-event-harness, .fc-timegrid-event-harness-inset, .fc-timegrid-event, .fc-v-event, .fc-event, .fc-event-draggable, .fc-event-resizable, .fc-event-start, .fc-event-end, .fc-event-past {
     box-shadow: 0px 0px 0px 0px var(--fc-page-bg-color, #fff)!important;
@@ -58,16 +71,19 @@
     scrollbar-width: none;  /* Firefox */
  }
  .fc {
-    width: calc(100% - 15px)!important;
-    background-color: rgb(39, 43, 46);
+    width: calc(100%)!important;
+    background-color: var(--dark-1);
+ }
+ .btn {
+    color: var(--textcolor-1)!important;
  }
  input{
-    background: rgb(39, 43, 46)!important;
+    background: var(--dark-1)!important;
     border-style: solid;
     border-radius: 3px;
     border-width: 1px;
     border-color: rgba(31, 31, 31, 0.61)!important;
-    color: rgb(196, 188, 177)!important;
+    color: var(--textcolor-1)!important;
  }
   
   input[type="checkbox"] {
@@ -84,4 +100,7 @@
   input[type="range"] {
     background: none!important;
     border: none!important;
+  }
+  .ActiveEventsListItem > div > a:hover{
+    color: var(--linkColor)!important;
   }
