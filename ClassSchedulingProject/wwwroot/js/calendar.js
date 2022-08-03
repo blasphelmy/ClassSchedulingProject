@@ -5,6 +5,7 @@
     usersColors;
     isActive;
     init;
+    UsersEventsMap;
     constructor(data) {
         this.init = 0;
         this.isActive = 0;
@@ -21,7 +22,8 @@
         this.data.userAccountID = data.userAccountID;
         this.data.userAccountLevel = data.userAccountLevel;
         this.data.events = [];
-        //if(developerMode) console.log(this.data);
+        this.UsersEventsMap = new Map();
+        if(developerMode) console.log(this.data);
         if (data.events) {
             this.parseEvents(data.events);
         }
@@ -37,6 +39,7 @@
     parseEvents(eventString) {
         let newEventList = eventString.split(" _--__- ").filter(e => e !== "");
         this.data.events = [];
+        this.UsersEventsMap = new Map();
         for (let i in newEventList) {
             newEventList[i] = JSON.parse(newEventList[i]);
             newEventList[i].overlap = true;
@@ -54,12 +57,14 @@
             if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#666"
             this.data.events.push(newEventList[i]);
             this.EventMap.set(this.data.events[i].extendedProps.uuid, i);
+            this.setUserEventMap(this.data.events[i]);
         }
         this.init = 1;
     }
     updateEvents(eventString) {
         let newEventList = eventString.split(" _--__- ").filter(e => e !== "");
         //if(developerMode) console.log(newEventList);
+        this.UsersEventsMap = new Map();
         this.data.events = [];
         for (let i in newEventList) {
             newEventList[i] = JSON.parse(newEventList[i]);
@@ -84,8 +89,19 @@
             }
             if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#666";
             //this.addEvent(newEventList[i], 1);
+            this.setUserEventMap(this.data.events[i]);
         }
         setTimeout(createCalender, 20);
+    }
+    setUserEventMap(event){
+        if(event.extendedProps.ProgramId !== Number(elements.dpt.val())) return
+        if(event.extendedProps.instructorHash === "STAFF" || event.extendedProps.instructorHash === "staff") event.extendedProps.instructorHash = "STAFF"
+        if(!this.UsersEventsMap.get(event.extendedProps.instructorHash)){
+            this.UsersEventsMap.set(event.extendedProps.instructorHash, [])
+        }
+        let thisUsersEvents = this.UsersEventsMap.get(event.extendedProps.instructorHash);
+        thisUsersEvents.push(event);
+        this.UsersEventsMap.set(event.extendedProps.instructorHash, thisUsersEvents)
     }
     addEvent(newEvent, callback){
         if(developerMode) console.log("addEventClassMethod");

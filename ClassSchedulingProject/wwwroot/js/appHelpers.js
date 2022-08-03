@@ -190,7 +190,7 @@ function formatTimeString(iTs, timestamps) {
     if (timestamps) time += ` (${getDuration(timestamps).toFixed(2)}hrs)`
     return time;
 }
-function goToEvent(building, roomNumber) {
+function goToEvent(building, roomNumber, callback) {
     elements.room.val(roomNumber.toString());
     elements.building.val(building.toString());
     try{
@@ -204,11 +204,12 @@ function goToEvent(building, roomNumber) {
 
     }
     fetchData(elements.room);
+    if(callback) callback();
 }
-function changeBackToCalendarThenGoToEvent(building, room) {
+function changeBackToCalendarThenGoToEvent(building, room, callback) {
     document.getElementById("viewStyle").value = "1";
     changeView(document.getElementById("viewStyle"), function () {
-        goToEvent(building, room);
+        goToEvent(building, room, callback);
     })
 }
 function stopPropagation(e){

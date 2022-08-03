@@ -75,7 +75,6 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
                 </div>
             </div>
             <div class="col-sm-6">
-
                 <div class="form-group">
                     <select id="pufDeliveryType" onchange="pufSelectBoxChange(this)" class="custom-select-xs">
                         <option selected>${event?.extendedProps.delivery || ""}</option>
@@ -93,7 +92,6 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
                         <option selected>${event?.extendedProps.Session || "Reg"}</option>
                     </select>
                 </div>
-
                 <div style="margin-bottom: 20px;">
                     <span><b>Room:</b> <span>
 
@@ -106,7 +104,6 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
                         <option value="${elements.room.val()}">${elements.room.val()}</option>
                     </select>
                 </div>
-
                 <div class="row">
                     <div class="col">
                         <div class="form-group">

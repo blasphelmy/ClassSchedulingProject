@@ -31,7 +31,7 @@ class ListViewComponent extends React.Component{
             <button className="btn" onClick={() => downloadFile()}><svg style={{position: "relative", top : "-2px"}} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
   <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
   <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-</svg> Download as csv</button>
+  </svg> Download as csv</button>
             <table id="tableListView" className="table table-bordered listViewTable">
               <thead>
                 <tr>
@@ -64,12 +64,12 @@ class ListViewComponent extends React.Component{
                         <td>{o.extendedProps.courseNumber}{"\t"}</td>
                         <td>{o.title}{"\t"}</td>
                         <td>{o.extendedProps.Session}{"\t"}</td>
-                        <td>{o.extendedProps.section || "null"}{"\t"}</td>
-                        <td>{o.extendedProps.startDate || "null"}{"\t"}</td>
-                        <td>{o.extendedProps.endDate || "null"}{"\t"}</td>
-                        <td>{o.extendedProps.component || "null"}{"\t"}</td>
-                        <td>{formatTimeString(iTs).split(" - ")[0] || "null"}{"\t"}</td>
-                        <td>{formatTimeString(iTs).split(" - ")[1] || "null"}{"\t"}</td>
+                        <td>{o.extendedProps.section || "not set"}{"\t"}</td>
+                        <td>{o.extendedProps.startDate || "not set"}{"\t"}</td>
+                        <td>{o.extendedProps.endDate || "not set"}{"\t"}</td>
+                        <td>{o.extendedProps.component || "not set"}{"\t"}</td>
+                        <td>{formatTimeString(iTs).split(" - ")[0] || "not set"}{"\t"}</td>
+                        <td>{formatTimeString(iTs).split(" - ")[1] || "not set"}{"\t"}</td>
                         <td>{function(){
                             if(o.extendedProps.room && o.extendedProps.building) return (<a href="#" onClick={() => changeBackToCalendarThenGoToEvent(o.extendedProps.building, o.extendedProps.room)}>
                               {o.extendedProps.building + "-" + o.extendedProps.room}
@@ -88,7 +88,68 @@ class ListViewComponent extends React.Component{
           </div>
         );
   }
-} 
+}
+class UserEventsComponents extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      userEvents: props.events,
+    };
+  }
+
+  componentDidMount() {
+    this.timerID = setInterval(() => this.tick(), 300);
+    createDraggableElement(document.getElementById("EventsByUserPopUp"))
+    // centerWindow(document.getElementById("EventsByUserPopUp"))
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  tick() {
+    this.setState({});
+  }
+  render() {
+    return (
+      <div id="EventsByUserPopUp" className="popup card">
+       <div style={{width : "20px" }}id="pclose-UUID" className="close" popupid="addEventPopUp" onClick={() => { userEvents.unmount(); }}>&times;</div>
+        <br />
+        {this.state.userEvents[0].extendedProps.instructorName} events : 
+        <table className="table table-bordered" style={{marginTop : "10px"}}>
+          <thead>
+            <th>Course Number</th>
+            <th>Course</th>
+            <th>Delivery</th>
+            <th>Location</th>
+            <th>Days</th>
+            <th>Time</th>
+          </thead>
+          <tbody>
+            {this.state.userEvents.map(function(o){
+              let iTs = [o.extendedProps.startTime, o.extendedProps.endTime];
+              return (
+                <tr>
+                  <td>{o.extendedProps.coursePrefix}-{o.extendedProps.courseNumber}</td>
+                  <td>#{o.extendedProps.classNumber} {o.title}</td>
+                  <td>{o.extendedProps.delivery || "Not set"}</td>
+                  <td>{function(){
+                      if(o.extendedProps.room && o.extendedProps.building) return (<a href="#" onClick={() => goToEvent(o.extendedProps.building, o.extendedProps.room, function(){userEvents.unmount()})}>
+                        {o.extendedProps.building + "-" + o.extendedProps.room}
+                      </a>)
+                      return "Online/Not set"
+                  }()}{"\t"}</td>
+                  <td>{formatdaysOfWeek(o.daysOfWeek, "M T W TH F".split(" "))}{"\t"}</td>
+                  <td>{formatTimeString(iTs) || "not set"}{"\t"}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+}
 class EventListComponent extends React.Component {
   type;
   constructor(props) {
@@ -122,6 +183,7 @@ class EventListComponent extends React.Component {
       return;
     }
     if(this.type === "FilteredEvents") events = events.map(eventBuilder);
+
     return (
       <div className="card">
         <div className="card-header">
@@ -142,7 +204,7 @@ class EventListComponent extends React.Component {
                       <div style={{ color: `rgb(${HEXtoRGB(o.color, colorFilterBrightness, .9).join(",")})`, background: `rgba(${HEXtoRGB(o.color).join(",")}, 0)`, fontSize: "10px", padding: "0" }}>
                         {formatdaysOfWeek(o.daysOfWeek)}, {formatTimeString([o.startTime, o.endTime])} <span onClick={() => goToEvent(o.extendedProps.building, o.extendedProps.room)} className="underlineText">@{o.extendedProps.building + "-" + o.extendedProps.room}</span>
                         <br /> 
-                        {o.extendedProps.instructorName}
+                        <a href="#" onClick={() => createUserEventListPopUp(o.extendedProps.instructorHash)}>{o.extendedProps.instructorName}</a>
                       </div>
                     </p>
                   </div>
