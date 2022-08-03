@@ -63,18 +63,19 @@ namespace ClassSchedulingProject.Controllers
         public IActionResult Index(string institution)
         {
             string cookieValueFromReq = Request.Cookies["sessionID"];
-
-                if (verifyUser(cookieValueFromReq) == 1)
-                {
-                    ViewBag.isAuthorized = 1;
-                    SessionTokens thisToken = context.SessionTokens.FirstOrDefault(e => e.SessionId == cookieValueFromReq);
-                    UserInformation thisUser = context.UserInformation.FirstOrDefault(e => e.AccountHash == thisToken.AccountHash);
-                    ViewData["Title"] = thisUser.PrimaryInstitutionId + " Home";
-                    ViewBag.thisUser = thisUser;
-                    ViewBag.userList = JsonSerializer.Serialize(userList);
-                    ViewBag.CourseOfferingsTemplates = JsonSerializer.Serialize(courseTemplates);
-                    return View();
-                }
+            if (verifyUser(cookieValueFromReq) == 1)
+            {
+                ViewBag.isAuthorized = 1;
+                SessionTokens thisToken = context.SessionTokens.FirstOrDefault(e => e.SessionId == cookieValueFromReq);
+                UserInformation thisUser = context.UserInformation.FirstOrDefault(e => e.AccountHash == thisToken.AccountHash);
+                ViewData["Title"] = thisUser.PrimaryInstitutionId + " Home";
+                if(Request.Cookies["theme"] == null) SetCookie("theme", "1", 99999);
+                ViewData["theme"] = Request.Cookies["theme"];
+                ViewBag.thisUser = thisUser;
+                ViewBag.userList = JsonSerializer.Serialize(userList);
+                ViewBag.CourseOfferingsTemplates = JsonSerializer.Serialize(courseTemplates);
+                return View();
+            }
             return RedirectToAction("Register", "Home");
         }
         [HttpGet]
@@ -89,6 +90,8 @@ namespace ClassSchedulingProject.Controllers
                 UserInformation thisUser = context.UserInformation.FirstOrDefault(e => e.AccountHash == thisToken.AccountHash);
                 ViewBag.thisUser = thisUser;
                 ViewData["Title"] = thisUser.PrimaryInstitutionId + " myAccount";
+                if(Request.Cookies["theme"] == null) SetCookie("theme", "1", 99999);
+                ViewData["theme"] = Request.Cookies["theme"];
                 return View(thisUser);
             }
             return RedirectToAction("Index", "Home");
@@ -379,6 +382,15 @@ namespace ClassSchedulingProject.Controllers
                 CalenderData newCalData = new CalenderData(thisUser);
                 newCalData.userList = JsonSerializer.Serialize(userList);
                 return Json(newCalData);
+            }
+            return Json(0);
+        }
+        [HttpGet]
+        public IActionResult toggleTheme(){
+            if(Request.Cookies["theme"] == "1") {
+                SetCookie("theme", "2", 99999);
+            }else{
+                SetCookie("theme", "1", 99999);
             }
             return Json(0);
         }

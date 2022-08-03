@@ -77,7 +77,7 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
             <div class="col-sm-6">
                 <div class="form-group">
                     <select id="pufDeliveryType" onchange="pufSelectBoxChange(this)" class="custom-select-xs">
-                        <option selected>${event?.extendedProps.delivery || ""}</option>
+                        <option selected>${event?.extendedProps.delivery || "Delivery"}</option>
                         <option value="Flex">Flex</option>
                         <option value="Online">Online</option>
                         <option value="InPerson">In Person</option>
@@ -142,13 +142,12 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
                 </div>
             </div>
         </div>
-        <br />
             ${function () {
             if (source === "eventList") {
-                return `<button onclick='finalizeFormDataAndAdd("class-${event.extendedProps.uuid}")' style="position:relative; float:right; margin-right: 30px;" class="btn btn-primary">Submit</button>
-            <button onclick='pufDeleteAction("${event.extendedProps.uuid}")' style="position:relative; float:right; margin-right: 10px;" class="btn btn-danger">Delete</button>`
+                return `<button onclick='finalizeFormDataAndAdd("class-${event.extendedProps.uuid}")' style="position:relative; float:left; margin-right: 10px;" class="btn btn-primary">Submit</button>
+                        <button onclick='pufDeleteAction("${event.extendedProps.uuid}")' style="position:relative; float:left; margin-right: 10px;" class="btn btn-danger">Delete</button>`
             } else {
-                return `<button onclick='finalizeFormDataAndAdd("course-${event.extendedProps.courseID}")' style="position:relative; float:right; margin-right: 30px;" class="btn btn-primary">Submit</button>`
+                return `<button onclick='finalizeFormDataAndAdd("course-${event.extendedProps.courseID}")' style="position:relative; float:left; margin-right: 30px;" class="btn btn-primary">Submit</button>`
             }
 
         }()}
@@ -162,7 +161,7 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
         }
     }
     centerWindow(document.getElementById("addEventPopUp"));
-    if(!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) createDraggableElement(document.getElementById("addEventPopUp"));
+    if(!/^((?!chrome|android).)*safari/i.test(navigator.userAgent) && window.innerWidth > 699) createDraggableElement(document.getElementById("addEventPopUp"));
     // setPopUpPos(document.getElementById("addEventPopUp"), { x: info.jsEvent.clientX, y: info.jsEvent.clientY });
 }
 function renderPopUp(event, info) {
@@ -197,7 +196,7 @@ function renderPopUp(event, info) {
             <div>Class # <b>${event.extendedProps.classNumber}</b></div>
         </div>
     </div>`).appendTo("body");
-    createDraggableElement(document.getElementById("eventPopUP"));
+     createDraggableElement(document.getElementById("eventPopUP"));
 }
 function createPopUp(info) {
     closePopUp();

@@ -1,0 +1,87 @@
+ /* dark theme */
+ body {
+    background-color: rgb(49, 54, 58);
+    color: rgb(196, 188, 177)!important;
+ }
+ .navbar {
+    background: rgb(39, 43, 46)!important;
+    border-color: rgb(46, 46, 46)!important;
+ }
+ .navbar a {
+    color: rgb(238, 229, 217)!important;
+ }
+ .navbar a:hover {
+    color: skyblue!important;
+ }
+ .card {
+    background: rgb(39, 43, 46);
+    color: rgb(196, 188, 177)!important;
+ }
+ .underlineText:hover {
+    color: skyblue!important;
+ }
+ #EventsByUserPopUp{
+    background-color: rgb(39, 43, 46);
+ }
+ select option{
+    background: rgb(39, 43, 46);
+    color: rgb(196, 188, 177)!important;
+    border-color: rgba(31, 31, 31, 0.61)!important;
+ }
+ select {
+    border-radius: 3px;
+    background: rgb(39, 43, 46);
+    border-color: rgba(31, 31, 31, 0.61)!important;
+    color: rgb(196, 188, 177)!important;
+ }
+ #menuBar {
+    background: rgb(39, 43, 46)!important;
+    border-top: rgba(31, 31, 31, 0.61) solid 1px;
+ }
+ table {
+    color: rgb(196, 188, 177)!important;
+ }
+ table, tr, th, td{
+    border-color: rgba(31, 31, 31, 0.61)!important;
+ }
+ .fc-timegrid-event-harness, .fc-timegrid-event-harness-inset, .fc-timegrid-event, .fc-v-event, .fc-event, .fc-event-draggable, .fc-event-resizable, .fc-event-start, .fc-event-end, .fc-event-past {
+    box-shadow: 0px 0px 0px 0px var(--fc-page-bg-color, #fff)!important;
+ }
+ .fc-event-main{
+    color: rgb(231, 231, 231)!important;
+ }
+ .fc ::-webkit-scrollbar {
+    display: none;
+ }
+ .fc  {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+ }
+ .fc {
+    width: calc(100% - 15px)!important;
+    background-color: rgb(39, 43, 46);
+ }
+ input{
+    background: rgb(39, 43, 46)!important;
+    border-style: solid;
+    border-radius: 3px;
+    border-width: 1px;
+    border-color: rgba(31, 31, 31, 0.61)!important;
+    color: rgb(196, 188, 177)!important;
+ }
+  
+  input[type="checkbox"] {
+    cursor: pointer;
+    outline: 0;
+    height: 16px;
+    width: 16px;
+    color: rgb(160, 160, 160);
+  }
+  
+  input[type="checkbox"]:checked:after {
+    display: block;
+  }
+  input[type="range"] {
+    background: none!important;
+    border: none!important;
+  }

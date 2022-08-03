@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
     elements.setItemsFromLocalStorage();
     newCalender = new CalenderApp(caldata);
     fetchEventTemplates(document.getElementById("dptSel"), function(){
-        updateTimer(10 * 1000);
+        // updateTimer(10 * 1000);
     });
 });
 function createCalender(events) {

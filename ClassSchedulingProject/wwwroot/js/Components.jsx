@@ -99,8 +99,8 @@ class UserEventsComponents extends React.Component {
 
   componentDidMount() {
     this.timerID = setInterval(() => this.tick(), 300);
-    createDraggableElement(document.getElementById("EventsByUserPopUp"))
-    // centerWindow(document.getElementById("EventsByUserPopUp"))
+    if(!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) createDraggableElement(document.getElementById("EventsByUserPopUp"))
+    centerWindow(document.getElementById("EventsByUserPopUp"))
   }
 
   componentWillUnmount() {
@@ -115,7 +115,7 @@ class UserEventsComponents extends React.Component {
       <div id="EventsByUserPopUp" className="popup card">
        <div style={{width : "20px" }}id="pclose-UUID" className="close" popupid="addEventPopUp" onClick={() => { userEvents.unmount(); }}>&times;</div>
         <br />
-        {this.state.userEvents[0].extendedProps.instructorName} events : 
+        <h4>{this.state.userEvents[0].extendedProps.instructorName} events :</h4> 
         <table className="table table-bordered" style={{marginTop : "10px"}}>
           <thead>
             <th>Course Number</th>
@@ -124,13 +124,14 @@ class UserEventsComponents extends React.Component {
             <th>Location</th>
             <th>Days</th>
             <th>Time</th>
+            <th>Edit</th>
           </thead>
           <tbody>
             {this.state.userEvents.map(function(o){
               let iTs = [o.extendedProps.startTime, o.extendedProps.endTime];
               return (
                 <tr>
-                  <td>{o.extendedProps.coursePrefix}-{o.extendedProps.courseNumber}</td>
+                  <td>{o.extendedProps.coursePrefix} {o.extendedProps.courseNumber}</td>
                   <td>#{o.extendedProps.classNumber} {o.title}</td>
                   <td>{o.extendedProps.delivery || "Not set"}</td>
                   <td>{function(){
@@ -141,6 +142,7 @@ class UserEventsComponents extends React.Component {
                   }()}{"\t"}</td>
                   <td>{formatdaysOfWeek(o.daysOfWeek, "M T W TH F".split(" "))}{"\t"}</td>
                   <td>{formatTimeString(iTs) || "not set"}{"\t"}</td>
+                  <td>Edit</td>
                 </tr>
               )
             })}
@@ -198,10 +200,10 @@ class EventListComponent extends React.Component {
 
                 return (
                   <div key={`class-${o.extendedProps.uuid}`} id={`class-${o.extendedProps.uuid}`} data={JSON.stringify(o)}>
-                    <p style={{ borderColor: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.title), colorFilterBrightness, .8).join(",")})` }} key={`${key}-p`} className="ActiveEventsListItem">
-                      <span style={{ color: `rgb(${HEXtoRGB(o.color, colorFilterBrightness, .9).join(",")})` }}>
+                    <p style={{ borderColor: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.title), colorFilterBrightness, 1).join(",")})` }} key={`${key}-p`} className="ActiveEventsListItem">
+                      <span style={{ color: `rgb(${HEXtoRGB(o.color, colorFilterBrightness, 1).join(",")})` }}>
                         <span className="underlineText" onClick={() => editEvent($(`#class-${o.extendedProps.uuid}`))}>Q{o.extendedProps.ClassQuarterNumber} {o.title} {" "}#{o.extendedProps.classNumber}</span></span>
-                      <div style={{ color: `rgb(${HEXtoRGB(o.color, colorFilterBrightness, .9).join(",")})`, background: `rgba(${HEXtoRGB(o.color).join(",")}, 0)`, fontSize: "10px", padding: "0" }}>
+                      <div style={{ color: `rgb(${HEXtoRGB(o.color, colorFilterBrightness, 1).join(",")})`, background: `rgba(${HEXtoRGB(o.color).join(",")}, 0)`, fontSize: "10px", padding: "0" }}>
                         {formatdaysOfWeek(o.daysOfWeek)}, {formatTimeString([o.startTime, o.endTime])} <span onClick={() => goToEvent(o.extendedProps.building, o.extendedProps.room)} className="underlineText">@{o.extendedProps.building + "-" + o.extendedProps.room}</span>
                         <br /> 
                         <a href="#" onClick={() => createUserEventListPopUp(o.extendedProps.instructorHash)}>{o.extendedProps.instructorName}</a>
@@ -297,14 +299,14 @@ class EventTemplateComponent extends React.Component {
                 if (o.Active) {
                   return (
                     <div id={`course-${o.Id}`} data={JSON.stringify(o)} onClick={() => ActivateEvent($(`#course-${o.Id}`))} key={id + "div"}>
-                      <p key={id} style={{ marginBottom: '0', color: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.Title), colorFilterBrightness, .7).join(",")})`}}>
+                      <p key={id} style={{ marginBottom: '0', color: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.Title), colorFilterBrightness, 1).join(",")})`}}>
                         <svg key={id + "svg"} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23FCB" className="bi bi-check" viewBox="0 0 16 16">
                           <path key={id + "path"} d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
                         </svg>
                         <span style={{  }}>{o.Title}</span></p>
                       {o.activeEvents.map(function (o, i) {
                         return (
-                          <p key={i + "-course"} style={{ fontSize: "10px", marginLeft: "15px", color: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.title), colorFilterBrightness, .7).join(",")})`, marginBottom: "0" }}>
+                          <p key={i + "-course"} style={{ fontSize: "10px", marginLeft: "15px", color: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.title), colorFilterBrightness, 1).join(",")})`, marginBottom: "0" }}>
                             {o.extendedProps.building + "-" + o.extendedProps.room + " " + o.extendedProps.instructorName + ", " + formatTimeString([o.startTime, o.endTime])}
                           </p>
                         )
