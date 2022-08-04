@@ -58,7 +58,7 @@ class ListViewComponent extends React.Component{
                     if(!o) return;
                     let iTs = [o.extendedProps.startTime, o.extendedProps.endTime];
                     return (
-                      <tr style={{color : o.color}}>
+                      <tr style={{color: `rgb(${HEXtoRGB(o.color, colorFilterBrightness, _colorBrightnessVal).join(",")})`}}>
                         <td>{o.extendedProps.classNumber || "not set"}{"\t"}</td>
                         <td>{o.extendedProps.coursePrefix}{"\t"}</td>
                         <td>{o.extendedProps.courseNumber}{"\t"}</td>
@@ -130,7 +130,7 @@ class UserEventsComponents extends React.Component {
             {this.state.userEvents.map(function(o){
               let iTs = [o.extendedProps.startTime, o.extendedProps.endTime];
               return (
-                <tr>
+                <tr style={{color: `rgb(${HEXtoRGB(o.color, colorFilterBrightness, _colorBrightnessVal).join(",")})`}}>
                   <td>{o.extendedProps.coursePrefix} {o.extendedProps.courseNumber}</td>
                   <td>#{o.extendedProps.classNumber} {o.title}</td>
                   <td>{o.extendedProps.delivery || "Not set"}</td>
@@ -142,7 +142,7 @@ class UserEventsComponents extends React.Component {
                   }()}{"\t"}</td>
                   <td>{formatdaysOfWeek(o.daysOfWeek, "M T W TH F".split(" "))}{"\t"}</td>
                   <td>{formatTimeString(iTs) || "not set"}{"\t"}</td>
-                  <td>Edit</td>
+                  <td><a id={`tableUserEventListPopUp-${o.extendedProps.uuid}`} href="#" data={JSON.stringify(o)} onClick={() => editEvent($(`#tableUserEventListPopUp-${o.extendedProps.uuid}`))}>Edit{"\t"}</a></td>
                 </tr>
               )
             })}
