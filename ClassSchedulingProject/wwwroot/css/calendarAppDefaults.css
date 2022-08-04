@@ -142,13 +142,13 @@ input[type=range] {
 .sLoading {
     display: inline-block;
     position: relative;
-    background-image: url("/img/animation.gif");
+    /* background-image: url("/img/animation.gif"); */
     background-size: contain;
     /* background: blue; */
-    top: 4px;
-    left: 4px;
-    height: 18px;
-    width: 18px;
+    top: 0px;
+    left: 8px;
+    height: 14px;
+    width: 14px;
     z-index: 2;
  }
 @media only screen and (max-width: 699px) {
@@ -234,10 +234,9 @@ input[type=range] {
    .sLoading {
       display: inline-block;
       position: relative;
-      background-image: url("/img/animation.gif");
       background-size: contain;
       /* background: blue; */
-      top: 4px;
+      top: 1px;
       left: 4px;
       height: 8px;
       width: 8px;

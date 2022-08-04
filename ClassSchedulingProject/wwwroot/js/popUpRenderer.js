@@ -140,6 +140,14 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
                     <label class="control-label">F</label>
                     <input type="checkbox" value="5" class="form-control-xs pufDaysOfWeek" />
                 </div>
+                <div style="font-size : 12px">
+                    <div>Event Author : ${userList.map(function(u){
+                        if(u.EventsAuthorId === event.extendedProps.userAccountID) return `${u.FirstName} ${u.LastName}`
+                        return undefined
+                    }).filter(e => e != undefined)}</div>
+                    <div>Created : ${new Date(event.extendedProps.dateCreated).toLocaleString()}</div>
+                    <div>Last Modified : ${event.extendedProps.lastModName} at ${new Date(event.extendedProps.lastModDate)?.toLocaleString() ?? "error"}</div>
+                </div>
             </div>
         </div>
             ${function () {
@@ -167,7 +175,10 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
 function renderPopUp(event, info) {
     $(`<div id="eventPopUP" class="card popup">
         <div id="ptitle">${event.title}<span id="pclose-UUID" class="close" onclick="closePopUp()">&times;</span></div>
-        <div style="font-size:12px">Event Author : <b>${event.extendedProps.eventAuthor}</b></div>
+        <div style="font-size:12px">Event Author : <b>${userList.map(function(u){
+            if(u.EventsAuthorId === event.extendedProps.userAccountID) return `${u.FirstName} ${u.LastName}`
+            return undefined
+        }).filter(e => e != undefined)}</b></div>
         <div id="ptime">${formatTime(info)} <i>room ${event.extendedProps.building}-${event.extendedProps.room}</i></div>
             <div class="pauthor">
                 <div>Recurs : <b>${function () {
@@ -256,89 +267,89 @@ function generateFormData(info, event) {
         extendedProps: {
             uuid: info?.event?._def?.extendedProps.uuid ?? event?.extendedProps?.uuid ?? create_UUID(),
             userAccountID: event?.extendedProps?.userAccountID || newCalender.data.userAccountID,
-        instructorHash: function () {
-            let e = $("#pufInstructor");
-            if (e.val()) {
-                return [e.val(), $("#pufInstructor option:selected").text()];
-            }
-            return ["", ""];
-        },
-        eventAuthor: newCalender.data.firstName + " " + newCalender.data.lastName,
-        classNumber: function () {
-            let e = $("#pufClassNumber");
-            try {
-                Number(e.val());
-                return Number(e.val());
-            } catch {
-                return null;
-            }
-        },
-        section: function () {
-            let e = $("#pufSection");
-            if (e.val()) {
-                return e.val();
-            } else {
-                return null;
-            }
-        },
-        coursePrefix: function(){
-            return $("#pufCourseNumberPrefix").val();
-        },
-        courseNumber: function () {
-            let e = $("#pufCourseNumber");
-            try {
-                Number(e.val());
-                return Number(e.val());
-            } catch {
-                return null;
-            }
-        },
-        building: function(){
-            return $("#pufBuilding").val();
-        },
-        room: function(){
-            return $("#pufRoomNumber").val();
-        },
-        component: function () {
-            let e = $("#pufComponent");
-            if (e.val() !== "Component") {
-                return e.val();
-            } else {
-                return null;
-            }
-        },
-        delivery: function () {
-            let e = $("#pufDeliveryType");
-            if (e.val() !== "Delivery") {
-                return e.val();
-            } else {
-                return null;
-            }
-        },
-        Session: function () {
-            return $("#pufSession").val();
-        },
-        startDate: function () {
-            return $("#pufStartDate").val();
-        },
-        endDate: function () {
-            return $("#pufEndDate").val();
-        },
-        startTime: function () {
-            return $("#pufStartTime").val();
-        },
-        endTime: function () {
-            return $("#pufEndTime").val();
-        }, 
-        ProgramId : event.extendedProps.ProgramId,
-        ClassQuarterNumber : event.extendedProps.ClassQuarterNumber
-        
+            instructorHash: function () {
+                let e = $("#pufInstructor");
+                if (e.val()) {
+                    return [e.val(), $("#pufInstructor option:selected").text()];
+                }
+                return ["", ""];
+            },
+            eventAuthor: newCalender.data.firstName + " " + newCalender.data.lastName,
+            classNumber: function () {
+                let e = $("#pufClassNumber");
+                try {
+                    Number(e.val());
+                    return Number(e.val());
+                } catch {
+                    return null;
+                }
+            },
+            section: function () {
+                let e = $("#pufSection");
+                if (e.val()) {
+                    return e.val();
+                } else {
+                    return null;
+                }
+            },
+            coursePrefix: function(){
+                return $("#pufCourseNumberPrefix").val();
+            },
+            courseNumber: function () {
+                let e = $("#pufCourseNumber");
+                try {
+                    Number(e.val());
+                    return Number(e.val());
+                } catch {
+                    return null;
+                }
+            },
+            building: function(){
+                return $("#pufBuilding").val();
+            },
+            room: function(){
+                return $("#pufRoomNumber").val();
+            },
+            component: function () {
+                let e = $("#pufComponent");
+                if (e.val() !== "Component") {
+                    return e.val();
+                } else {
+                    return null;
+                }
+            },
+            delivery: function () {
+                let e = $("#pufDeliveryType");
+                if (e.val() !== "Delivery") {
+                    return e.val();
+                } else {
+                    return null;
+                }
+            },
+            Session: function () {
+                return $("#pufSession").val();
+            },
+            startDate: function () {
+                return $("#pufStartDate").val();
+            },
+            endDate: function () {
+                return $("#pufEndDate").val();
+            },
+            startTime: function () {
+                return $("#pufStartTime").val();
+            },
+            endTime: function () {
+                return $("#pufEndTime").val();
+            }, 
+            ProgramId : event.extendedProps.ProgramId,
+            ClassQuarterNumber : event.extendedProps.ClassQuarterNumber,
+            dateCreated : event.extendedProps.dateCreated ?? (new Date()),
+        }
     }
-}
 }
 function finalizeFormDataAndAdd(id) {
     let finalizedEvent = JSON.parse(JSON.stringify(newEvent));
-    // if(developerMode) console.log(finalizedEvent);
+    if(developerMode) console.log(finalizedEvent);
     if (newEvent.title() &&
         newEvent.extendedProps.courseNumber() &&
         newEvent.extendedProps.coursePrefix() &&
@@ -363,11 +374,15 @@ function finalizeFormDataAndAdd(id) {
         finalizedEvent.extendedProps.room = newEvent.extendedProps.room();
         finalizedEvent.extendedProps.building = newEvent.extendedProps.building();
         finalizedEvent.extendedProps.ClassQuarterNumber = newEvent.extendedProps.ClassQuarterNumber;
-        finalizedEvent.extendedProps.ProgramId = newEvent.extendedProps.ProgramId,
+        finalizedEvent.extendedProps.ProgramId = newEvent.extendedProps.ProgramId;
+        finalizedEvent.extendedProps.dateCreated = newEvent.extendedProps.dateCreated;
 
         finalizedEvent.groupId = finalizedEvent.extendedProps.uuid;
         finalizedEvent.startTime = finalizedEvent.extendedProps.startTime;
         finalizedEvent.endTime = finalizedEvent.extendedProps.endTime;
+
+        finalizedEvent.extendedProps.lastModName = `${caldata.firstName} ${caldata.lastName}`;
+        finalizedEvent.extendedProps.lastModDate = new Date();
 
         if (id) {
             let e = JSON.parse($(`#${id}`).attr("data"));

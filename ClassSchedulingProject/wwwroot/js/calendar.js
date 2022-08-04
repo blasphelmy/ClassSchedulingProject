@@ -38,6 +38,7 @@
         return false;
     }
     parseEvents(eventString) {
+        console.log(eventString);
         let newEventList = eventString.split(" _--__- ").filter(e => e !== "");
         this.data.events = [];
         this.UsersEventsMap = new Map();
@@ -171,6 +172,10 @@
                 Section: newEvent.extendedProps.section + "",
                 Component: newEvent.extendedProps.component + "",
             })
+        }
+        if(new RegExp(/ _--__- /gm).test(newPost.body)){
+            $("#s3").text("Invalid token stream detected...");
+            return;
         }
         fetch(`/home/SaveEventData`, newPost).then(response => response.json()).then((data) => {
            if(data === 1 || data === 2){

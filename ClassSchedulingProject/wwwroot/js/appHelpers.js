@@ -38,7 +38,7 @@ function updateTimer(delay) {
 }
 
 let fetchData = (e, callback) => {
-    document.getElementById("s1").classList.add("sLoading");
+    document.getElementById("s1").style.setProperty("display", "inline-block");
     $("#s2").text("fetching data...");
     try {
         localStorage.setItem(e.id, e.value);
@@ -58,13 +58,13 @@ let fetchData = (e, callback) => {
                 newCalender.updateEvents(data);
             }
             setTimeout(() => {
-                document.getElementById("s1").classList.remove("sLoading");
+                document.getElementById("s1").style.setProperty("display", "none");
                 $("#s2").text(`Last fetched at ${new Date().toLocaleTimeString()}`);
             }, 500);
         } else {
             if(developerMode) console.log("error fetching calendar events...")
             setTimeout(() => {
-                document.getElementById("s1").classList.remove("sLoading");
+                document.getElementById("s1").style.setProperty("display", "none");
                 $("#s2").text(`error fetching calendar events...`);
             }, 1000);
         }
@@ -164,7 +164,9 @@ function HEXtoRGB(hex, callback, multiplier) {
 }
 let colorFilterBrightness = function (red, green, blue, mulitplier) {
     if (!mulitplier) mulitplier = .6;
-    return [(red * mulitplier) % 255, (green * mulitplier) % 255, (blue * mulitplier) % 255]
+    return [Math.min(Math.max(parseInt(red * mulitplier), 0), 255), 
+            Math.min(Math.max(parseInt(green * mulitplier), 0), 255),
+            Math.min(Math.max(parseInt(blue * mulitplier), 0), 255)]
 }
 let pufDeleteAction = function (UUID) {
     newCalender.deleteEvent(UUID);
