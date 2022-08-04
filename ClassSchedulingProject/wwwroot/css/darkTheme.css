@@ -47,22 +47,29 @@
     background: var(--dark-1)!important;
     border-top: rgba(31, 31, 31, 0.61) solid 1px;
  }
- table {
-    color: var(--textcolor-1)!important;
- }
- table, tr, th, td{
-    border-color: rgba(31, 31, 31, 0.61)!important;
+ table, tr, th, td {
+    /* background-color: var(--dark-1); */
+    border-color: rgba(92, 92, 92, 0.61)!important;
     border-style: solid;
     border-width: 1px;
+ }
+ table {
+    color: var(--textcolor-1)!important;
+    border-color: rgba(46, 46, 46, 0.61)!important;
  }
  tbody > tr > td > a:hover {
     color: var(--linkColor)!important;
  }
  .fc-timegrid-event-harness, .fc-timegrid-event-harness-inset, .fc-timegrid-event, .fc-v-event, .fc-event, .fc-event-draggable, .fc-event-resizable, .fc-event-start, .fc-event-end, .fc-event-past {
-    box-shadow: 0px 0px 0px 0px var(--fc-page-bg-color, #fff)!important;
+    box-shadow: none!important;
  }
  .fc-event-main{
     color: rgb(231, 231, 231)!important;
+ }
+ .fc-timegrid-col-events {
+    position: relative;
+    width: 100%!important;
+    left: -2px!important;
  }
  .fc ::-webkit-scrollbar {
     display: none;

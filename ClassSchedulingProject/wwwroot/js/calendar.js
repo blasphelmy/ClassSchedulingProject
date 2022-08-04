@@ -29,6 +29,7 @@
         }
     }
     checkPermissions(event){
+        if(event.extendedProps.ProgramId !== caldata.ProgramID) return false
         if(caldata.role < 3) return true;
         if (event.extendedProps.ProgramId === caldata.ProgramID && (event.extendedProps.userAccountID === this.data.userAccountID
             || event.extendedProps.instructorHash === this.data.userAccountID)) {
@@ -139,7 +140,11 @@
     }
     saveEvent(newEvent, callback) {
         if(!this.checkPermissions(newEvent)){
-            $("#s3").text(`not authorized to make changes to this event`)
+            if(newEvent.extendedProps.ProgramId !== caldata.ProgramID) {
+                $("#s3").text(`Error saving event : event not in currently selected program`)
+            }else{
+                $("#s3").text(`not authorized to make changes to this event!`)
+            }
             return fetchData();
         } 
         $("#s3").text(`saving event ${newEvent.extendedProps.uuid}`);

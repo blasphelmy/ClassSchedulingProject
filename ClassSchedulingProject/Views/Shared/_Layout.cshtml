@@ -59,5 +59,14 @@
             })
         }
     </script>
+    @if((String)ViewData["theme"] == "1"){
+        <script>
+            const _colorBrightnessVal = 1.35
+        </script>
+    }else{
+        <script>
+            const _colorBrightnessVal = .8
+        </script>
+    }
 </body>
 </html>
