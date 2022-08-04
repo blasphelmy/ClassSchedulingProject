@@ -52,7 +52,8 @@
  }
  table, tr, th, td{
     border-color: rgba(31, 31, 31, 0.61)!important;
-    background-color: var(--dark-1);
+    border-style: solid;
+    border-width: 1px;
  }
  tbody > tr > td > a:hover {
     color: var(--linkColor)!important;
@@ -67,8 +68,9 @@
     display: none;
  }
  .fc  {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none; 
+    background-color: none!important;
  }
  .fc {
     width: calc(100%)!important;
