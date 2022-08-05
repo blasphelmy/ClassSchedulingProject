@@ -29,6 +29,7 @@ function changeView(e, callback){
         fetchData(new Object, function(){
             document.getElementById("panel2").style.setProperty("display", "");
             document.getElementById("calendar").style.setProperty("opacity", "1");
+            if(callback) callback();
         });
     }
 }

@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@{
+    String mode = "light";
+    if((String)ViewData["theme"] == "1"){
+        mode = "dark";
+    }
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -9,7 +15,7 @@
 </head>
 <body>
     <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-@mode bg-white border-bottom box-shadow mb-3">
         <a class="navbar-brand" href="/">Class Scheduler</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -26,9 +32,6 @@
                 
             </form>
             <ul class="navbar-nav flex-grow-1">
-                <li class="nav-item">
-                    <a class="nav-link text-dark" href="/">Home</a>
-                </li>
                 @if(ViewBag.isAuthorized != 1)
                 {
                     <li class="nav-item">
@@ -39,6 +42,14 @@
                 {
                     <li class="nav-item">
                         <a class="nav-link text-dark" href="/myAccount">My Account</a>
+                    </li>
+                }
+                @if((int)ViewData["role"] < 3){
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/manageProgram">Manage Program and Courses</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/myAccount">Manage App Settings</a>
                     </li>
                 }
             </ul>
@@ -69,4 +80,7 @@
         </script>
     }
 </body>
+@if((String)ViewData["theme"] == "1") {
+    <link rel="stylesheet" href="/css/darkTheme.css" />
+}
 </html>

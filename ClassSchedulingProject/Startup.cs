@@ -82,6 +82,10 @@ namespace ClassSchedulingProject
                     name: "default",
                     pattern: "/{action=myAccount}/",
                     defaults: new { controller = "Home", action = "myAccount" });
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "/{action=manageProgram}/",
+                    defaults: new { controller = "Home", action = "manageProgram" });
             });
         }
     }

@@ -40,7 +40,6 @@
                       <option value="2">List View</option>
                     </select>
                     <select id="dptSel" class="custom-select-sm" style="margin-top: 0px; margin-bottom: 25px;" onchange="fetchEventTemplates(this)">
-                      <option selected></option>
                       @foreach(ProgramOfferings program in thisUser.Department.ProgramOfferings){
                         <option value="@program.Id">@program.ProgramName @program.ProgramType</option>
                       }
@@ -73,6 +72,7 @@
                 </span>
         </div>
     </div>
+    <p id="helpPage"></p>
     <div class="row" style="padding-right: 20px; padding-bottom: 20px">
         <div id="panel1" style="height: 100vh;" class="col-lg-7">
             <div id='calendar'></div>
@@ -99,9 +99,6 @@
 </div>
 
 <link rel="stylesheet" href="/css/calendarAppDefaults.css" />
-@if((String)ViewData["theme"] == "1") {
-    <link rel="stylesheet" href="/css/darkTheme.css" />
-}
 <link rel="stylesheet" href="/libCal_f/main.css" />
 <script src="/libCal_f/main.js"></script>
 <script src="/js/app.js"></script>
@@ -138,6 +135,7 @@ document.getElementById("role").innerText = function() {
 </script>
 <script src="/js/Components.jsx" type="text/babel"></script>
 <script src="/js/main.jsx" type="text/babel"></script>
+<script src="/js/helpPage.jsx" type="text/babel"></script>
 <script type="text/babel">
 
 </script>

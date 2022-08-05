@@ -56,7 +56,7 @@ namespace ClassSchedulingProject.Controllers
             }
         }
 
-        public IActionResult Index(string institution)
+        public IActionResult Index()
         {
             string cookieValueFromReq = Request.Cookies["sessionID"];
             if (verifyUser(cookieValueFromReq) == 1)
@@ -68,6 +68,7 @@ namespace ClassSchedulingProject.Controllers
                 if(Request.Cookies["theme"] == null) SetCookie("theme", "1", 99999);
                 ViewData["theme"] = Request.Cookies["theme"];
                 ViewBag.thisUser = thisUser;
+                ViewData["role"] = thisUser.AccountFlag;
                 ViewBag.userList = JsonSerializer.Serialize(userList);
                 ViewBag.CourseOfferingsTemplates = JsonSerializer.Serialize(courseTemplates);
                 return View();
@@ -88,9 +89,22 @@ namespace ClassSchedulingProject.Controllers
                 ViewData["Title"] = thisUser.PrimaryInstitutionId + " myAccount";
                 if(Request.Cookies["theme"] == null) SetCookie("theme", "1", 99999);
                 ViewData["theme"] = Request.Cookies["theme"];
+                ViewData["role"] = thisUser.AccountFlag;
                 return View(thisUser);
             }
             return RedirectToAction("Index", "Home");
+        }
+        [HttpGet]
+        public IActionResult manageProgram(){
+            UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
+            if(thisUser == null || thisUser.AccountFlag > 2) return RedirectToAction("Index", "Home");
+            ViewData["Title"] = thisUser.PrimaryInstitutionId + " Home";
+            if(Request.Cookies["theme"] == null) SetCookie("theme", "1", 99999);
+            ViewData["theme"] = Request.Cookies["theme"];
+            ViewBag.thisUser = thisUser;
+            ViewData["role"] = thisUser.AccountFlag;
+            ViewBag.isAuthorized = 1;
+            return View(thisUser); 
         }
 
         public IActionResult Register()
@@ -332,35 +346,6 @@ namespace ClassSchedulingProject.Controllers
             }
             return Json("ERROR DELETING EVENT");
         }
-        public int verifyUser(string hash)
-        {
-            SessionTokens token = context.SessionTokens.FirstOrDefault(o => o.SessionId == hash);
-            if (token != null)
-            {
-                token.LastUsed = DateTime.Now;
-                if (token.AccountHashNavigation != null)
-                {
-                    return 1;
-                }
-            }
-            return 0;
-        }
-        public UserInformation getUser(string cookie)
-        {
-            SessionTokens token = context.SessionTokens.FirstOrDefault(o => o.SessionId == cookie);
-            return token.AccountHashNavigation;
-        }
-        public void SetCookie(string key, string value, int? expireTime)
-        {
-            CookieOptions option = new CookieOptions();
-
-            if (expireTime.HasValue)
-                option.Expires = DateTime.Now.AddMinutes(expireTime.Value);
-            else
-                option.Expires = DateTime.Now.AddMilliseconds(10);
-
-            Response.Cookies.Append(key, value, option);
-        }
         [HttpGet]
         public IActionResult checkLoginStatus(string sessionID){
             int status = 0;
@@ -389,6 +374,56 @@ namespace ClassSchedulingProject.Controllers
                 SetCookie("theme", "1", 99999);
             }
             return Json(0);
+        }
+        [HttpPost]
+        public IActionResult saveProgramEventTemplate([FromBody] CourseOfferedTemplates eventTemplate){
+            System.Console.WriteLine(eventTemplate.Title);
+
+            UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
+            if(thisUser != null && thisUser.AccountFlag < 3)
+            {
+                CourseOfferingsTemplates existing = context.CourseOfferingsTemplates.FirstOrDefault(e => e.Id == eventTemplate.Id);
+                existing.Title = eventTemplate.Title;
+                existing.QuarterNumber = eventTemplate.QuarterNumber;
+                existing.CoursePrefix = eventTemplate.CoursePrefix;
+                existing.CourseNumber = eventTemplate.CourseNumber;
+                existing.Component = eventTemplate.Component;
+                context.SaveChanges();
+                return Json(1);
+            }
+
+            return Json(-1);
+        }
+
+        //helper methods
+        public int verifyUser(string hash)
+        {
+            SessionTokens token = context.SessionTokens.FirstOrDefault(o => o.SessionId == hash);
+            if (token != null)
+            {
+                token.LastUsed = DateTime.Now;
+                if (token.AccountHashNavigation != null)
+                {
+                    return 1;
+                }
+            }
+            return 0;
+        }
+        public UserInformation getUser(string cookie)
+        {
+            SessionTokens token = context.SessionTokens.FirstOrDefault(o => o.SessionId == cookie);
+            return token.AccountHashNavigation;
+        }
+        public void SetCookie(string key, string value, int? expireTime)
+        {
+            CookieOptions option = new CookieOptions();
+
+            if (expireTime.HasValue)
+                option.Expires = DateTime.Now.AddMinutes(expireTime.Value);
+            else
+                option.Expires = DateTime.Now.AddMilliseconds(10);
+
+            Response.Cookies.Append(key, value, option);
         }
     }
 }

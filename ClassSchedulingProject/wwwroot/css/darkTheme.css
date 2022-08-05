@@ -2,7 +2,7 @@
  :root {
     --dark-1: rgb(39, 45, 52);
     --dark-2: rgb(34, 40, 46);
-    --textcolor-1: rgb(177, 174, 169);
+    --textcolor-1: rgb(194, 191, 187);
     --linkColor : skyblue;
  }
  body {
@@ -34,8 +34,11 @@
     color: var(--textcolor-1)!important;
     border-color: rgba(31, 31, 31, 0.61)!important;
  }
- .collapsed, .card-link {
+.card-link {
     color: rgb(85, 164, 238);
+ }
+ .card-link:hover {
+    color: var(--linkColor);
  }
  select {
     border-radius: 3px;

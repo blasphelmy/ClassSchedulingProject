@@ -38,7 +38,7 @@
         return false;
     }
     parseEvents(eventString) {
-        console.log(eventString);
+        if(developerMode) console.log(eventString);
         let newEventList = eventString.split(" _--__- ").filter(e => e !== "");
         this.data.events = [];
         this.UsersEventsMap = new Map();

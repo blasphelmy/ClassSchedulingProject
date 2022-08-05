@@ -23,9 +23,14 @@ document.addEventListener('DOMContentLoaded', function () {
         checkNull: function () {
             if (this.year.val() === "Select Year"
                 || this.quarter.val() === "Select Quarter"
-                || this.dpt.val() === "Dept") {
+                || this.dpt.val() === "") {
+                    document.getElementById("calendar").style.setProperty("display", "none");
+                    $("#helpPage").css("display", "block");
+                    renderHelpPage();
                 return false;
             }
+            $("#helpPage").css("display", "none");
+            if(document.getElementById("viewStyle").value === "1") document.getElementById("calendar").style.setProperty("display", "");
             return true;
         },
         setItemsFromLocalStorage: function () {

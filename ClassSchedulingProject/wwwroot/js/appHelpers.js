@@ -88,11 +88,12 @@ function fetchEventTemplates(e, callback){
             caldata.ProgramID = data.programID;
             caldata.EventTemplates = JSON.parse(data.programTemplates);
             var colorIndex = 0;
-            caldata.EventTemplates.map(function(o, id){
+            caldata.EventTemplates.map(function(o, i){
                 let color = colors[colorIndex++ % colors.length];
                 o.Active = false;
                 o.EventTemplateColor = color;
-                EventTemplatesColorMap.set(o.Title, color);
+                console.log(o)
+                EventTemplatesColorMap.set(o.Id, color);
             });
             fetchData(new Object);
             if(callback) callback();
