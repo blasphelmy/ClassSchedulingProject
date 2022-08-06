@@ -10,6 +10,7 @@ FilteredEventsList.render(<EventListComponent i={newCalender.data} type={"Filter
 const EventTemplates = ReactDOM.createRoot(document.getElementById("EventTemplates"));
 EventTemplates.render(<EventTemplateComponent CourseOfferings={caldata.EventTemplates} />);
 function changeView(e, callback){
+    closePopUp();
     if(developerMode) console.log("hello");
     if(e.value === "2"){
         document.getElementById("calendar").style.setProperty("display", "none");
@@ -38,4 +39,11 @@ function createUserEventListPopUp(InstructorHash){
     try{userEvents.unmount();}catch{}
     userEvents = ReactDOM.createRoot(document.getElementById("userEventListPopup"));
     userEvents.render(<UserEventsComponents events={newCalender.UsersEventsMap.get(InstructorHash)} callback={() => console.log("Blog rendered")}  />);
-  }
+    fetch(`/home/fetchEventsByUserYear?InstructorHash=${InstructorHash}&year=${elements.year.val()}`).then(data => data.json()).then(function(data){
+        data = data.split(" _--__- ").filter(e => e != "");
+        for(let i in data){
+            data[i] = JSON.parse(data[i]);
+        }
+        console.log(data);
+    })
+}

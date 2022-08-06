@@ -167,6 +167,46 @@ namespace ClassSchedulingProject.Controllers
 
             return Json(institutionEvents);
         }
+        [HttpGet]
+        public IActionResult fetchEventsByUserYear(string InstructorHash, int year)
+        {
+            System.Console.WriteLine(year.ToString());
+            if(verifyUser(Request.Cookies["sessionID"]) == 0){
+                return Json("sessionIDNotFound");
+            }
+            UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
+            string institutionID = thisUser.PrimaryInstitutionId;
+            string institutionEvents = "";
+
+            List<ApiEvents> eventList = context.ApiEvents.ToList();
+            if(eventList.Count > 0)
+            {
+                eventList = eventList.FindAll(e =>
+                {
+                if (e.InstitutonId == institutionID && 
+                    e.Year == year && 
+                    e.InstructorHash == InstructorHash)
+                    {
+                        foreach(ProgramOfferings program in thisUser.Department.ProgramOfferings){
+                            if(e.ProgramId == program.Id){
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                });
+            }
+
+            foreach (ApiEvents evnt in eventList)
+            {
+                if (evnt.InstitutonId == institutionID)
+                {
+                    institutionEvents = institutionEvents + evnt.EventData + " _--__- ";
+                }
+            }
+
+            return Json(institutionEvents);
+        }
         [HttpPost]
         public IActionResult createAccount([FromBody] RegisterAccount newAccountData)
         {

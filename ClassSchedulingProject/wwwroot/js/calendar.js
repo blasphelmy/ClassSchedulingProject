@@ -133,12 +133,13 @@
         if(callback) callback();
         this.isActive = 0;
     }
-    checkEventPermmisions(eventUID) {
-        if(this.EventMap.get(eventUID) && this.data.events[this.EventMap.get(eventUID)].extendedProps.userAccountID === this.data.userAccountID ){
-            return true;
-        }
-        return false;
-    }
+    //an appendix
+    // checkEventPermmisions(eventUID) {
+    //     if(this.EventMap.get(eventUID) && this.data.events[this.EventMap.get(eventUID)].extendedProps.userAccountID === this.data.userAccountID ){
+    //         return true;
+    //     }
+    //     return false;
+    // }
     saveEvent(newEvent, callback) {
         if(!this.checkPermissions(newEvent)){
             if(newEvent.extendedProps.ProgramId !== caldata.ProgramID) {
@@ -157,11 +158,11 @@
             body: JSON.stringify({
                 EventData: JSON.stringify(newEvent),
                 EventUuid: newEvent.extendedProps.uuid,
-                Year: Number(elements.year.val()),
+                Year: Number(newEvent.extendedProps.Year),
                 InstructorHash : newEvent.extendedProps.instructorHash,
                 EventAuthorHash: newEvent.extendedProps.userAccountID || caldata.userAccountID,
                 InstitutonId : caldata.institutionID,
-                Quarter: Number(elements.quarter.val()),
+                Quarter: Number(newEvent.extendedProps.Quarter),
                 Building: newEvent.extendedProps.building + "",
                 Room: newEvent.extendedProps.room + "",
                 ProgramId: Number(newEvent.extendedProps.ProgramId),
@@ -171,7 +172,7 @@
                 CourseNumber: newEvent.extendedProps.courseNumber + "",
                 Section: newEvent.extendedProps.section + "",
                 Component: newEvent.extendedProps.component + "",
-            })
+            }).replace(/_--__-/gm, "")
         }
         if(new RegExp(/ _--__- /gm).test(newPost.body)){
             $("#s3").text("Invalid token stream detected...");

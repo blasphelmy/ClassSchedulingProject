@@ -123,6 +123,7 @@ class UserEventsComponents extends React.Component {
             <th>Location</th>
             <th>Days</th>
             <th>Time</th>
+            <th></th>
           </thead>
           <tbody>
             {this.state.userEvents.map(function(o){
@@ -237,10 +238,10 @@ class AccordianHeader extends React.Component {
             Active Courses for
             {elements.quarter.map(function (o, element) {
               switch (element.value) {
-                case "1": return " Winter"; break;
-                case "2": return " Spring"; break;
-                case "3": return " Summer"; break;
-                case "4": return " Fall"; break;
+                case "1": return " Fall"; break;
+                case "2": return " Winter"; break;
+                case "3": return " Spring"; break;
+                case "4": return " Summer"; break;
               }
               return "Error";
             })[0] + " " + elements.year.val()}

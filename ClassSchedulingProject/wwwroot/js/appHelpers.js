@@ -75,6 +75,7 @@ let fetchData = (e, callback) => {
     });
 }
 function fetchEventTemplates(e, callback){
+    closePopUp();
     try {
         localStorage.setItem(e.id, e.value);
     } catch {
@@ -92,7 +93,6 @@ function fetchEventTemplates(e, callback){
                 let color = colors[colorIndex++ % colors.length];
                 o.Active = false;
                 o.EventTemplateColor = color;
-                console.log(o)
                 EventTemplatesColorMap.set(o.Id, color);
             });
             fetchData(new Object);
@@ -101,6 +101,7 @@ function fetchEventTemplates(e, callback){
     });
 }
 function fetchNewCalendar(element) {
+    if(element.id === "yearSel" || element.id === "qSel") closePopUp();
     newCalender = new CalenderApp(caldata);
     fetchData(element);
 }

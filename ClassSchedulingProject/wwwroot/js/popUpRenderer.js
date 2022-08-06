@@ -27,10 +27,12 @@ function editEvent(element) {
     closePopUp();
     let data = JSON.parse(element.attr("data"));
     //goToEvent(data.extendedProps.building, data.extendedProps.room);
-    if(developerMode) console.log(data);
+    if (!developerMode) console.log(data);
     let info = {
 
     }
+
+    if(!newCalender.checkPermissions(data)) return renderPopUp(data, info);
     generateFormData({}, data);
     createAnEventPopUp(info, data, source = "eventList");
 }
@@ -172,14 +174,15 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
     if(!/^((?!chrome|android).)*safari/i.test(navigator.userAgent) && window.innerWidth > 699) createDraggableElement(document.getElementById("addEventPopUp"));
     // setPopUpPos(document.getElementById("addEventPopUp"), { x: info.jsEvent.clientX, y: info.jsEvent.clientY });
 }
-function renderPopUp(event, info) {
+function renderPopUp(event) {
+    let iTs = [event.extendedProps.startTime, event.extendedProps.endTime];
     $(`<div id="eventPopUP" class="card popup">
         <div id="ptitle">${event.title}<span id="pclose-UUID" class="close" onclick="closePopUp()">&times;</span></div>
         <div style="font-size:12px">Event Author : <b>${userList.map(function(u){
             if(u.EventsAuthorId === event.extendedProps.userAccountID) return `${u.FirstName} ${u.LastName}`
             return undefined
         }).filter(e => e != undefined)}</b></div>
-        <div id="ptime">${formatTime(info)} <i>room ${event.extendedProps.building}-${event.extendedProps.room}</i></div>
+        <div id="ptime">${formatTimeString(iTs)} <i>room ${event.extendedProps.building}-${event.extendedProps.room}</i></div>
             <div class="pauthor">
                 <div>Recurs : <b>${function () {
             let eventDaysOfWeek = "";
@@ -208,6 +211,7 @@ function renderPopUp(event, info) {
         </div>
     </div>`).appendTo("body");
      createDraggableElement(document.getElementById("eventPopUP"));
+     centerWindow(document.getElementById("eventPopUP"));
 }
 function createPopUp(info) {
     closePopUp();
@@ -343,6 +347,8 @@ function generateFormData(info, event) {
             }, 
             ProgramId : event.extendedProps.ProgramId,
             ClassQuarterNumber : event.extendedProps.ClassQuarterNumber,
+            Quarter : event.extendedProps.Quarter ?? Number(elements.quarter.val()),
+            Year : event.extendedProps.Year ?? Number(elements.year.val()),
             dateCreated : event.extendedProps.dateCreated ?? (new Date()),
         }
     }
@@ -374,6 +380,8 @@ function finalizeFormDataAndAdd(id) {
         finalizedEvent.extendedProps.room = newEvent.extendedProps.room();
         finalizedEvent.extendedProps.building = newEvent.extendedProps.building();
         finalizedEvent.extendedProps.ClassQuarterNumber = newEvent.extendedProps.ClassQuarterNumber;
+        finalizedEvent.extendedProps.Quarter = newEvent.extendedProps.Quarter;
+        finalizedEvent.extendedProps.Year = newEvent.extendedProps.Year;
         finalizedEvent.extendedProps.ProgramId = newEvent.extendedProps.ProgramId;
         finalizedEvent.extendedProps.dateCreated = newEvent.extendedProps.dateCreated;
 
