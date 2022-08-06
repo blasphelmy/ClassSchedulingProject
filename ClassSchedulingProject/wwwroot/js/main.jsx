@@ -35,15 +35,19 @@ function changeView(e, callback){
     }
 }
 function createUserEventListPopUp(InstructorHash){
-    console.log(InstructorHash)
+    if(developerMode) console.log(InstructorHash)
     try{userEvents.unmount();}catch{}
-    userEvents = ReactDOM.createRoot(document.getElementById("userEventListPopup"));
-    userEvents.render(<UserEventsComponents events={newCalender.UsersEventsMap.get(InstructorHash)} callback={() => console.log("Blog rendered")}  />);
     fetch(`/home/fetchEventsByUserYear?InstructorHash=${InstructorHash}&year=${elements.year.val()}`).then(data => data.json()).then(function(data){
+        if(!data) return alert("Nothing found for selected program/year");
         data = data.split(" _--__- ").filter(e => e != "");
-        for(let i in data){
-            data[i] = JSON.parse(data[i]);
+        data.map(function(o, i){
+            data[i] = JSON.parse(o);
+        });
+        console.log(data.length)
+        if(data.length === 0){
+            return alert("Nothing found for selected program/year")
         }
-        console.log(data);
+        userEvents = ReactDOM.createRoot(document.getElementById("userEventListPopup"));
+        userEvents.render(<UserEventsComponents events={data} />);
     })
 }

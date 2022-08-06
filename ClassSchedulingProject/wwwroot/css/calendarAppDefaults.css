@@ -69,8 +69,19 @@ input[type=range] {
 }
 #EventsByUserPopUp {
    background: white;
-   height: fit-content;
-   width: 640px;
+   max-height: 505px;
+   max-width: 990px;
+}
+#EventsByUserPopUp > table {
+   font-size: 12px;
+}
+#EventsByUserPopUp ::-webkit-scrollbar {
+   display: none!important;
+}
+#EventsByUserPopUp  {
+   -ms-overflow-style: none!important;
+   scrollbar-width: none!important; 
+   background-color: none!important;
 }
 .popup {
    position: fixed;
@@ -184,6 +195,8 @@ input[type=range] {
       height: calc(100vh)!important;
       width: 100%!important;
       overflow-y: scroll;
+      max-height:100vh;
+      max-width: 100%;
    }
    .popup {
       position: fixed;

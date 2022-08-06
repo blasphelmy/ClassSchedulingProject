@@ -32,7 +32,8 @@
     <div class="row">
         <div class="col">
             <h2>@thisUser.PrimaryInstitution.InstitutionName</h2>
-            <p>Welcome, @thisUser.FirstName @thisUser.LastName</p>
+            <p style="margin-bottom:0">Welcome, @thisUser.FirstName @thisUser.LastName</p>
+            <a href="#" onclick="createUserEventListPopUp(caldata.userAccountID)">View all my assigned events</a>
             <p>Your department: @thisUser.Department.DepartmentName, Role : <span id="role"></span></p>
                 <span>
                     <select id="viewStyle" class="custom-select-sm" style="margin-top: 0px; margin-bottom: 25px;" onchange="changeView(this)">

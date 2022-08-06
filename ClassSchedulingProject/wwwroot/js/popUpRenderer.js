@@ -1,6 +1,6 @@
 
 function ActivateEvent(element) {
-    if (caldata.role > 2) return;
+    if (role > 2) return;
     closePopUp();
     let data = JSON.parse(element.attr("data"));
     if(developerMode) console.log(data);
@@ -37,6 +37,11 @@ function editEvent(element) {
     createAnEventPopUp(info, data, source = "eventList");
 }
 
+function checkRolePopUp(){
+    if(role > 2) return "disabled";
+    return;
+}
+
 function createAnEventPopUp(info, event, source = "eventTemplates") {
     $(`
 <div id="addEventPopUp" class="card popup">
@@ -50,12 +55,12 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
                 </div>
                 <div class="form-group">
                     <label class="control-label"><b>Class Number</b></label><br />
-                    <input style="width:100%" id="pufClassNumber" class="form-control-xs" value="${event?.extendedProps?.classNumber || ""}"/>
+                    <input style="width:100%" id="pufClassNumber" class="form-control-xs" value="${event?.extendedProps?.classNumber || ""}" ${checkRolePopUp()}/>
                 </div>
                 <div class="form-group">
                     <label class="control-label" ><b>Instructor</b></label><br />
-                    <select style="width:100%" id="pufInstructor" class="custom-select-xs">
-                    <option value="${event.extendedProps.instructorHash || "STAFF"}" selected>${event.extendedProps.instructorName || "STAFF"}</option >
+                    <select style="width:100%" id="pufInstructor" class="custom-select-xs" ${checkRolePopUp()}>
+                    <option value="${event.extendedProps.instructorHash || "STAFF"}" selected>${event.extendedProps.instructorName || "STAFF"}</option>
                     ${userList.map(function (user) {
         return `<option value="${user.EventsAuthorId}">${user.FirstName} ${user.LastName}</option>`
     })}
@@ -64,7 +69,7 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
                 </div>
                 <div class="form-group">
                     <label class="control-label" ><b>Section</b></label><br />
-                    <input style="width:100%" id="pufSection" class="form-control-xs" value="${event?.extendedProps?.section || ""}"/>
+                    <input style="width:100%" id="pufSection" class="form-control-xs" value="${event?.extendedProps?.section || ""}" ${checkRolePopUp()}/>
                 </div>
                 <div class="form-group">
                     <label class="control-label"><b>Course Number</b></label><br />
@@ -85,12 +90,12 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
                         <option value="InPerson">In Person</option>
                         <option value="IndStudy">Ind Study</option>
                     </select>
-                    <select id="pufComponent" class="custom-select-xs">
+                    <select id="pufComponent" class="custom-select-xs" ${checkRolePopUp()}>
                         <option selected>${event?.extendedProps.component || "Component"}</option>
                         <option value="Lecture">Lecture</option>
                         <option value="Lab">Lab</option>
                     </select>
-                    <select id="pufSession" class="custom-select-xs">
+                    <select id="pufSession" class="custom-select-xs" ${checkRolePopUp()}>
                         <option selected>${event?.extendedProps.Session || "Reg"}</option>
                     </select>
                 </div>
@@ -154,10 +159,10 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
         </div>
             ${function () {
             if (source === "eventList") {
-                return `<button onclick='finalizeFormDataAndAdd("class-${event.extendedProps.uuid}")' style="position:relative; float:left; margin-right: 10px;" class="btn btn-primary">Submit</button>
-                        <button onclick='pufDeleteAction("${event.extendedProps.uuid}")' style="position:relative; float:left; margin-right: 10px;" class="btn btn-danger">Delete</button>`
+                return `<button onclick='finalizeFormDataAndAdd("class-${event.extendedProps.uuid}")' style="position:relative; float:left; margin-right: 10px; margin-top : 20px" class="btn btn-primary">Submit</button>
+                        <button onclick='pufDeleteAction("${event.extendedProps.uuid}")' style="position:relative; float:left; margin-right: 10px; margin-top : 20px" class="btn btn-danger">Delete</button>`
             } else {
-                return `<button onclick='finalizeFormDataAndAdd("course-${event.extendedProps.courseID}")' style="position:relative; float:left; margin-right: 30px;" class="btn btn-primary">Submit</button>`
+                return `<button onclick='finalizeFormDataAndAdd("course-${event.extendedProps.courseID}")' style="position:relative; float:left; margin-right: 30px; margin-top : 20px" class="btn btn-primary">Submit</button>`
             }
 
         }()}

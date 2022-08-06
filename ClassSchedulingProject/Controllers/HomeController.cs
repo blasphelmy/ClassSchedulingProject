@@ -113,6 +113,7 @@ namespace ClassSchedulingProject.Controllers
             {
                 return RedirectToAction("Index");
             }
+            ViewData["role"] = 4;
             ViewBag.institutionRegistry = instutionNames;
             ViewBag.institutionEmailSuffix = institutionEmailSuffix;
             return View();
@@ -291,6 +292,7 @@ namespace ClassSchedulingProject.Controllers
             {
                 return RedirectToAction("Index");
             }
+            ViewData["role"] = 4;
             ViewBag.institutionRegistry = instutionNames;
             ViewBag.institutionEmailSuffix = institutionEmailSuffix;
             return View();

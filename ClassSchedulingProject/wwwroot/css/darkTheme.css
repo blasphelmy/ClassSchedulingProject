@@ -116,3 +116,9 @@
   .ActiveEventsListItem > div > a:hover{
     color: var(--linkColor)!important;
   }
+  .close {
+   color: var(--textcolor-1);
+  }
+  .close:hover {
+   color: var(--linkColor)
+  }

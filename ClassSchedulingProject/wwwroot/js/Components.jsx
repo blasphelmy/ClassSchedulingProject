@@ -26,6 +26,11 @@ class ListViewComponent extends React.Component{
     if(events.length === 0 || events === undefined || events === null){
       return;
     }
+    try{
+      events = events.sort((a, b) => a.extendedProps.instructorName > b.extendedProps.instructorName ? 1 : -1)
+     }catch{
+      if(developerMode) console.log("error sorting events")
+     }
     return (
           <div>
             <button className="btn" onClick={() => downloadFile()}><svg style={{position: "relative", top : "-2px"}} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
@@ -114,9 +119,10 @@ class UserEventsComponents extends React.Component {
       <div id="EventsByUserPopUp" className="popup card">
        <div style={{width : "20px" }}id="pclose-UUID" className="close" popupid="addEventPopUp" onClick={() => { userEvents.unmount(); }}>&times;</div>
         <br />
-        <h4>{this.state.userEvents[0].extendedProps.instructorName} events :</h4> 
-        <table className="table table-bordered" style={{marginTop : "10px"}}>
+        <h4>Courses assigned to {this.state.userEvents[0].extendedProps.instructorName} for {elements.year.val() - 1}-{elements.year.val()}</h4> 
+        <table className="table table-responsive" style={{marginTop : "10px"}}>
           <thead>
+            <td>Quater</td>
             <th>Course Number</th>
             <th>Course</th>
             <th>Delivery</th>
@@ -126,30 +132,63 @@ class UserEventsComponents extends React.Component {
             <th></th>
           </thead>
           <tbody>
+            {checkEventsForQuarter(this.state.userEvents, 1)}
             {this.state.userEvents.map(function(o){
-              let iTs = [o.extendedProps.startTime, o.extendedProps.endTime];
-              return (
-                <tr style={{color: `rgb(${HEXtoRGB(o.color, colorFilterBrightness, _colorBrightnessVal).join(",")})`}}>
-                  <td>{o.extendedProps.coursePrefix} {o.extendedProps.courseNumber}</td>
-                  <td>#{o.extendedProps.classNumber} {o.title}</td>
-                  <td>{o.extendedProps.delivery || "Not set"}</td>
-                  <td>{function(){
-                      if(o.extendedProps.room && o.extendedProps.building) return (<a href="#" onClick={() => goToEvent(o.extendedProps.building, o.extendedProps.room, function(){userEvents.unmount()})}>
-                        {o.extendedProps.building + "-" + o.extendedProps.room}
-                      </a>)
-                      return "Online/Not set"
-                  }()}{"\t"}</td>
-                  <td>{formatdaysOfWeek(o.daysOfWeek, "M T W TH F".split(" "))}{"\t"}</td>
-                  <td>{formatTimeString(iTs) || "not set"}{"\t"}</td>
-                  <td><a id={`tableUserEventListPopUp-${o.extendedProps.uuid}`} href="#" data={JSON.stringify(o)} onClick={() => editEvent($(`#tableUserEventListPopUp-${o.extendedProps.uuid}`))}>Edit{"\t"}</a></td>
-                </tr>
-              )
+              if(o.extendedProps.Quarter !== 1) return;
+              return returnUserListTableRow(o);
+            })}
+            {checkEventsForQuarter(this.state.userEvents, 2)}
+            {this.state.userEvents.map(function(o){
+              if(o.extendedProps.Quarter !== 2) return;
+              return returnUserListTableRow(o);
+            })}
+            {checkEventsForQuarter(this.state.userEvents, 3)}
+            {this.state.userEvents.map(function(o){
+              if(o.extendedProps.Quarter !== 3) return;
+              return returnUserListTableRow(o);
+            })}
+            {checkEventsForQuarter(this.state.userEvents, 4)}
+            {this.state.userEvents.map(function(o){
+              if(o.extendedProps.Quarter !== 4) return;
+              return returnUserListTableRow(o);
             })}
           </tbody>
         </table>
       </div>
     )
   }
+}
+function checkEventsForQuarter(eventList, QuarterNumber){
+    for(let i of eventList){
+      if(i.extendedProps.Quarter === QuarterNumber){
+        switch(QuarterNumber){
+          case 1: return <tr><td colSpan="8">Courses assigned for Fall</td></tr>
+          case 2: return <tr><td colSpan="8">Courses assigned for Winter</td></tr>
+          case 3: return <tr><td colSpan="8">Courses assigned for Spring</td></tr>
+          case 4: return <tr><td colSpan="8">Courses assigned for Summer</td></tr>
+        }
+      }
+    }
+}
+function returnUserListTableRow(o){
+  let iTs = [o.extendedProps.startTime, o.extendedProps.endTime];
+  return (
+    <tr>
+      <td></td>
+      <td>{o.extendedProps.coursePrefix} {o.extendedProps.courseNumber}</td>
+      <td>#{o.extendedProps.classNumber} {o.title}</td>
+      <td>{o.extendedProps.delivery || "Not set"}</td>
+      <td>{function(){
+          if(o.extendedProps.room && o.extendedProps.building) return (<a href="#" onClick={() => goToEvent(o.extendedProps.building, o.extendedProps.room, function(){userEvents.unmount()})}>
+            {o.extendedProps.building + "-" + o.extendedProps.room}
+          </a>)
+          return "Online/Not set"
+      }()}{"\t"}</td>
+      <td>{formatdaysOfWeek(o.daysOfWeek, "M T W TH F".split(" "))}{"\t"}</td>
+      <td>{formatTimeString(iTs) || "not set"}{"\t"}</td>
+      <td><a id={`tableUserEventListPopUp-${o.extendedProps.uuid}`} href="#" data={JSON.stringify(o)} onClick={() => editEvent($(`#tableUserEventListPopUp-${o.extendedProps.uuid}`))}>Edit{"\t"}</a></td>
+    </tr>
+  )
 }
 class EventListComponent extends React.Component {
   type;
@@ -185,6 +224,12 @@ class EventListComponent extends React.Component {
     }
     if(this.type === "FilteredEvents") events = events.map(eventBuilder);
 
+   try{
+    events = events.sort((a, b) => a.extendedProps.instructorName > b.extendedProps.instructorName ? 1 : -1)
+   }catch{
+    // console.log("error sorting events")
+   }
+
     return (
       <div className="card">
         <div className="card-header">
@@ -208,7 +253,7 @@ class EventListComponent extends React.Component {
                           return "rooms not set"
                         }()}
                         <br /> 
-                        <a href="#" onClick={() => createUserEventListPopUp(o.extendedProps.instructorHash)}>View all events assigned to <span className="underlineText">{o.extendedProps.instructorName}</span></a>
+                        <a href="#" onClick={() => createUserEventListPopUp(o.extendedProps.instructorHash)}><span className="underlineText">View all events assigned to {o.extendedProps.instructorName}</span></a>
                       </div>
                     </p>
                   </div>
