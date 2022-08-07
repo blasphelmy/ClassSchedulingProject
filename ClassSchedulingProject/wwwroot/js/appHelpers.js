@@ -87,7 +87,7 @@ function fetchEventTemplates(e, callback){
             caldata.ProgramName = data.programName;
             caldata.ProgramType = data.programType;
             caldata.ProgramID = data.programID;
-            caldata.EventTemplates = JSON.parse(data.programTemplates);
+            caldata.EventTemplates = JSON.parse(data.programTemplates).sort( (a, b) => a.QuarterNumber > b.QuarterNumber ? 1 : -1);
             var colorIndex = 0;
             caldata.EventTemplates.map(function(o, i){
                 let color = colors[colorIndex++ % colors.length];

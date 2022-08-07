@@ -127,7 +127,7 @@ let caldata = {
 const role = @thisUser.AccountFlag;
 let userList = JSON.parse('@Html.Raw(ViewBag.userList)')
 document.getElementById("role").innerText = function() { 
-    switch (caldata.role) {
+    switch (role) {
         case 0: return "Admin"; break;
         case 1: return "Admin Assistant"; break;
         default: return "Professor"; break;
