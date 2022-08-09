@@ -27,6 +27,7 @@
                     <th>Course Number</th>
                     <th>Title</th>
                     <th>Component</th>
+                    <th>Credits</th>
                 </tr>
             </thead>
             <tbody>
@@ -47,7 +48,8 @@
                         <option value="Lab">Lab</option>
                         <option value="Ind Study"></option>
                     </select></td>
-                    <td><a id="@course.Id" href="#" onclick="save('tableRow-@course.Id')">Save</a></td>
+                    <td><input data="CourseCredits" type="text" value="@course.Credits"></td>
+                    <td><a id="@course.Id" href="#" onclick="save('tableRow-@course.Id')">Save</a></td> 
                 </tr>
                 }
             </tbody>
@@ -78,6 +80,7 @@
                 case "Title": newPost.body.Title = o.firstChild.value.toString(); break;
                 case "Component": newPost.body.Component = o.firstChild.value.toString(); break;
                 case "QuarterNumber": newPost.body.QuarterNumber = Number(o.firstChild.value); break;
+                case "CourseCredits": newPost.body.Credits = parseFloat(o.firstChild.value); break;
             }
         })
         newPost.body = JSON.stringify(newPost.body);

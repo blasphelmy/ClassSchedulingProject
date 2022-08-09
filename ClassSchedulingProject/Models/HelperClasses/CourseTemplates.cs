@@ -11,6 +11,7 @@ public struct CourseOfferedTemplates
         public string CourseNumber { get; set; }
         public string Component { get; set; }
         public int QuarterNumber { get; set; }
+        public decimal? Credits {get; set;}
 
         public CourseOfferedTemplates(CourseOfferingsTemplates course){
             this.Id = course.Id;
@@ -21,6 +22,7 @@ public struct CourseOfferedTemplates
             this.CourseNumber = course.CourseNumber;
             this.QuarterNumber = course.QuarterNumber;
             this.Component = course.Component;
+            this.Credits = course.Credits;
         }
     }
 }

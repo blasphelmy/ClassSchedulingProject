@@ -20,6 +20,7 @@ class ListViewComponent extends React.Component{
     });
   }
   render() {
+    if(jQuery.isEmptyObject(this.state.newCalData)) return;
     let events = this.state.newCalData.events.map(function(o){
       if(o.extendedProps.ProgramId === caldata.ProgramID) return o;
     })
@@ -129,6 +130,7 @@ class UserEventsComponents extends React.Component {
             <th>Location</th>
             <th>Days</th>
             <th>Time</th>
+            <th>Credits</th>
             <th></th>
           </thead>
           <tbody>
@@ -162,13 +164,22 @@ function checkEventsForQuarter(eventList, QuarterNumber){
     for(let i of eventList){
       if(i.extendedProps.Quarter === QuarterNumber){
         switch(QuarterNumber){
-          case 1: return <tr><td colSpan="8">Courses assigned for Fall</td></tr>
-          case 2: return <tr><td colSpan="8">Courses assigned for Winter</td></tr>
-          case 3: return <tr><td colSpan="8">Courses assigned for Spring</td></tr>
-          case 4: return <tr><td colSpan="8">Courses assigned for Summer</td></tr>
+          case 1: return <tr><td colSpan="8">Courses assigned for Fall: {sumcredits(eventList, QuarterNumber)} credits total</td></tr>
+          case 2: return <tr><td colSpan="8">Courses assigned for Winter: {sumcredits(eventList, QuarterNumber)} credits total</td></tr>
+          case 3: return <tr><td colSpan="8">Courses assigned for Spring: {sumcredits(eventList, QuarterNumber)} credits total</td></tr>
+          case 4: return <tr><td colSpan="8">Courses assigned for Summer: {sumcredits(eventList, QuarterNumber)} credits total</td></tr>
         }
       }
     }
+}
+function sumcredits(eventList, QuarterNumber){
+  let credits = 0.0;
+  for(let i of eventList){
+    if(i.extendedProps.Quarter === QuarterNumber){
+      credits = credits + i.extendedProps.credits;
+    }
+  }
+  return credits;
 }
 function returnUserListTableRow(o){
   let iTs = [o.extendedProps.startTime, o.extendedProps.endTime];
@@ -186,6 +197,7 @@ function returnUserListTableRow(o){
       }()}{"\t"}</td>
       <td>{formatdaysOfWeek(o.daysOfWeek, "M T W TH F".split(" "))}{"\t"}</td>
       <td>{formatTimeString(iTs) || "not set"}{"\t"}</td>
+      <td>{o.extendedProps.credits}</td>
       <td><a id={`tableUserEventListPopUp-${o.extendedProps.uuid}`} href="#" data={JSON.stringify(o)} onClick={() => editEvent($(`#tableUserEventListPopUp-${o.extendedProps.uuid}`))}>Edit{"\t"}</a></td>
     </tr>
   )
@@ -214,6 +226,7 @@ class EventListComponent extends React.Component {
     });
   }
   render() {
+    if(jQuery.isEmptyObject(this.state.newCalData)) return;
     let events = this.state.newCalData.events;
     events = events.map(function(o){
       if(o.extendedProps.ProgramId === caldata.ProgramID) return o;

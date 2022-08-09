@@ -36,34 +36,34 @@
             <a href="#" onclick="createUserEventListPopUp(caldata.userAccountID)">View all my assigned events</a>
             <p>Your department: @thisUser.Department.DepartmentName, Role : <span id="role"></span></p>
                 <span>
-                    <select id="viewStyle" class="custom-select-sm" style="margin-top: 0px; margin-bottom: 25px;" onchange="changeView(this)">
+                    <select id="viewStyle" class="custom-select-sm" style="margin-top: 0px;" onchange="changeView(this)">
                       <option value="1" selected>Calendar</option>
                       <option value="2">List View</option>
                     </select>
-                    <select id="dptSel" class="custom-select-sm" style="margin-top: 0px; margin-bottom: 25px;" onchange="fetchEventTemplates(this)">
+                    <select id="dptSel" class="custom-select-sm" style="margin-top: 0px;" onchange="fetchEventTemplates(this)">
                       @foreach(ProgramOfferings program in thisUser.Department.ProgramOfferings){
                         <option value="@program.Id">@program.ProgramName @program.ProgramType</option>
                       }
                     </select>
-                    <select id="yearSel" class="custom-select-sm" style="margin-top: 0px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
+                    <select id="yearSel" class="custom-select-sm" style="margin-top: 0px;" onchange="fetchNewCalendar(this)">
                       <option selected>Select Year</option>
                         @foreach(int year in AvailableYears)
                         {
                             <option value="@year">@(year-1) - @year</option>
                         }
                     </select>
-                    <select id="qSel" class="custom-select-sm" style="margin-top: 0px; margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
+                    <select id="qSel" class="custom-select-sm" style="margin-top: 0px;" onchange="fetchNewCalendar(this)">
                       <option selected>Select Quarter</option>
                       <option value="1">Fall</option>
                       <option value="2">Winter</option>
                       <option value="3">Spring</option>
                       <option value="4">Summer</option>
                     </select>
-                    <select id="building" class="custom-select-sm" style="margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
+                    <select id="building" class="custom-select-sm" style=" onchange="fetchNewCalendar(this)">
                       <option selected>Select Building</option>
                       <option value="J">J</option>
                     </select>
-                    <select id="room" class="custom-select-sm" style="margin-bottom: 25px;" onchange="fetchNewCalendar(this)">
+                    <select id="room" class="custom-select-sm" style=" onchange="fetchNewCalendar(this)">
                       <option selected>Select Room</option>
                       <option value="108">108</option>
                       <option value="111">111</option>
@@ -71,6 +71,9 @@
                       <option value="114">114</option>
                     </select>
                 </span>
+                <div style="margin-bottom:25px; margin-top: 10px">
+                    <input id="isActiveToggle" data-off="Active" data-on="Locked" data-onstyle="danger" data-offstyle="primary" type="checkbox" onchange="toggleCalendarState()" data-toggle="toggle" data-size="xs" checked disabled>
+                </div>
         </div>
     </div>
     <p id="helpPage"></p>
@@ -124,6 +127,8 @@ let caldata = {
     EventTemplates: [],
     institutionID: "@thisUser.PrimaryInstitutionId",
 }
+var _isActive = 1; 
+const userAccountID = "@thisUser.EventsAuthorId";
 const role = @thisUser.AccountFlag;
 let userList = JSON.parse('@Html.Raw(ViewBag.userList)')
 document.getElementById("role").innerText = function() { 
@@ -133,10 +138,16 @@ document.getElementById("role").innerText = function() {
         default: return "Professor"; break;
     }
 }();
+function toggleCalendarState(){
+    if(role > 2) return;
+    if(dontAssert) return;
+    fetch(`/home/toggleCalendarState?year=${elements.year.val()}&quarter=${elements.quarter.val()}&programID=${Number(elements.dpt.val())}`).then(data => data.json()).then(function(data){
+        _isActive = data;
+        newCalender = new CalenderApp(caldata);
+        fetchData();
+    })
+} 
 </script>
 <script src="/js/Components.jsx" type="text/babel"></script>
 <script src="/js/main.jsx" type="text/babel"></script>
 <script src="/js/helpPage.jsx" type="text/babel"></script>
-<script type="text/babel">
-
-</script>

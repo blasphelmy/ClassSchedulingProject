@@ -1,12 +1,12 @@
 'use strict'
 
 const AllEvents = ReactDOM.createRoot(document.getElementById("allEvents"));
-AllEvents.render(<EventListComponent i={newCalender.data}  type={"EventList"} />);
+AllEvents.render(<EventListComponent i={newCalender?.data ?? {}}  type={"EventList"} />);
 
 var userEvents;
 
 const FilteredEventsList = ReactDOM.createRoot(document.getElementById("filteredEvents"))
-FilteredEventsList.render(<EventListComponent i={newCalender.data} type={"FilteredEvents"} />);
+FilteredEventsList.render(<EventListComponent i={newCalender?.data || {}} type={"FilteredEvents"} />);
 const EventTemplates = ReactDOM.createRoot(document.getElementById("EventTemplates"));
 EventTemplates.render(<EventTemplateComponent CourseOfferings={caldata.EventTemplates} />);
 function changeView(e, callback){
@@ -42,8 +42,8 @@ function createUserEventListPopUp(InstructorHash){
         data = data.split(" _--__- ").filter(e => e != "");
         data.map(function(o, i){
             data[i] = JSON.parse(o);
+            data[i] = checkEventSanity(data[i]);
         });
-        console.log(data.length)
         if(data.length === 0){
             return alert("Nothing found for selected program/year")
         }

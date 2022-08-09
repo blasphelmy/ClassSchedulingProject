@@ -44,6 +44,7 @@
         this.UsersEventsMap = new Map();
         for (let i in newEventList) {
             newEventList[i] = JSON.parse(newEventList[i]);
+            newEventList[i] = checkEventSanity(newEventList[i]);
             newEventList[i].overlap = true;
             if (this.usersColors.get(newEventList[i].extendedProps.instructorHash) === undefined) {
                 this.usersColors.set(newEventList[i].extendedProps.instructorHash, this.colorWheel.colors[this.colorWheel.index++]);
@@ -57,6 +58,7 @@
                 newEventList[i].color = this.usersColors.get(newEventList[i].extendedProps.instructorHash);
             }
             if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#666"
+            if(_isActive === 0) newEventList[i].color = "#8c8c8c"
             this.data.events.push(newEventList[i]);
             this.EventMap.set(this.data.events[i].extendedProps.uuid, i);
             this.setUserEventMap(this.data.events[i]);
@@ -70,13 +72,14 @@
         this.data.events = [];
         for (let i in newEventList) {
             newEventList[i] = JSON.parse(newEventList[i]);
+            newEventList[i] = checkEventSanity(newEventList[i]);
             newEventList[i].overlap = true;
             this.data.events[i] = newEventList[i];
             if (this.EventMap.get(this.data.events[i]) != i) {
                 this.EventMap.set(this.data.events[i].extendedProps.uuid, i);
             }
             //if usersColor return undefined and 
-            if (!this.usersColors.get(this.data.events[i].extendedProps.instructorHash) && this.data.events[i].extendedProps.instructorHash !== caldata.userAccountID) {
+            if (!this.usersColors.get(this.data.events[i].extendedProps.instructorHash) && this.data.events[i].extendedProps.instructorHash !== userAccountID) {
                 if(developerMode) console.log("new user detected");
                 this.usersColors.set(this.data.events[i].extendedProps.instructorHash, this.colorWheel.colors[this.colorWheel.index++]);
                 if (this.colorWheel.index > this.colorWheel.colors.length) {
@@ -90,6 +93,7 @@
                 this.data.events[i].color = this.usersColors.get(this.data.events[i].extendedProps.instructorHash);
             }
             if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#666";
+            if(_isActive === 0) newEventList[i].color = "#8c8c8c"
             //this.addEvent(newEventList[i], 1);
             this.setUserEventMap(this.data.events[i]);
         }
@@ -106,6 +110,7 @@
         this.UsersEventsMap.set(event.extendedProps.instructorHash, thisUsersEvents)
     }
     addEvent(newEvent, callback){
+        if(_isActive === 0) return $("#s3").text("calendar is locked!");
         if(developerMode) console.log("addEventClassMethod");
         newEvent.color = this.usersColors.get(newEvent.extendedProps.userAccountID);
         if (this.checkPermissions(newEvent)) {
@@ -141,6 +146,8 @@
     //     return false;
     // }
     saveEvent(newEvent, callback) {
+        if(_isActive === 0) return $("#s3").text("calendar is locked!");
+        newEvent = checkEventSanity(newEvent);
         if(!this.checkPermissions(newEvent)){
             if(newEvent.extendedProps.ProgramId !== caldata.ProgramID) {
                 $("#s3").text(`Error saving event : event not in currently selected program`)
@@ -160,7 +167,7 @@
                 EventUuid: newEvent.extendedProps.uuid,
                 Year: Number(newEvent.extendedProps.Year),
                 InstructorHash : newEvent.extendedProps.instructorHash,
-                EventAuthorHash: newEvent.extendedProps.userAccountID || caldata.userAccountID,
+                EventAuthorHash: newEvent.extendedProps.userAccountID || userAccountID,
                 InstitutonId : caldata.institutionID,
                 Quarter: Number(newEvent.extendedProps.Quarter),
                 Building: newEvent.extendedProps.building + "",
@@ -172,6 +179,7 @@
                 CourseNumber: newEvent.extendedProps.courseNumber + "",
                 Section: newEvent.extendedProps.section + "",
                 Component: newEvent.extendedProps.component + "",
+                CourseId: Number(newEvent.extendedProps.courseID)
             }).replace(/_--__-/gm, "")
         }
         if(new RegExp(/ _--__- /gm).test(newPost.body)){
@@ -189,6 +197,7 @@
         });
     }
     deleteEvent(uuid) {
+        if(_isActive === 0) return $("#s3").text("calendar is locked!");
         if (this.data.events[this.EventMap.get(uuid)] && this.data.events[this.EventMap.get(uuid)].extendedProps.userAccountID === this.data.userAccountID) {
             $("#s3").text("deleting event...")
             fetch(`/home/deleteEvent?uuid=${uuid}`).then(response => response.json()).then((data) => {
@@ -201,7 +210,7 @@
                 }
             });
         }else{
-            $("#s3").text(`not authorized to delete or modify event ${this.data.events[this.EventMap.get(uuid)].title}`)
+            $("#s3").text(`not authorized to delete this event ${this.data.events[this.EventMap.get(uuid)].title}`)
         }
     }
 }

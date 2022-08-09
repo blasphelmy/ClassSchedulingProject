@@ -1,0 +1,25 @@
+@model UserInformation
+<div style="margin-left: 15px">
+    <p>Hello @Model.FirstName, <br>Your account is not yet verified. To proceed to the app, please await for an admin to approve your account.</p>
+    <p><b>A list of admins you may contact : </b></p>
+    <table class="table table-responsive">
+        <thead>
+            <th>Name</th>
+            <th>Instituion</th>
+            <th>Department</th>
+            <th>Contact</th>
+        </thead>
+        <tbody>
+            @foreach (UserInformation admin in ViewBag.adminList )
+            {
+                <tr>
+                    <td>@admin.FirstName @admin.LastName</td>
+                    <td>@admin.PrimaryInstitution.InstitutionName</td>
+                    <td>@admin.Department.DepartmentName No.@admin.DepartmentId</td>
+                    <td>@admin.PrimaryEmail</td>
+                </tr>
+            }
+            <tr>
+        </tbody>
+    </table>
+</div>

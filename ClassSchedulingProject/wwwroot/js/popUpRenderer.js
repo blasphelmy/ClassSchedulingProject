@@ -17,7 +17,7 @@ function ActivateEvent(element) {
             courseID: data.Id,
             institutionID: data.InstitutionID,
             ProgramId: data.ProgramId,
-            ClassQuarterNumber: data.QuarterNumber
+            ClassQuarterNumber: data.QuarterNumber,
         }
     }
     generateFormData(undefined, event);
@@ -180,6 +180,7 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
     // setPopUpPos(document.getElementById("addEventPopUp"), { x: info.jsEvent.clientX, y: info.jsEvent.clientY });
 }
 function renderPopUp(event) {
+    event = checkEventSanity(event);
     let iTs = [event.extendedProps.startTime, event.extendedProps.endTime];
     $(`<div id="eventPopUP" class="card popup">
         <div id="ptitle">${event.title}<span id="pclose-UUID" class="close" onclick="closePopUp()">&times;</span></div>
@@ -274,6 +275,7 @@ function generateFormData(info, event) {
         return daysofweek;
     },
         extendedProps: {
+            courseID : event.extendedProps.courseID,
             uuid: info?.event?._def?.extendedProps.uuid ?? event?.extendedProps?.uuid ?? create_UUID(),
             userAccountID: event?.extendedProps?.userAccountID || newCalender.data.userAccountID,
             instructorHash: function () {
@@ -389,6 +391,7 @@ function finalizeFormDataAndAdd(id) {
         finalizedEvent.extendedProps.Year = newEvent.extendedProps.Year;
         finalizedEvent.extendedProps.ProgramId = newEvent.extendedProps.ProgramId;
         finalizedEvent.extendedProps.dateCreated = newEvent.extendedProps.dateCreated;
+        finalizedEvent.extendedProps.courseID = newEvent.extendedProps.courseID;
 
         finalizedEvent.groupId = finalizedEvent.extendedProps.uuid;
         finalizedEvent.startTime = finalizedEvent.extendedProps.startTime;
@@ -404,6 +407,7 @@ function finalizeFormDataAndAdd(id) {
                 finalizedEvent.extendedProps.courseID = e.extendedProps.courseID;
                 finalizedEvent.extendedProps.ClassQuarterNumber = e.extendedProps.ClassQuarterNumber;
                 finalizedEvent.extendedProps.ProgramId = e.extendedProps.ProgramId;
+                finalizedEvent.extendedProps.courseID = e.extendedProps.courseID;
             } else {
                 finalizedEvent.extendedProps.ProgramId = e.ProgramId;
                 finalizedEvent.extendedProps.courseID = e.Id;

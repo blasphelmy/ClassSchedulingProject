@@ -64,6 +64,9 @@ namespace ClassSchedulingProject.Controllers
                 ViewBag.isAuthorized = 1;
                 SessionTokens thisToken = context.SessionTokens.FirstOrDefault(e => e.SessionId == cookieValueFromReq);
                 UserInformation thisUser = context.UserInformation.FirstOrDefault(e => e.AccountHash == thisToken.AccountHash);
+                if(thisUser.DepartmentId == null || thisUser.AccountFlag == 4){
+                    return RedirectToAction("waitingForAccountActivation", "Home");
+                }
                 ViewData["Title"] = thisUser.PrimaryInstitutionId + " Home";
                 if(Request.Cookies["theme"] == null) SetCookie("theme", "1", 99999);
                 ViewData["theme"] = Request.Cookies["theme"];
@@ -117,6 +120,19 @@ namespace ClassSchedulingProject.Controllers
             ViewBag.institutionRegistry = instutionNames;
             ViewBag.institutionEmailSuffix = institutionEmailSuffix;
             return View();
+        }
+        [HttpGet]
+        public IActionResult waitingForAccountActivation(){
+            UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
+            if(thisUser == null) return Json("");
+            ViewData["Title"] = thisUser.PrimaryInstitutionId + " Home";
+            if(Request.Cookies["theme"] == null) SetCookie("theme", "1", 99999);
+            ViewData["theme"] = Request.Cookies["theme"];
+            ViewBag.thisUser = thisUser;
+            ViewData["role"] = thisUser.AccountFlag;
+            ViewBag.adminList = context.UserInformation.ToList().FindAll(e => e.AccountFlag < 3);
+            if(thisUser.AccountFlag < 4 && thisUser.DepartmentId != null) return RedirectToAction("Index", "Home");
+            return View(thisUser);
         }
         [HttpGet]
         public IActionResult fetchEvents(string filterterms, string sessionID)
@@ -298,7 +314,7 @@ namespace ClassSchedulingProject.Controllers
             return View();
         }
         [HttpGet]
-        public IActionResult Logout(int id)
+        public IActionResult Logout(string id)
         {
             string cookieValueFromReq = Request.Cookies["sessionID"];
 
@@ -307,7 +323,7 @@ namespace ClassSchedulingProject.Controllers
                 ViewBag.isAuthorized = 1;
                 SessionTokens thisToken = context.SessionTokens.FirstOrDefault(e => e.SessionId == cookieValueFromReq);
                 UserInformation thisUser = context.UserInformation.FirstOrDefault(e => e.AccountHash == thisToken.AccountHash);
-                SessionTokens deleteQeue = thisUser.SessionTokens.FirstOrDefault(o => o.Id == id);
+                SessionTokens deleteQeue = thisUser.SessionTokens.FirstOrDefault(o => o.SessionId == id);
                 if(deleteQeue != null) context.SessionTokens.Remove(deleteQeue);
                 context.SaveChanges();
             }
@@ -344,6 +360,12 @@ namespace ClassSchedulingProject.Controllers
             UserInformation thisUser = getUser(Request.Cookies["sessionID"] ?? sessionID);
             if(thisUser != null)
             {
+
+            FinalizedCalendar calendar = context.FinalizedCalendar.FirstOrDefault(e => e.Department == thisUser.DepartmentId
+                                                                                                        && e.Quarter == newEvent.Quarter
+                                                                                                        && e.Year == newEvent.Year);
+            if(calendar == null || calendar.IsActive == 0) return Json("calendar not active"); 
+
                 // newEvent.EventAuthorHash = thisUser.AccountHash;
                 newEvent.InstitutonId = thisUser.PrimaryInstitutionId;
                 ApiEvents existing = context.ApiEvents.FirstOrDefault(e => e.EventUuid == newEvent.EventUuid);
@@ -430,11 +452,52 @@ namespace ClassSchedulingProject.Controllers
                 existing.CoursePrefix = eventTemplate.CoursePrefix;
                 existing.CourseNumber = eventTemplate.CourseNumber;
                 existing.Component = eventTemplate.Component;
+                existing.Credits = eventTemplate.Credits;
                 context.SaveChanges();
                 return Json(1);
             }
 
             return Json(-1);
+        }
+        [HttpGet]
+        public IActionResult checkCalState(int year, int quarter, int programID){
+            UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
+            if(thisUser != null){
+                FinalizedCalendar calendar = context.FinalizedCalendar.FirstOrDefault(e => e.Department == thisUser.DepartmentId
+                                                                                                                        && e.Quarter == quarter
+                                                                                                                        && e.Year == year);
+                
+                if(calendar == null){
+                    calendar = new FinalizedCalendar();
+                    calendar.IsActive = 0;
+                    calendar.ProgramId = programID;
+                    calendar.Quarter = quarter;
+                    calendar.Year = year;
+                    calendar.Department = thisUser.DepartmentId ?? 0;
+                    context.FinalizedCalendar.Add(calendar);
+                    context.SaveChanges();
+
+                    return Json(0);
+                }
+                return Json(calendar.IsActive);
+            }
+            return Json(0);
+        }
+        [HttpGet]
+        public IActionResult toggleCalendarState(int year, int quarter, int programID){
+        UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
+            if(thisUser != null && thisUser.AccountFlag < 3){
+                FinalizedCalendar calendar = context.FinalizedCalendar.FirstOrDefault(e => e.Department == thisUser.DepartmentId
+                                                                                                                        && e.Quarter == quarter
+                                                                                                                        && e.Year == year);
+                switch(calendar.IsActive){
+                    case 1: calendar.IsActive = 0; break;
+                    case 0: calendar.IsActive = 1; break;
+                }
+                context.SaveChanges();
+                return Json(calendar.IsActive);
+            }
+            return Json(0);
         }
 
         //helper methods
@@ -444,6 +507,7 @@ namespace ClassSchedulingProject.Controllers
             if (token != null)
             {
                 token.LastUsed = DateTime.Now;
+                context.SaveChanges();
                 if (token.AccountHashNavigation != null)
                 {
                     return 1;
@@ -454,6 +518,8 @@ namespace ClassSchedulingProject.Controllers
         public UserInformation getUser(string cookie)
         {
             SessionTokens token = context.SessionTokens.FirstOrDefault(o => o.SessionId == cookie);
+            token.LastUsed = DateTime.Now;
+            context.SaveChanges();
             return token.AccountHashNavigation;
         }
         public void SetCookie(string key, string value, int? expireTime)

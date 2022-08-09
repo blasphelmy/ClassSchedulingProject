@@ -13,6 +13,14 @@ let eventBuilder = function(e){
 }
 let ua = 5;
 let EventTemplatesColorMap = new Map();
+var EventTemplateMaps = new Map();
+// function buildEventTemplatMaps(eventsTemplates){
+//     EventTemplateMaps = new Map();
+//     eventsTemplates.map(function(o, i){
+//         console.log(o)
+//         EventTemplateMaps.set(o.Id, o);
+//     })
+// }
 document.addEventListener('DOMContentLoaded', function () {
     elements = {
         year: $("#yearSel"),
@@ -53,9 +61,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     generateResourceGroups();
     elements.setItemsFromLocalStorage();
-    newCalender = new CalenderApp(caldata);
-    fetchEventTemplates(document.getElementById("dptSel"), function(){
-        updateTimer(10 * 1000);
+    checkCalendarState(function(){
+        newCalender = new CalenderApp(caldata);
+        fetchEventTemplates(document.getElementById("dptSel"), function(){
+            updateTimer(10 * 1000);
+        });
     });
 });
 function createCalender(events) {
@@ -173,7 +183,7 @@ function formatTime(info) {
     return formatTimeString(iTs, timestamps);
 }
 function formatCalendarItem(info) {
-    info.event.extendedProps.userAccountID = caldata.userAccountID;
+    info.event.extendedProps.userAccountID = userAccountID;
     let titleElement = info.el.querySelectorAll('.fc-event-title.fc-sticky')[0];
     let eventTimeElement = info.el.querySelectorAll('.fc-event-time')[0];
     try {

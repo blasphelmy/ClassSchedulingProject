@@ -28,7 +28,7 @@ namespace ClassSchedulingProject.Models
         [StringLength(64)]
         public string InstitutonId { get; set; }
         [Column("classQuarterNumber")]
-        public int ClassQuarterNumber { get; set; }
+        public int? ClassQuarterNumber { get; set; }
         [Column("year")]
         public int Year { get; set; }
         [Column("quarter")]
@@ -41,11 +41,11 @@ namespace ClassSchedulingProject.Models
         public string Room { get; set; }
         [Column("programID")]
         public int ProgramId { get; set; }
-        [Required]
+        [Column("courseID")]
+        public int CourseId { get; set; }
         [Column("coursePrefix")]
         [StringLength(24)]
         public string CoursePrefix { get; set; }
-        [Required]
         [Column("courseNumber")]
         [StringLength(12)]
         public string CourseNumber { get; set; }
@@ -54,6 +54,9 @@ namespace ClassSchedulingProject.Models
         [StringLength(64)]
         public string Component { get; set; }
 
+        [ForeignKey(nameof(CourseId))]
+        [InverseProperty(nameof(CourseOfferingsTemplates.ApiEvents))]
+        public virtual CourseOfferingsTemplates Course { get; set; }
         public virtual UserInformation EventAuthorHashNavigation { get; set; }
         public virtual InstitutionsRegistry Instituton { get; set; }
         [ForeignKey(nameof(ProgramId))]

@@ -30,6 +30,7 @@ function updateTimer(delay) {
         if (elements.checkNull() && newCalender.isActive === 0 && isFetching === 0) {
             isFetching = 1;
             fetchData(new Object);
+            checkCalendarState();
             ua = ua - 1;
             if(ua < 1) ua = 1;
         }
@@ -94,16 +95,45 @@ function fetchEventTemplates(e, callback){
                 o.Active = false;
                 o.EventTemplateColor = color;
                 EventTemplatesColorMap.set(o.Id, color);
+                EventTemplateMaps.set(o.Id, o);
             });
             fetchData(new Object);
             if(callback) callback();
         }
     });
 }
+function checkEventSanity(event){
+    let eventTemplate = EventTemplateMaps.get(event.extendedProps.courseID);
+    event.title = eventTemplate.Title;
+    event.extendedProps.coursePrefix = eventTemplate.CoursePrefix;
+    event.extendedProps.courseNumber = eventTemplate.CourseNumber;
+    event.extendedProps.component = eventTemplate.Component;
+    event.extendedProps.ClassQuarterNumber = eventTemplate.QuarterNumber;
+    event.extendedProps.credits = eventTemplate.Credits;
+    return event;
+}
 function fetchNewCalendar(element) {
     if(element.id === "yearSel" || element.id === "qSel") closePopUp();
+    checkCalendarState();
     newCalender = new CalenderApp(caldata);
     fetchData(element);
+}
+function checkCalendarState(callback){
+    window.dontAssert = true;
+    let isActiveElement = $("#isActiveToggle")
+    fetch(`/home/checkCalState?year=${elements.year.val()}&quarter=${elements.quarter.val()}&programID=${Number(elements.dpt.val())}`).then(data => data.json()).then(function(data){
+        isActiveElement.bootstrapToggle('enable')
+        if(data == 1){
+            isActiveElement.bootstrapToggle('off')
+        }else{
+            isActiveElement.bootstrapToggle('on')
+        }
+        isActiveElement.bootstrapToggle('disable')
+        _isActive = data;
+        window.dontAssert = false;
+        if(role < 3) isActiveElement.bootstrapToggle('enable')
+        if(callback) callback();
+    })
 }
 function formatdaysOfWeek(daysofweek, option = "Mon Tues Wed Thur Fri".split(" ")) {
     let days = [];

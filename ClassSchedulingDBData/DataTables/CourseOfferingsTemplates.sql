@@ -8,6 +8,7 @@
 	[CourseNumber] varchar(24) not null,
 	[Component] varchar(64) not null,
 	[quarterNumber] int not null, -- 1-6 
+	[credits] decimal(3,1),
 	constraint [InstitutionCourseOfferings] foreign key (institutionID) references InstitutionsRegistry(institutionID),
 	constraint [CourseProgramReference] foreign key (ProgramID) references ProgramOfferings(Id),
 	constraint [UniqueCourseOffering] unique(institutionID, CoursePrefix, CourseNumber, quarterNumber, Component, ProgramID)

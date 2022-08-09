@@ -9,6 +9,7 @@ namespace ClassSchedulingProject.Models
     {
         public CourseOfferingsTemplates()
         {
+            ApiEvents = new HashSet<ApiEvents>();
             CourseOfferings = new HashSet<CourseOfferings>();
         }
 
@@ -34,11 +35,15 @@ namespace ClassSchedulingProject.Models
         public string Component { get; set; }
         [Column("quarterNumber")]
         public int QuarterNumber { get; set; }
+        [Column("credits", TypeName = "decimal(3, 1)")]
+        public decimal? Credits { get; set; }
 
         public virtual InstitutionsRegistry Institution { get; set; }
         [ForeignKey(nameof(ProgramId))]
         [InverseProperty(nameof(ProgramOfferings.CourseOfferingsTemplates))]
         public virtual ProgramOfferings Program { get; set; }
+        [InverseProperty("Course")]
+        public virtual ICollection<ApiEvents> ApiEvents { get; set; }
         [InverseProperty("CourseOffered")]
         public virtual ICollection<CourseOfferings> CourseOfferings { get; set; }
     }
