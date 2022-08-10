@@ -363,7 +363,8 @@ namespace ClassSchedulingProject.Controllers
 
             FinalizedCalendar calendar = context.FinalizedCalendar.FirstOrDefault(e => e.Department == thisUser.DepartmentId
                                                                                                         && e.Quarter == newEvent.Quarter
-                                                                                                        && e.Year == newEvent.Year);
+                                                                                                        && e.Year == newEvent.Year
+                                                                                                        && e.ProgramId == newEvent.ProgramId);
             if(calendar == null || calendar.IsActive == 0) return Json("calendar not active"); 
 
                 // newEvent.EventAuthorHash = thisUser.AccountHash;

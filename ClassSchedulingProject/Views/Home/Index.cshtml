@@ -36,7 +36,9 @@
             <a href="#" onclick="createUserEventListPopUp(caldata.userAccountID)">View all my assigned events</a>
             <p>Your department: @thisUser.Department.DepartmentName, Role : <span id="role"></span></p>
                 <span>
-                    <select id="viewStyle" class="custom-select-sm" style="margin-bottom:10px" onchange="changeView(this)">
+                    <span>Calendar is :  </span>
+                    <input id="isActiveToggle" data-off="Active" data-on="Locked" data-onstyle="danger" data-offstyle="primary" type="checkbox" onchange="toggleCalendarState()" data-toggle="toggle" data-size="xs" checked disabled>
+                    <select id="viewStyle" class="custom-select-sm" style="margin-bottom:10px;" onchange="changeView(this)">
                       <option value="1" selected>Calendar</option>
                       <option value="2">List View</option>
                     </select>
@@ -70,7 +72,6 @@
                       <option value="112">112</option>
                       <option value="114">114</option>
                     </select>
-                    <input id="isActiveToggle" data-off="Active" data-on="Locked" data-onstyle="danger" data-offstyle="primary" type="checkbox" onchange="toggleCalendarState()" data-toggle="toggle" data-size="xs" checked disabled>
                 </span>
         </div>
     </div>

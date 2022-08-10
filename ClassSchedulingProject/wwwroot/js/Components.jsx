@@ -272,7 +272,7 @@ class EventListComponent extends React.Component {
                               return "rooms not set"
                             }()}
                             <br /> 
-                            <a href="#" onClick={() => createUserEventListPopUp(o.extendedProps.instructorHash)}><span className="underlineText">View all events assigned to {o.extendedProps.instructorName}</span></a>
+                            <a href="#" style={{color:"#4090f2"}} onClick={() => createUserEventListPopUp(o.extendedProps.instructorHash)}><span className="underlineText">View all events assigned to {o.extendedProps.instructorName}</span></a>
                           </div>
                         </p>
                       </div>
@@ -304,10 +304,10 @@ function mouseOverWarnings(warnings, errors){
   $element.css(`left`, `${capturedX}px`)
   $element.css(`top`, `${capturedY}px`)
   for(let error of errors){
-    $element.append($(`<div style="color: red; font-weight: bold">${error}</div>`))
+    $element.append($(`<div style="color: red; font-weight: bold">&#x2022; ${error}</div>`))
   }
   for(let warning of warnings){
-    $element.append($(`<div style="color: orange">${warning}</div>`))
+    $element.append($(`<div style="color: orange">&#x2022; ${warning}</div>`))
   }
   $element.css(`display`, `block`)
 }
