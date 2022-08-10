@@ -121,24 +121,27 @@
                 //prevent previously seen combos from rechecking 
                 if(checkedCombo.get(eventA.extendedProps.uuid+eventB.extendedProps.uuid) || checkedCombo.get(eventB.extendedProps.uuid+eventA.extendedProps.uuid)) continue;
                 checkedCombo.set(eventA.extendedProps.uuid + eventB.extendedProps.uuid, true); //probably wont need this
-                checkedCombo.set(eventB.extendedProps.uuid + eventA.extendedProps.uuid, true);
+                // checkedCombo.set(eventB.extendedProps.uuid + eventA.extendedProps.uuid, true);
 
                 //flush out unscheduled/unfinished event pairs
                 if(eventA.extendedProps.room === "" 
                 || eventA.extendedProps.building === ""
                 || eventB.extendedProps.room === ""
                 || eventB.extendedProps.building === ""
-                || eventA.startTime === ""
-                || eventA.endTime === ""
-                || eventB.startTime === ""
-                || eventB.endTime === ""
-                || eventA.daysOfWeek.length === 0) continue;
+                || eventA.extendedProps.startTime === ""
+                || eventA.extendedProps.endTime === ""
+                || eventB.extendedProps.startTime === ""
+                || eventB.extendedProps.endTime === ""
+                || eventA.daysOfWeek.length === 0
+                || eventB.daysOfWeek.length === 0) continue;
+
                 let checkDayOverlay = function(eventA, eventB){
                     for(let dayA of eventA.daysOfWeek){
                         for(let dayB of eventB.daysOfWeek){
                             if(dayA === dayB) return true;
                         }
                     }
+                    return false;
                 }
                 let checkitsConflict = function(itsA, itsB){
                     if((itsA.start < itsB.start && itsB.start < itsA.end)
@@ -153,8 +156,8 @@
                     start : new Date("01 Jan 1970 " + eventB.extendedProps.startTime),
                     end : new Date("01 Jan 1970 " + eventB.extendedProps.endTime)
                 }
-                if(eventA.extendedProps.room === eventB.extendedProps.room
-                    && eventA.extendedProps.building === eventB.extendedProps.building){
+                //if events fall in the same room, check for time conflicts
+                if(eventA.extendedProps.room === eventB.extendedProps.room && eventA.extendedProps.building === eventB.extendedProps.building){
                         let thisRoom = eventA.extendedProps.building + "-" + eventB.extendedProps.room;
                         //check for tangible and concrete time conflicts
                         //if event are potentially taught on the same days and if they overlap
@@ -162,15 +165,32 @@
                                  eventA.extendedProps.errors.push(`Time conflict with ${eventB.title} in room ${thisRoom}`)
                                  eventB.extendedProps.errors.push(`Time conflict with ${eventA.title} in room ${thisRoom}`)
                         }
-                }else if(eventA.extendedProps.ClassQuarterNumber === eventB.extendedProps.ClassQuarterNumber && eventA.extendedProps.ProgramId === eventB.extendedProps.ProgramId){
+                //if events belong to the same program and have the same quarter number, check for time conflicts
+                }
+                // console.log(eventA.title + " |  " + eventB.title)
+                // console.log(eventA.extendedProps.ProgramId == eventB.extendedProps.ProgramId)
+                if(eventA.extendedProps.ClassQuarterNumber === eventB.extendedProps.ClassQuarterNumber 
+                    && eventA.extendedProps.ProgramId == eventB.extendedProps.ProgramId){
                         let roomA = eventA.extendedProps.building + "-" + eventA.extendedProps.room;
                         let roomB = eventB.extendedProps.building + "-" + eventB.extendedProps.room;
                         //check for tangible and concrete time conflicts
                         //if event are potentially taught on the same days and if they overlap
                         if(checkDayOverlay(eventA, eventB) && checkitsConflict(itsA, itsB)) {
-                                    eventA.extendedProps.errors.push(`Conflict with ${eventB.title} in room ${roomB} - class taught same quarter but scheduled for the conflicting times!`)
-                                    eventB.extendedProps.errors.push(`Conflict with ${eventA.title} in room ${roomA} - class taught same quarter but scheduled for the conflicting times!`)
+                                    eventA.extendedProps.errors.push(`Conflict with ${eventB.title} in room ${roomB} - classes meant to be taught together are overlapping`)
+                                    eventB.extendedProps.errors.push(`Conflict with ${eventA.title} in room ${roomA} - classes meant to be taught together are overlapping`)
                         }
+                }
+
+                //always check two events if the same instructor is teaching
+                if(eventA.extendedProps.instructorHash === eventB.extendedProps.instructorHash){
+                    let roomA = eventA.extendedProps.building + "-" + eventA.extendedProps.room;
+                    let roomB = eventB.extendedProps.building + "-" + eventB.extendedProps.room;
+                    //check for tangible and concrete time conflicts
+                    //if event are potentially taught on the same days and if they overlap
+                    if(checkDayOverlay(eventA, eventB) && checkitsConflict(itsA, itsB)) {
+                                eventA.extendedProps.errors.push(`This instructor is already scheduled to teach a course in room ${roomB} during this time`)
+                                eventB.extendedProps.errors.push(`This instructor is already scheduled to teach a course in room  ${roomA} during this time`)
+                    }
                 }
             }
         }
@@ -270,6 +290,7 @@
                 $("#s3").text(`error saving event, server responded with : ${data}`);
            }
            if (callback) callback();
+           this.checkForConflicts();
         });
     }
     deleteEvent(uuid) {
@@ -282,6 +303,7 @@
                     this.data.events = this.data.events.splice(Number(this.EventMap.get(uuid)), 1);
                     fetchData(new Object, function(){
                         $("#s3").text(`${title} deleted...`)
+                        this.checkForConflicts();
                     });
                 }
             });
