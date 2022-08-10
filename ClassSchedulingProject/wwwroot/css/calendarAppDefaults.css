@@ -58,6 +58,10 @@ input[type=range] {
 .fc-v-event {
    background-color: rgba(23, 34, 54,.4);
 }
+.card > .collapse  {
+   /* background-color: blue!important; */
+   font-weight:500;
+}
 #eventPopUP {
    height: 405px;
    width: 326px;
@@ -121,6 +125,36 @@ input[type=range] {
 .ActiveEventsListItem:hover {
    padding-left: 11px;
    border-left: solid 5px;
+}
+ .fc-timegrid-col-events {
+    position: relative;
+    width: 100%!important;
+    left: -2px!important;
+ }
+ .fc ::-webkit-scrollbar {
+    display: none;
+ }
+#EventWarnings {
+   cursor: pointer;
+   color: white;
+   font-size: 12px;
+   display: none;
+   height: fit-content;
+   width: 200px;
+   position: fixed;
+   top: 0;
+   left: 0;
+   background: rgba(255, 255, 255, .2);
+   border-radius: 4px;
+   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.219);
+   backdrop-filter: blur(20px);
+   -webkit-backdrop-filter: blur(5px);
+   border: 1px solid rgba(194, 194, 194, 0.151);
+   z-index: 100;
+   padding: 10px;
+}
+#EventWarnings > div {
+   margin-bottom: 5px;
 }
 .close {
    cursor: pointer;

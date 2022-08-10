@@ -188,7 +188,7 @@ function formatCalendarItem(info) {
     let eventTimeElement = info.el.querySelectorAll('.fc-event-time')[0];
     try {
         eventTimeElement.innerHTML = `${function () {
-            if (info.event._def.extendedProps.userAccountID === newCalender.data.userAccountID) {
+            if (info.event._def.extendedProps.userAccountID === newCalender.data.userAccountID && role < 3 && _isActive == 1 && caldata.ProgramID == info.event._def.extendedProps.ProgramId) {
                 return `<span id="eventDelete_${info.event._def.extendedProps.uuid}" class="close text-light" style="position:relative;bottom:6px;">&times;</span> <br /> `;
             }
             return ``;

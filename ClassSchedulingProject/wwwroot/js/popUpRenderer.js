@@ -24,6 +24,7 @@ function ActivateEvent(element) {
     createAnEventPopUp(info, event);
 }
 function editEvent(element) {
+    if(_isActive === 0) return alert("Calendar locked");
     closePopUp();
     let data = JSON.parse(element.attr("data"));
     //goToEvent(data.extendedProps.building, data.extendedProps.room);

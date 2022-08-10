@@ -12,8 +12,14 @@ window.addEventListener('click', (event) => {
     if(ua > 5) ua = 5;
     if(developerMode) console.log(ua)
 })
-window.addEventListener('mousemove', function(){
+var _mousePOS = {
+    x : 0,
+    y : 0
+}
+window.addEventListener('mousemove', function(e){
     ua = ua + 0.0008;
+    _mousePOS.x = e.clientX;
+    _mousePOS.y = e.clientY;
     if(ua > 4) ua = 4;
     if(developerMode) console.log(ua)
 }, false);
@@ -82,34 +88,57 @@ function fetchEventTemplates(e, callback){
     } catch {
     }
     //caldata.ProgramID = e.value;
-    fetch(`/home/fetchEventTemplates?programID=${e.value}`).then(res => res.json()).then(data => {
-        if(developerMode) console.log(data);
-        if(data){
-            caldata.ProgramName = data.programName;
-            caldata.ProgramType = data.programType;
-            caldata.ProgramID = data.programID;
-            caldata.EventTemplates = JSON.parse(data.programTemplates).sort( (a, b) => a.QuarterNumber > b.QuarterNumber ? 1 : -1);
-            var colorIndex = 0;
-            caldata.EventTemplates.map(function(o, i){
-                let color = colors[colorIndex++ % colors.length];
-                o.Active = false;
-                o.EventTemplateColor = color;
-                EventTemplatesColorMap.set(o.Id, color);
-                EventTemplateMaps.set(o.Id, o);
-            });
-            fetchData(new Object);
-            if(callback) callback();
-        }
-    });
+    window.dontAssert = true;
+    checkCalendarState(function(){
+        fetch(`/home/fetchEventTemplates?programID=${e.value}`).then(res => res.json()).then(data => {
+            if(developerMode) console.log(data);
+            if(data){
+                caldata.ProgramName = data.programName;
+                caldata.ProgramType = data.programType;
+                caldata.ProgramID = data.programID;
+                caldata.EventTemplates = JSON.parse(data.programTemplates).sort( (a, b) => a.QuarterNumber > b.QuarterNumber ? 1 : -1);
+                var colorIndex = 0;
+                caldata.EventTemplates.map(function(o, i){
+                    let color = colors[colorIndex++ % colors.length];
+                    o.Active = false;
+                    o.EventTemplateColor = color;
+                    EventTemplatesColorMap.set(o.Id, color);
+                    EventTemplateMaps.set(o.Id, o);
+                });
+                fetchData(new Object, function(){
+                    window.dontAssert = false;
+                });
+                if(callback) callback();
+            }
+        });
+    })
 }
 function checkEventSanity(event){
     let eventTemplate = EventTemplateMaps.get(event.extendedProps.courseID);
+    if(!eventTemplate){
+        return event;
+    }
     event.title = eventTemplate.Title;
     event.extendedProps.coursePrefix = eventTemplate.CoursePrefix;
     event.extendedProps.courseNumber = eventTemplate.CourseNumber;
     event.extendedProps.component = eventTemplate.Component;
     event.extendedProps.ClassQuarterNumber = eventTemplate.QuarterNumber;
     event.extendedProps.credits = eventTemplate.Credits;
+
+    event.extendedProps.sanity = 0;
+
+    event = checkForWarnings(event);
+
+    return event;
+}
+function checkForWarnings(event){
+    event.extendedProps.warnings = new Array();
+    if(event.daysOfWeek.length === 0) event.extendedProps.warnings.push("Event days of week not set");
+    if(event.extendedProps.room === "" || event.extendedProps.building === "") event.extendedProps.warnings.push("Location not set")
+    if(event.endTime === "" || event.startTime === "") event.extendedProps.warnings.push("Times not set")
+    if(event.extendedProps.startDate === "" || event.extendedProps.endDate === "") event.extendedProps.warnings.push("Start and end date not set")
+    if(event.extendedProps.classNumber === 0) event.extendedProps.warnings.push("Class number not set")
+    if(event.extendedProps.section === null) event.extendedProps.warnings.push("Section number not set")
     return event;
 }
 function fetchNewCalendar(element) {
@@ -196,9 +225,16 @@ function HEXtoRGB(hex, callback, multiplier) {
 }
 let colorFilterBrightness = function (red, green, blue, mulitplier) {
     if (!mulitplier) mulitplier = .6;
-    return [Math.min(Math.max(parseInt(red * mulitplier), 0), 255), 
-            Math.min(Math.max(parseInt(green * mulitplier), 0), 255),
-            Math.min(Math.max(parseInt(blue * mulitplier), 0), 255)]
+    let max = 210;
+    let min = 90;
+    if(_theme === 2){
+        // mulitplier = .6
+        max = 225;
+        min = 0;
+    } 
+    return [Math.min(Math.max(parseInt(red * mulitplier), min), max), 
+            Math.min(Math.max(parseInt(green * mulitplier), min), max),
+            Math.min(Math.max(parseInt(blue * mulitplier), min), max)]
 }
 let pufDeleteAction = function (UUID) {
     newCalender.deleteEvent(UUID);

@@ -44,7 +44,7 @@ namespace ClassSchedulingProject.Controllers
             foreach (UserInformation i in context.UserInformation)
             {
                 registeredEmailsDict.Add(i.PrimaryEmail, 1);
-                userList.Add(new publicUserInformation(i));
+                if(i.AccountFlag == 3) userList.Add(new publicUserInformation(i));
             }
             foreach (InstitutionEmailDomains d in context.InstitutionEmailDomains)
             {
@@ -465,7 +465,8 @@ namespace ClassSchedulingProject.Controllers
             if(thisUser != null){
                 FinalizedCalendar calendar = context.FinalizedCalendar.FirstOrDefault(e => e.Department == thisUser.DepartmentId
                                                                                                                         && e.Quarter == quarter
-                                                                                                                        && e.Year == year);
+                                                                                                                        && e.Year == year
+                                                                                                                        && e.ProgramId == programID);
                 
                 if(calendar == null){
                     calendar = new FinalizedCalendar();
@@ -489,7 +490,8 @@ namespace ClassSchedulingProject.Controllers
             if(thisUser != null && thisUser.AccountFlag < 3){
                 FinalizedCalendar calendar = context.FinalizedCalendar.FirstOrDefault(e => e.Department == thisUser.DepartmentId
                                                                                                                         && e.Quarter == quarter
-                                                                                                                        && e.Year == year);
+                                                                                                                        && e.Year == year
+                                                                                                                        && e.ProgramId == programID);
                 switch(calendar.IsActive){
                     case 1: calendar.IsActive = 0; break;
                     case 0: calendar.IsActive = 1; break;

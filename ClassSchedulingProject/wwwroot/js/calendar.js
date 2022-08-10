@@ -12,8 +12,9 @@
         this.usersColors = new Map();
         this.EventMap = new Map();
         this.colorWheel = {
-            colors: ("#abdda4 #ee8a29 #66c2a5 #abc71d #3288bd #5e4fa2".split(" ").reverse()),
+            colors: ("#abdda4 #ee8a29 #66c2a5 #abc71d #3288bd #8d77f3".split(" ").reverse()),
             default: "#ab4e68",
+            locked: "",
             index: 0
         }
         this.data = {};
@@ -57,12 +58,13 @@
             } else {
                 newEventList[i].color = this.usersColors.get(newEventList[i].extendedProps.instructorHash);
             }
-            if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#666"
-            if(_isActive === 0) newEventList[i].color = "#8c8c8c"
+            if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#444"
+            if(_isActive === 0 && newEventList[i].extendedProps.ProgramId === caldata.ProgramID) newEventList[i].color = "#a36475"
             this.data.events.push(newEventList[i]);
             this.EventMap.set(this.data.events[i].extendedProps.uuid, i);
             this.setUserEventMap(this.data.events[i]);
         }
+        this.checkForConflicts();
         this.init = 1;
     }
     updateEvents(eventString) {
@@ -92,12 +94,79 @@
             } else {
                 this.data.events[i].color = this.usersColors.get(this.data.events[i].extendedProps.instructorHash);
             }
-            if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#666";
-            if(_isActive === 0) newEventList[i].color = "#8c8c8c"
+            if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#444";
+            if(_isActive === 0 && newEventList[i].extendedProps.ProgramId === caldata.ProgramID) newEventList[i].color = "#a36475"
             //this.addEvent(newEventList[i], 1);
             this.setUserEventMap(this.data.events[i]);
         }
+        this.checkForConflicts();
         setTimeout(createCalender, 20);
+    }
+    checkForConflicts(){
+        var checkedCombo = new Map();
+
+        for(let eventA of this.data.events){
+            for(let eventB of this.data.events){
+                eventA.extendedProps.errors = new Array();
+                eventB.extendedProps.errors = new Array();
+            }
+        }
+
+        for(let eventA of this.data.events){
+            for(let eventB of this.data.events){
+                //prevent same event from checking each other
+                if(eventA.extendedProps.uuid === eventB.extendedProps.uuid) continue;
+
+                //prevent previously seen combos from rechecking 
+                if(checkedCombo.get(eventA.extendedProps.uuid+eventB.extendedProps.uuid) || checkedCombo.get(eventB.extendedProps.uuid+eventA.extendedProps.uuid)) continue;
+                checkedCombo.set(eventA.extendedProps.uuid + eventB.extendedProps.uuid, true);
+                checkedCombo.set(eventB.extendedProps.uuid + eventA.extendedProps.uuid, true);
+
+                //flush out unscheduled/unfinished event pairs
+                if(eventA.extendedProps.room === "" 
+                || eventA.extendedProps.building === ""
+                || eventB.extendedProps.room === ""
+                || eventB.extendedProps.building === ""
+                || eventA.startTime === ""
+                || eventA.endTime === ""
+                || eventB.startTime === ""
+                || eventB.endTime === ""
+                || eventA.daysOfWeek.length === 0) continue;
+            
+                // console.log(eventA.title, eventB.title)
+                if(eventA.extendedProps.room === eventB.extendedProps.room
+                    && eventA.extendedProps.building === eventB.extendedProps.building){
+
+                        let checkDayOverlay = function(eventA, eventB){
+                            for(let dayA of eventA.daysOfWeek){
+                                for(let dayB of eventB.daysOfWeek){
+                                    if(dayA === dayB) return true;
+                                }
+                            }
+                        }
+
+                        let thisRoom = eventA.extendedProps.building + "-" + eventB.extendedProps.room;
+                        console.log("same room event: ", eventA.title, eventB.title)
+                        let itsA = {
+                            start : new Date("01 Jan 1970 " + eventA.extendedProps.startTime),
+                            end : new Date("01 Jan 1970 " + eventA.extendedProps.endTime)
+                        }
+                        let itsB = {
+                            start : new Date("01 Jan 1970 " + eventB.extendedProps.startTime),
+                            end : new Date("01 Jan 1970 " + eventB.extendedProps.endTime)
+                        }
+                        //check for tangible and concrete time conflicts
+                        //if event are potentially taught on the same days and if they overlap
+                        if( checkDayOverlay(eventA, eventB)
+                            && ((itsA.start < itsB.start && itsB.start < itsA.end)
+                            || (itsB.start < itsA.start && itsA.start < itsB.end))
+                            ) {
+                                 eventA.extendedProps.errors.push(`Time conflict with ${eventB.title} in room ${thisRoom}!`)
+                                 eventB.extendedProps.errors.push(`Time conflict with ${eventA.title} in room ${thisRoom}`)
+                            }
+                    }
+            }
+        }
     }
     setUserEventMap(event){
         if(event.extendedProps.ProgramId !== Number(elements.dpt.val())) return

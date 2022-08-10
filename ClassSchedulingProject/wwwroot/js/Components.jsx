@@ -34,7 +34,7 @@ class ListViewComponent extends React.Component{
      }
     return (
           <div>
-            <button className="btn" onClick={() => downloadFile()}><svg style={{position: "relative", top : "-2px"}} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+            <button className="btn" onClick={() => downloadFile()}><svg style={{position: "relative", top : "-2px"}} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-download" viewBox="0 0 16 16">
   <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
   <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
   </svg> Download as csv</button>
@@ -118,7 +118,7 @@ class UserEventsComponents extends React.Component {
   render() {
     return (
       <div id="EventsByUserPopUp" className="popup card">
-       <div style={{width : "20px" }}id="pclose-UUID" className="close" popupid="addEventPopUp" onClick={() => { userEvents.unmount(); }}>&times;</div>
+       <div style={{width : "20px" }} id="pclose-UUID" className="close" popupid="addEventPopUp" onClick={() => { userEvents.unmount(); }}>&times;</div>
         <br />
         <h4>Courses assigned to {this.state.userEvents[0].extendedProps.instructorName} for {elements.year.val() - 1}-{elements.year.val()}</h4> 
         <table className="table table-responsive" style={{marginTop : "10px"}}>
@@ -185,7 +185,7 @@ function returnUserListTableRow(o){
   let iTs = [o.extendedProps.startTime, o.extendedProps.endTime];
   return (
     <tr>
-      <td></td>
+      <td>ProgramID : {o.extendedProps.ProgramId}</td>
       <td>{o.extendedProps.coursePrefix} {o.extendedProps.courseNumber}</td>
       <td>#{o.extendedProps.classNumber} {o.title}</td>
       <td>{o.extendedProps.delivery || "Not set"}</td>
@@ -249,26 +249,42 @@ class EventListComponent extends React.Component {
         <AccordianHeader type={this.type} />
         </div>
         <div id={`collaspe${this.type}`} className="collapse show" data-parent={`#accordion${this.type}`}>
-          <div className="card-body">
+          <div id={`${this.type}_accordian_body`} className="card-body">
             {
               events.map(function (o, key) {
+                  let warningDisplay = "none";
+                  let errorFill = "orange";
                   if (Object.keys(o).length === 0) return "";
                   if (o.extendedProps.ProgramId !== caldata.ProgramID) EventTemplatesColorMap.set(o.title, "#666")
+                  if(o.extendedProps.warnings?.length > 0 || o.extendedProps.errors?.length > 0) warningDisplay = "block"
+                  if(o.extendedProps.errors?.length > 0) errorFill = "red";
 
                 return (
-                  <div key={`class-${o.extendedProps.uuid}`} id={`class-${o.extendedProps.uuid}`} data={JSON.stringify(o)}>
-                    <p style={{ borderColor: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.extendedProps.courseID), colorFilterBrightness, _colorBrightnessVal).join(",")})` }} key={`${key}-p`} className="ActiveEventsListItem">
-                      <span style={{ color: `rgb(${HEXtoRGB(o.color, colorFilterBrightness, _colorBrightnessVal).join(",")})` }}>
-                        <span className="underlineText" onClick={() => editEvent($(`#class-${o.extendedProps.uuid}`))}>Q{o.extendedProps.ClassQuarterNumber} {"Class "}#{o.extendedProps.classNumber} {o.title}</span></span>
-                      <div style={{ color: `rgb(${HEXtoRGB(o.color, colorFilterBrightness, _colorBrightnessVal).join(",")})`, background: `rgba(${HEXtoRGB(o.color).join(",")}, 0)`, fontSize: "12px", padding: "0" }}>
-                        {formatdaysOfWeek(o.daysOfWeek)}, {formatTimeString([o.startTime, o.endTime])} {function(){
-                          if(o.extendedProps.building !== "" && o.extendedProps.room !== "") return (<span onClick={() => goToEvent(o.extendedProps.building, o.extendedProps.room)} className="underlineText"><b>view -&gt; {o.extendedProps.building + "-" + o.extendedProps.room}</b></span>)
-                          return "rooms not set"
-                        }()}
-                        <br /> 
-                        <a href="#" onClick={() => createUserEventListPopUp(o.extendedProps.instructorHash)}><span className="underlineText">View all events assigned to {o.extendedProps.instructorName}</span></a>
+                  <div className="row">
+                    <div className="col-10">
+                      <div key={`class-${o.extendedProps.uuid}`} id={`class-${o.extendedProps.uuid}`} data={JSON.stringify(o)}>
+                        <p style={{ borderColor: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.extendedProps.courseID), colorFilterBrightness, _colorBrightnessVal).join(",")})` }} key={`${key}-p`} className="ActiveEventsListItem">
+                          <span style={{ color: `rgb(${HEXtoRGB(o.color, colorFilterBrightness, _colorBrightnessVal).join(",")})` }}>
+                            <span className="underlineText" onClick={() => editEvent($(`#class-${o.extendedProps.uuid}`))}>Q{o.extendedProps.ClassQuarterNumber} {"Class "}#{o.extendedProps.classNumber} {o.title}</span></span>
+                          <div style={{ color: `rgb(${HEXtoRGB(o.color, colorFilterBrightness, _colorBrightnessVal).join(",")})`, background: `rgba(${HEXtoRGB(o.color).join(",")}, 0)`, fontSize: "12px", padding: "0" }}>
+                            {formatdaysOfWeek(o.daysOfWeek)}, {formatTimeString([o.startTime, o.endTime])} {function(){
+                              if(o.extendedProps.building !== "" && o.extendedProps.room !== "") return (<span onClick={() => goToEvent(o.extendedProps.building, o.extendedProps.room)} className="underlineText"><b>view -&gt; {o.extendedProps.building + "-" + o.extendedProps.room}</b></span>)
+                              return "rooms not set"
+                            }()}
+                            <br /> 
+                            <a href="#" onClick={() => createUserEventListPopUp(o.extendedProps.instructorHash)}><span className="underlineText">View all events assigned to {o.extendedProps.instructorName}</span></a>
+                          </div>
+                        </p>
                       </div>
-                    </p>
+                    </div>
+                    <div className="col-1">
+                      <div onMouseEnter={()=> {mouseOverWarnings(JSON.stringify(o.extendedProps.warnings), JSON.stringify(o.extendedProps.errors))}} onMouseLeave={()=> {hideWarning()}} style={{display : warningDisplay}}>
+                        <center><svg className="bi bi-exclamation-triangle" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill={errorFill} viewBox="0 0 16 16">
+                          <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+                          <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
+                        </svg></center>
+                      </div>
+                    </div>
                   </div>
                 )
               })
@@ -278,6 +294,27 @@ class EventListComponent extends React.Component {
       </div>
     );
   }
+}
+function mouseOverWarnings(warnings, errors){
+  warnings = JSON.parse(warnings);
+  errors = JSON.parse(errors);
+  let capturedX = _mousePOS.x - 200;
+  let capturedY = _mousePOS.y;
+  let $element = $(`#EventWarnings`);
+  $element.css(`left`, `${capturedX}px`)
+  $element.css(`top`, `${capturedY}px`)
+  for(let error of errors){
+    $element.append($(`<div style="color: red; font-weight: bold">${error}</div>`))
+  }
+  for(let warning of warnings){
+    $element.append($(`<div style="color: orange">${warning}</div>`))
+  }
+  $element.css(`display`, `block`)
+}
+function hideWarning(){
+  let $element = $(`#EventWarnings`);
+  $element.css(`display`, `none`);
+  $element.text("");
 }
 class AccordianHeader extends React.Component {
   type;
