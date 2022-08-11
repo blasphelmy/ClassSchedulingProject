@@ -284,8 +284,9 @@ function formatTimeString(iTs, timestamps) {
     return time;
 }
 function goToEvent(building, roomNumber, callback) {
-    elements.room.val(roomNumber.toString());
     elements.building.val(building.toString());
+    createSelectListRooms();
+    elements.room.val(roomNumber.toString());
     try{
         localStorage.setItem(elements.room.attr("id"), roomNumber.toString());
     }catch{
