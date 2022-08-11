@@ -121,7 +121,7 @@
                 //prevent previously seen combos from rechecking 
                 if(checkedCombo.get(eventA.extendedProps.uuid+eventB.extendedProps.uuid) || checkedCombo.get(eventB.extendedProps.uuid+eventA.extendedProps.uuid)) continue;
                 checkedCombo.set(eventA.extendedProps.uuid + eventB.extendedProps.uuid, true); //probably wont need this
-                // checkedCombo.set(eventB.extendedProps.uuid + eventA.extendedProps.uuid, true);
+                checkedCombo.set(eventB.extendedProps.uuid + eventA.extendedProps.uuid, true);
 
                 //flush out unscheduled/unfinished event pairs
                 if(eventA.extendedProps.room === "" 
@@ -144,26 +144,29 @@
                     return false;
                 }
                 let checkitsConflict = function(itsA, itsB){
-                    if((itsA.start < itsB.start && itsB.start < itsA.end)
-                    || (itsB.start < itsA.start && itsA.start < itsB.end)) return true;
+                    if((itsA.start <= itsB.start && itsB.start <= itsA.end)
+                    || (itsB.start <= itsA.start && itsA.start <= itsB.end)) return true;
                     return false;
                 }
                 let itsA = {
                     start : new Date("01 Jan 1970 " + eventA.extendedProps.startTime),
-                    end : new Date("01 Jan 1970 " + eventA.extendedProps.endTime)
+                    end : new Date("01 Jan 1970 " + eventA.extendedProps.endTime),
                 }
                 let itsB = {
                     start : new Date("01 Jan 1970 " + eventB.extendedProps.startTime),
                     end : new Date("01 Jan 1970 " + eventB.extendedProps.endTime)
                 }
+                let colorA = `rgb(${HEXtoRGB(eventA.color, colorFilterBrightness, _colorBrightnessVal).join(",")})`;
+                let colorB = `rgb(${HEXtoRGB(eventB.color, colorFilterBrightness, _colorBrightnessVal).join(",")})`;
+                let defaultColor = `#dfd29e`
                 //if events fall in the same room, check for time conflicts
                 if(eventA.extendedProps.room === eventB.extendedProps.room && eventA.extendedProps.building === eventB.extendedProps.building){
                         let thisRoom = eventA.extendedProps.building + "-" + eventB.extendedProps.room;
                         //check for tangible and concrete time conflicts
                         //if event are potentially taught on the same days and if they overlap
                         if(checkDayOverlay(eventA, eventB) && checkitsConflict(itsA, itsB)) {
-                                 eventA.extendedProps.errors.push(`Time conflict with ${eventB.title} in room ${thisRoom}`)
-                                 eventB.extendedProps.errors.push(`Time conflict with ${eventA.title} in room ${thisRoom}`)
+                                 eventA.extendedProps.errors.push(`Time conflict with <span style="color:${colorB}">"${eventB.title}"</span> in room <span style="color:${defaultColor}">"${thisRoom}"</span>`)
+                                 eventB.extendedProps.errors.push(`Time conflict with <span style="color:${colorA}">"${eventA.title}"</span> in room <span style="color:${defaultColor}">"${thisRoom}"</span>`)
                         }
                 //if events belong to the same program and have the same quarter number, check for time conflicts
                 }
@@ -176,8 +179,8 @@
                         //check for tangible and concrete time conflicts
                         //if event are potentially taught on the same days and if they overlap
                         if(checkDayOverlay(eventA, eventB) && checkitsConflict(itsA, itsB)) {
-                                    eventA.extendedProps.errors.push(`Conflict with ${eventB.title} in room ${roomB} - classes meant to be taught together are overlapping`)
-                                    eventB.extendedProps.errors.push(`Conflict with ${eventA.title} in room ${roomA} - classes meant to be taught together are overlapping`)
+                                    eventA.extendedProps.errors.push(`Conflict with <span style="color:${colorB}">"${eventB.title}"</span> in room <span style="color:${defaultColor}">"${roomB}"</span> from <span style="color:${defaultColor}">"${formatTimeString([eventB.extendedProps.startTime, eventB.extendedProps.endTime])}"</span> - classes meant to be taught together are overlapping`)
+                                    eventB.extendedProps.errors.push(`Conflict with <span style="color:${colorA}">"${eventA.title}"</span> in room <span style="color:${defaultColor}">"${roomA}"</span> from <span style="color:${defaultColor}">"${formatTimeString([eventA.extendedProps.startTime, eventA.extendedProps.endTime])}"</span> - classes meant to be taught together are overlapping`)
                         }
                 }
 
@@ -188,8 +191,8 @@
                     //check for tangible and concrete time conflicts
                     //if event are potentially taught on the same days and if they overlap
                     if(checkDayOverlay(eventA, eventB) && checkitsConflict(itsA, itsB)) {
-                                eventA.extendedProps.errors.push(`This instructor is already scheduled to teach a course in room ${roomB} during this time`)
-                                eventB.extendedProps.errors.push(`This instructor is already scheduled to teach a course in room  ${roomA} during this time`)
+                                eventA.extendedProps.errors.push(`<span style="color:${colorA}">${eventA.extendedProps.instructorName}</span> is already scheduled to teach <span style="color:${colorB}">"${eventB.title}"</span> in room <span style="color:${defaultColor}">"${roomB}"</span> from <span style="color:${defaultColor}">"${formatTimeString([eventB.extendedProps.startTime, eventB.extendedProps.endTime])}"</span> during this time`)
+                                eventB.extendedProps.errors.push(`<span style="color:${colorB}">${eventB.extendedProps.instructorName}</span> is already scheduled to teach <span style="color:${colorA}">"${eventA.title}"</span> in room <span style="color:${defaultColor}">"${roomA}"</span> from <span style="color:${defaultColor}">"${formatTimeString([eventA.extendedProps.startTime, eventA.extendedProps.endTime])}"</span> during this time`)
                     }
                 }
             }

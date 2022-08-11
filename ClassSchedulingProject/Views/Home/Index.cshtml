@@ -34,38 +34,40 @@
             <h2>@thisUser.PrimaryInstitution.InstitutionName</h2>
             <p style="margin-bottom:0">Welcome, @thisUser.FirstName @thisUser.LastName</p>
             <a href="#" onclick="createUserEventListPopUp(caldata.userAccountID)">View all my assigned events</a>
-            <p>Your department: @thisUser.Department.DepartmentName, Role : <span id="role"></span></p>
+            <p style="margin-bottom: 10px">Your department: @thisUser.Department.DepartmentName, Role : <span id="role"></span></p>
+            <div style="margin-bottom: 10px">
+                <span>Calendar is :  </span>
+                <input id="isActiveToggle" data-off="Active" data-on="Locked" data-onstyle="danger" data-offstyle="primary" type="checkbox" onchange="toggleCalendarState()" data-toggle="toggle" data-size="xs" checked disabled>
+            </div>
                 <span>
-                    <span>Calendar is :  </span>
-                    <input id="isActiveToggle" data-off="Active" data-on="Locked" data-onstyle="danger" data-offstyle="primary" type="checkbox" onchange="toggleCalendarState()" data-toggle="toggle" data-size="xs" checked disabled>
-                    <select id="viewStyle" class="custom-select-sm" style="margin-bottom:10px;" onchange="changeView(this)">
+                    <select id="viewStyle" class="custom-select-sm" style="margin-bottom:25px;" onchange="changeView(this)">
                       <option value="1" selected>Calendar</option>
                       <option value="2">List View</option>
                     </select>
-                    <select id="dptSel" class="custom-select-sm" style="margin-bottom:10px" onchange="fetchEventTemplates(this)">
+                    <select id="dptSel" class="custom-select-sm" style="margin-bottom:25px" onchange="fetchEventTemplates(this)">
                       @foreach(ProgramOfferings program in thisUser.Department.ProgramOfferings){
                         <option value="@program.Id">@program.ProgramName @program.ProgramType</option>
                       }
                     </select>
-                    <select id="yearSel" class="custom-select-sm" style="margin-bottom:10px" onchange="fetchNewCalendar(this)">
+                    <select id="yearSel" class="custom-select-sm" style="margin-bottom:25px" onchange="fetchNewCalendar(this)">
                       <option selected>Select Year</option>
                         @foreach(int year in AvailableYears)
                         {
                             <option value="@year">@(year-1) - @year</option>
                         }
                     </select>
-                    <select id="qSel" class="custom-select-sm" style="margin-bottom:10px" onchange="fetchNewCalendar(this)">
+                    <select id="qSel" class="custom-select-sm" style="margin-bottom:25px" onchange="fetchNewCalendar(this)">
                       <option selected>Select Quarter</option>
                       <option value="1">Fall</option>
                       <option value="2">Winter</option>
                       <option value="3">Spring</option>
                       <option value="4">Summer</option>
                     </select>
-                    <select id="building" class="custom-select-sm" style="margin-bottom:10px" onchange="fetchNewCalendar(this)">
+                    <select id="building" class="custom-select-sm" style="margin-bottom:25px" onchange="fetchNewCalendar(this)">
                       <option selected>Select Building</option>
                       <option value="J">J</option>
                     </select>
-                    <select id="room" class="custom-select-sm" style="margin-bottom:10px" onchange="fetchNewCalendar(this)">
+                    <select id="room" class="custom-select-sm" style="margin-bottom:25px" onchange="fetchNewCalendar(this)">
                       <option selected>Select Room</option>
                       <option value="108">108</option>
                       <option value="111">111</option>
@@ -76,8 +78,8 @@
         </div>
     </div>
     <p id="helpPage"></p>
-    <div class="row" style="padding-right: 20px; padding-bottom: 20px">
-        <div id="panel1" style="height: 100vh;" class="col-lg-7">
+    <div class="row flex-row-reverse" style="padding-right: 20px; padding-bottom: 20px">
+        <div id="panel1" class="col-lg-7">
             <div id='calendar'></div>
             <div id='listView' style="display: none" class="table-responsive"></div>
             <br />
