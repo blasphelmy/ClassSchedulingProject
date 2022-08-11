@@ -10,6 +10,7 @@ namespace ClassSchedulingProject.Models
         public InstitutionsRegistry()
         {
             ApiEvents = new HashSet<ApiEvents>();
+            Buildings = new HashSet<Buildings>();
             CalendarBookBackUps = new HashSet<CalendarBookBackUps>();
             CourseOfferingsTemplates = new HashSet<CourseOfferingsTemplates>();
             Departments = new HashSet<Departments>();
@@ -29,6 +30,7 @@ namespace ClassSchedulingProject.Models
         public string InstitutionName { get; set; }
 
         public virtual ICollection<ApiEvents> ApiEvents { get; set; }
+        public virtual ICollection<Buildings> Buildings { get; set; }
         public virtual ICollection<CalendarBookBackUps> CalendarBookBackUps { get; set; }
         public virtual ICollection<CourseOfferingsTemplates> CourseOfferingsTemplates { get; set; }
         public virtual ICollection<Departments> Departments { get; set; }

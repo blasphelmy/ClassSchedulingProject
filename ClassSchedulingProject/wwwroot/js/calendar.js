@@ -159,14 +159,15 @@
                 let colorA = `rgb(${HEXtoRGB(eventA.color, colorFilterBrightness, _colorBrightnessVal).join(",")})`;
                 let colorB = `rgb(${HEXtoRGB(eventB.color, colorFilterBrightness, _colorBrightnessVal).join(",")})`;
                 let defaultColor = `#dfd29e`
+                if(_theme === 2) defaultColor = "#555555"
                 //if events fall in the same room, check for time conflicts
                 if(eventA.extendedProps.room === eventB.extendedProps.room && eventA.extendedProps.building === eventB.extendedProps.building){
                         let thisRoom = eventA.extendedProps.building + "-" + eventB.extendedProps.room;
                         //check for tangible and concrete time conflicts
                         //if event are potentially taught on the same days and if they overlap
                         if(checkDayOverlay(eventA, eventB) && checkitsConflict(itsA, itsB)) {
-                                 eventA.extendedProps.errors.push(`Time conflict with <span style="color:${colorB}">"${eventB.title}"</span> in room <span style="color:${defaultColor}">"${thisRoom}"</span>`)
-                                 eventB.extendedProps.errors.push(`Time conflict with <span style="color:${colorA}">"${eventA.title}"</span> in room <span style="color:${defaultColor}">"${thisRoom}"</span>`)
+                                 eventA.extendedProps.errors.push(`Time conflict with <span style="color:${colorB}">"${eventB.title}"</span> in room <span style="color:${defaultColor}">"${thisRoom}"</span> from <span style="color:${defaultColor}">"${formatTimeString([eventB.extendedProps.startTime, eventB.extendedProps.endTime])}"</span>`)
+                                 eventB.extendedProps.errors.push(`Time conflict with <span style="color:${colorA}">"${eventA.title}"</span> in room <span style="color:${defaultColor}">"${thisRoom}"</span> from <span style="color:${defaultColor}">"${formatTimeString([eventA.extendedProps.startTime, eventA.extendedProps.endTime])}"</span>`)
                         }
                 //if events belong to the same program and have the same quarter number, check for time conflicts
                 }
@@ -209,6 +210,7 @@
         this.UsersEventsMap.set(event.extendedProps.instructorHash, thisUsersEvents)
     }
     addEvent(newEvent, callback){
+        //check if calendar state is active. front end check. server wont accept event if bypassed for some reason
         if(_isActive === 0) return $("#s3").text("calendar is locked!");
         if(developerMode) console.log("addEventClassMethod");
         newEvent.color = this.usersColors.get(newEvent.extendedProps.userAccountID);
@@ -294,6 +296,7 @@
            }
            if (callback) callback();
            this.checkForConflicts();
+           updateWarningDisplayIfExist();
         });
     }
     deleteEvent(uuid) {

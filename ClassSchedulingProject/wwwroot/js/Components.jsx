@@ -56,6 +56,7 @@ class ListViewComponent extends React.Component{
                   <th>Days</th>
                   <th>Delivery</th>
                   <th>Instructor</th>
+                  <th>{"  "}</th>
                 </tr>
               </thead>
               <tbody>
@@ -123,7 +124,7 @@ class UserEventsComponents extends React.Component {
         <h4>Courses assigned to {this.state.userEvents[0].extendedProps.instructorName} for {elements.year.val() - 1}-{elements.year.val()}</h4> 
         <table className="table table-responsive" style={{marginTop : "10px"}}>
           <thead>
-            <td>Quater</td>
+            <td>Quarter</td>
             <th>Course Number</th>
             <th>Course</th>
             <th>Delivery</th>
@@ -131,7 +132,7 @@ class UserEventsComponents extends React.Component {
             <th>Days</th>
             <th>Time</th>
             <th>Credits</th>
-            <th></th>
+            <th>{"  "}</th>
           </thead>
           <tbody>
             {checkEventsForQuarter(this.state.userEvents, 1)}
@@ -266,7 +267,7 @@ class EventListComponent extends React.Component {
                         <p style={{ borderColor: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.extendedProps.courseID), colorFilterBrightness, _colorBrightnessVal).join(",")})` }} key={`${key}-p`} className="ActiveEventsListItem">
                           <span style={{ color: `rgb(${HEXtoRGB(o.color, colorFilterBrightness, _colorBrightnessVal).join(",")})` }}>
                             "<span className="underlineText" onClick={() => editEvent($(`#class-${o.extendedProps.uuid}`))}>{o.title}</span>"</span>
-                          <div style={{ color: `rgb(${HEXtoRGB(o.color, colorFilterBrightness, _colorBrightnessVal).join(",")})`, background: `rgba(${HEXtoRGB(o.color).join(",")}, 0)`, fontSize: "12px", padding: "0" }}>
+                          <div style={{ padding: "0" }}>
                             {formatdaysOfWeek(o.daysOfWeek)}, {formatTimeString([o.startTime, o.endTime])} {function(){
                               if(o.extendedProps.building !== "" && o.extendedProps.room !== "") return (<span onClick={() => goToEvent(o.extendedProps.building, o.extendedProps.room)} className="underlineText"><b>view -&gt; {o.extendedProps.building + "-" + o.extendedProps.room}</b></span>)
                               return "rooms not set"
@@ -283,7 +284,7 @@ class EventListComponent extends React.Component {
                       </div>
                     </div>
                     <div className="col-2">
-                      <div style={{display : warningDisplay}} onMouseEnter={()=> {mouseOverWarnings(JSON.stringify(o.extendedProps.warnings), JSON.stringify(o.extendedProps.errors))}} onMouseLeave={()=> {hideWarning()}}>
+                      <div style={{display : warningDisplay, cursor : "pointer"}} onClick={()=> {warningPopUps(JSON.stringify(o.extendedProps.warnings), JSON.stringify(o.extendedProps.errors), o)}}>
                         <center><svg className="bi bi-exclamation-triangle" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill={errorFill} viewBox="0 0 16 16">
                           <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
                           <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
@@ -299,27 +300,6 @@ class EventListComponent extends React.Component {
       </div>
     );
   }
-}
-function mouseOverWarnings(warnings, errors, color){
-  warnings = JSON.parse(warnings);
-  errors = JSON.parse(errors);
-  let capturedX = _mousePOS.x;
-  let capturedY = _mousePOS.y;
-  let $element = $(`#EventWarnings`);
-  $element.css(`left`, `${capturedX}px`)
-  $element.css(`top`, `${capturedY}px`)
-  for(let error of errors){
-    $element.append($(`<div style="color: red; font-weight: bold">&#x2022; ${error}</div>`))
-  }
-  for(let warning of warnings){
-    $element.append($(`<div style="color: orange">&#x2022; ${warning}</div>`))
-  }
-  $element.css(`display`, `block`)
-}
-function hideWarning(){
-  let $element = $(`#EventWarnings`);
-  $element.css(`display`, `none`);
-  $element.text("");
 }
 class AccordianHeader extends React.Component {
   type;

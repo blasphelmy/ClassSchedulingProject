@@ -79,8 +79,8 @@
  .fc ::-webkit-scrollbar {
     display: none;
  } */
- #EventWarnings {
-   background: rgba(0, 0, 0, 0.144)!important;
+ .eventWarning {
+   background: rgba(0, 0, 0, 0.3)!important;
 }
  .fc  {
     -ms-overflow-style: none;
@@ -126,4 +126,7 @@
   }
   .close:hover {
    color: var(--linkColor)
+  }
+  p > div {
+   color: rgb(172, 172, 172);
   }

@@ -1,8 +1,5 @@
-﻿var calendar, init = 0, elements = {}, isFetching = 0, calEvents = [], newEvent = {};
+﻿var calendar, init = 0, elements = {}, isFetching = 0, calEvents = [], newEvent = {}, ua = 5, EventTemplatesColorMap = new Map(), EventTemplateMaps = new Map(), newCalender, _mousePOS = { x : 0, y : 0 };
 const slotDuration = `00:05 00:10 00:15 00:20 00:30 01:00)`.split(" "), colors = "#3587e9 #ff8700 #c87a17 #5e4fa2 #00ea2f #1fb976 #ee66a8 #79a2ed".split(" "), timeoffset = (7 * 1000 * 60 * 60)
-var resources = [
-    { id: 'J', building: 'J', title: '111' },
-  ];
 const developerMode = false;
 let eventBuilder = function(e){
     if(e.extendedProps.room === elements.room.val() &&
@@ -11,9 +8,6 @@ let eventBuilder = function(e){
     }
     return {};
 }
-let ua = 5;
-let EventTemplatesColorMap = new Map();
-var EventTemplateMaps = new Map();
 // function buildEventTemplatMaps(eventsTemplates){
 //     EventTemplateMaps = new Map();
 //     eventsTemplates.map(function(o, i){
@@ -59,11 +53,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-    generateResourceGroups();
     elements.setItemsFromLocalStorage();
+    createSelectListRooms();
     checkCalendarState(function(){
         newCalender = new CalenderApp(caldata);
         fetchEventTemplates(document.getElementById("dptSel"), function(){
+            renderListComponents();
             updateTimer(10 * 1000);
         });
     });

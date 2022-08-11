@@ -67,6 +67,20 @@ namespace ClassSchedulingProject.Controllers
                 if(thisUser.DepartmentId == null || thisUser.AccountFlag == 4){
                     return RedirectToAction("waitingForAccountActivation", "Home");
                 }
+
+                List<BuildingResources> resources = new List<BuildingResources>();
+
+                foreach(Buildings building in thisUser.PrimaryInstitution.Buildings){
+                    BuildingResources newBuilding = new BuildingResources();
+                    newBuilding.buildingCode = building.BuildingCode;
+                    foreach(BuildingRooms room in building.BuildingRooms){
+                        newBuilding.buildingRooms.Add(room.Room);
+                    }
+                    resources.Add(newBuilding);
+                }
+
+                ViewBag.resources = JsonSerializer.Serialize(resources);
+
                 ViewData["Title"] = thisUser.PrimaryInstitutionId + " Home";
                 if(Request.Cookies["theme"] == null) SetCookie("theme", "1", 99999);
                 ViewData["theme"] = Request.Cookies["theme"];

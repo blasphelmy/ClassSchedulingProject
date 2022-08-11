@@ -12,14 +12,11 @@ window.addEventListener('click', (event) => {
     if(ua > 5) ua = 5;
     if(developerMode) console.log(ua)
 })
-var _mousePOS = {
-    x : 0,
-    y : 0
-}
 window.addEventListener('mousemove', function(e){
+    _mousePOS.x = e.pageX;
+    _mousePOS.y = e.pageY;
+
     ua = ua + 0.0008;
-    _mousePOS.x = e.clientX;
-    _mousePOS.y = e.clientY;
     if(ua > 4) ua = 4;
     if(developerMode) console.log(ua)
 }, false);
@@ -79,6 +76,7 @@ let fetchData = (e, callback) => {
             isFetching = 0;
             if(callback) callback();
         }, 200);
+        updateWarningDisplayIfExist();
     });
 }
 function fetchEventTemplates(e, callback){
@@ -140,6 +138,31 @@ function checkForWarnings(event){
     if(event.extendedProps.classNumber === 0) event.extendedProps.warnings.push("Class number not set")
     if(event.extendedProps.section === null) event.extendedProps.warnings.push("Section number not set")
     return event;
+}
+function createSelectListRooms(){
+    elements.setItemsFromLocalStorage();
+    let currentBuilding = elements.building.val();
+    let rooms = resources.get(currentBuilding);
+    elements.room.text("");
+    elements.room.append($(`<option>Select Room</option>`))
+    for(let room of rooms){
+        elements.room.append($(`<option value="${room}">${room}</option>`))
+    }
+    elements.setItemsFromLocalStorage();
+}
+function updatePopUpSelectList(){
+    let element = $(`#pufRoomNumber`);
+    let currentBuilding = $(`#pufBuilding`).val();
+    let rooms = resources.get(currentBuilding);
+    element.text("");
+    element.append($(`<option>Select Room</option>`))
+    for(let room of rooms){
+        element.append($(`<option value="${room}">${room}</option>`))
+    }
+}
+function updateRoomsThenFetchNewCalendar(element){
+    createSelectListRooms();
+    fetchNewCalendar(element);
 }
 function fetchNewCalendar(element) {
     if(element.id === "yearSel" || element.id === "qSel") closePopUp();

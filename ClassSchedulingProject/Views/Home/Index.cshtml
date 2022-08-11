@@ -63,9 +63,12 @@
                       <option value="3">Spring</option>
                       <option value="4">Summer</option>
                     </select>
-                    <select id="building" class="custom-select-sm" style="margin-bottom:25px" onchange="fetchNewCalendar(this)">
+                    <select id="building" class="custom-select-sm" style="margin-bottom:25px" onchange="updateRoomsThenFetchNewCalendar(this)">
                       <option selected>Select Building</option>
-                      <option value="J">J</option>
+                      @foreach (Buildings building in thisUser.PrimaryInstitution.Buildings)
+                      {
+                        <option value="@building.BuildingCode">@building.BuildingCode</option>
+                      }
                     </select>
                     <select id="room" class="custom-select-sm" style="margin-bottom:25px" onchange="fetchNewCalendar(this)">
                       <option selected>Select Room</option>
@@ -116,7 +119,6 @@
 <script src="/lib/react/babel7189.js"></script>
 <script src="/js/convertTableToCSV.js"></script>
 <script>
-var newCalender;
 let caldata = {
     firstName: "@thisUser.FirstName",
     lastName: "@thisUser.LastName",
@@ -131,7 +133,16 @@ let caldata = {
 var _isActive = 1; 
 const userAccountID = "@thisUser.EventsAuthorId";
 const role = @thisUser.AccountFlag;
-let userList = JSON.parse('@Html.Raw(ViewBag.userList)')
+const resourceArray = JSON.parse('@Html.Raw(ViewBag.resources)');
+var resources = function(){
+    let newResourceMap = new Map();
+    let newResources = JSON.parse('@Html.Raw(ViewBag.resources)');
+    for(let building of newResources){
+        newResourceMap.set(building.buildingCode, building.buildingRooms);
+    }
+    return newResourceMap;
+}()
+const userList = JSON.parse('@Html.Raw(ViewBag.userList)')
 const _theme = @ViewData["theme"];
 document.getElementById("role").innerText = function() { 
     switch (role) {

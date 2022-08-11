@@ -1,14 +1,13 @@
 'use strict'
-
-const AllEvents = ReactDOM.createRoot(document.getElementById("allEvents"));
-AllEvents.render(<EventListComponent i={newCalender?.data ?? {}}  type={"EventList"} />);
-
 var userEvents;
-
-const FilteredEventsList = ReactDOM.createRoot(document.getElementById("filteredEvents"))
-FilteredEventsList.render(<EventListComponent i={newCalender?.data || {}} type={"FilteredEvents"} />);
-const EventTemplates = ReactDOM.createRoot(document.getElementById("EventTemplates"));
-EventTemplates.render(<EventTemplateComponent CourseOfferings={caldata.EventTemplates} />);
+function renderListComponents(){
+    const AllEvents = ReactDOM.createRoot(document.getElementById("allEvents"));
+    AllEvents.render(<EventListComponent i={newCalender?.data ?? {}}  type={"EventList"} />);
+    const FilteredEventsList = ReactDOM.createRoot(document.getElementById("filteredEvents"))
+    FilteredEventsList.render(<EventListComponent i={newCalender?.data || {}} type={"FilteredEvents"} />);
+    const EventTemplates = ReactDOM.createRoot(document.getElementById("EventTemplates"));
+    EventTemplates.render(<EventTemplateComponent CourseOfferings={caldata.EventTemplates} />);
+}
 function changeView(e, callback){
     closePopUp();
     if(developerMode) console.log("hello");

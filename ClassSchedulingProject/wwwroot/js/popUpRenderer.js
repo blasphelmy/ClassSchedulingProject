@@ -28,7 +28,7 @@ function editEvent(element) {
     closePopUp();
     let data = JSON.parse(element.attr("data"));
     //goToEvent(data.extendedProps.building, data.extendedProps.room);
-    if (!developerMode) console.log(data);
+    if (developerMode) console.log(data);
     let info = {
 
     }
@@ -103,13 +103,17 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
                 <div style="margin-bottom: 20px;">
                     <span><b>Room:</b> <span>
 
-                    <select id="pufBuilding" class="custom-select-xs">
+                    <select id="pufBuilding" onchange="updatePopUpSelectList()" class="custom-select-xs">
                         <option value="${event.extendedProps.building || ""}" selected>${event.extendedProps.building || ""}</option>
-                        <option value="${event.extendedProps.building || elements.building.val()}">${elements.building.val()}</option>
+                        ${resourceArray.map(function(o, i){
+                            return `<option value="${o.buildingCode}">${o.buildingCode}</option>`
+                        })}
                     </select></span></span>
                     <select id="pufRoomNumber" class="custom-select-xs">
                         <option ${event.extendedProps.room || ""} selected>${event.extendedProps.room || ""}</option>
-                        <option value="${elements.room.val()}">${elements.room.val()}</option>
+                        ${resources.get(event.extendedProps.building)?.map(function(room, i){
+                            return `<option value="${room}">${room}</option>`
+                        })}
                     </select>
                 </div>
                 <div class="row">
@@ -220,6 +224,70 @@ function renderPopUp(event) {
      createDraggableElement(document.getElementById("eventPopUP"));
      centerWindow(document.getElementById("eventPopUP"));
 }
+var zIndex = 50;
+function warningPopUps(warnings, errors, event, coor){ 
+    let defaultColor = `#dfd29e`
+    if(_theme === 2) defaultColor = "#555555"
+    let newId = `warning_${event.extendedProps.uuid}`;
+    hideWarning(newId);
+    warnings = JSON.parse(warnings);
+    errors = JSON.parse(errors);
+    let capturedX = coor?.x ?? _mousePOS.x - 400;
+    let capturedY = coor?.y ?? _mousePOS.y;
+    let $element = $(`#EventWarnings`);
+    let $newWarning = $(`<div onclick="focusWarningWindow('${newId}')" class="eventWarning" id="${newId}">
+                            <span style="width:20px" class="close" onclick="hideWarning('${newId}')">&times;</span>
+                        </div>`)
+    // $element.text("");
+    $newWarning.css(`left`, `${capturedX}px`)
+    $newWarning.css(`top`, `${capturedY}px`)
+    $newWarning.append(`<div style="color: rgb(${HEXtoRGB(event.color, colorFilterBrightness, _colorBrightnessVal).join(",")}); font-weight: bold; font-size: 16px">${event.title} - ${event.extendedProps.instructorName}</div>`)
+    for(let error of errors){
+      $newWarning.append($(`<div style="color: red; font-weight: bold">&#x2022; ${error}</div>`))
+    }
+    for(let warning of warnings){
+      $newWarning.append($(`<div style="color: orange">&#x2022; ${warning}</div>`))
+    }
+    $newWarning.css(`display`, `block`)
+    $element.append($newWarning)
+    $(`#${newId}`).css("z-index", ++zIndex)
+    createDraggableElement(document.getElementById(newId));
+    focusWarningWindow(newId);
+
+  }
+  function hideWarning(id){
+    let $element = $(`#${id}`);
+    try{
+        $element.remove();
+    }catch{
+
+    }
+  }
+  function focusWarningWindow(id){
+    // let elements = document.getElementsByClassName("eventWarning");
+    // console.log(elements);
+    // for(let element of elements){
+    //     element.style.setProperty("z-index", "99")
+    // }
+        $(`#${id}`).css("z-index", ++zIndex)
+}
+function updateWarningDisplayIfExist(){
+    let events = newCalender.data.events;
+    for(let event of events){
+        let potWarningID = `warning_${event.extendedProps.uuid}`;
+        let $element = $(`#${potWarningID}`);
+        if($element.length){
+            let coor = {
+                x : Number($element.css("left").split("px")[0]),
+                y : Number($element.css("top").split("px")[0])
+            }
+            $element.text("");
+            warningPopUps(JSON.stringify(event.extendedProps.warnings), JSON.stringify(event.extendedProps.errors), event, coor);
+        }
+    }
+}
+
+
 function createPopUp(info) {
     closePopUp();
     let event = newCalender.data.events[newCalender.EventMap.get(info.event._def.extendedProps.uuid)];

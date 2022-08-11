@@ -17,6 +17,8 @@ namespace ClassSchedulingProject.data
         }
 
         public virtual DbSet<ApiEvents> ApiEvents { get; set; }
+        public virtual DbSet<BuildingRooms> BuildingRooms { get; set; }
+        public virtual DbSet<Buildings> Buildings { get; set; }
         public virtual DbSet<CalendarBookBackUps> CalendarBookBackUps { get; set; }
         public virtual DbSet<CourseOfferings> CourseOfferings { get; set; }
         public virtual DbSet<CourseOfferingsTemplates> CourseOfferingsTemplates { get; set; }
@@ -94,6 +96,41 @@ namespace ClassSchedulingProject.data
                     .HasForeignKey(d => d.ProgramId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("eventProgramReference");
+            });
+
+            modelBuilder.Entity<BuildingRooms>(entity =>
+            {
+                entity.HasIndex(e => new { e.BuildingId, e.Room })
+                    .HasName("uniqueRoom")
+                    .IsUnique();
+
+                entity.Property(e => e.Room).IsUnicode(false);
+
+                entity.HasOne(d => d.Building)
+                    .WithMany(p => p.BuildingRooms)
+                    .HasForeignKey(d => d.BuildingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("buildingReference");
+            });
+
+            modelBuilder.Entity<Buildings>(entity =>
+            {
+                entity.HasIndex(e => new { e.BuildingCode, e.InstitutionId })
+                    .HasName("uniqueBuilding")
+                    .IsUnique();
+
+                entity.Property(e => e.BuildingCode).IsUnicode(false);
+
+                entity.Property(e => e.BuildingName).IsUnicode(false);
+
+                entity.Property(e => e.InstitutionId).IsUnicode(false);
+
+                entity.HasOne(d => d.Institution)
+                    .WithMany(p => p.Buildings)
+                    .HasPrincipalKey(p => p.InstitutionId)
+                    .HasForeignKey(d => d.InstitutionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("buildingInstitutionReference");
             });
 
             modelBuilder.Entity<CalendarBookBackUps>(entity =>
