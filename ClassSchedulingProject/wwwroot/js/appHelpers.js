@@ -114,6 +114,7 @@ function fetchEventTemplates(e, callback){
 function checkEventSanity(event){
     let eventTemplate = EventTemplateMaps.get(event.extendedProps.courseID);
     if(!eventTemplate){
+        event.extendedProps.insanityLevel = 1;
         return event;
     }
     event.title = eventTemplate.Title;
@@ -123,7 +124,7 @@ function checkEventSanity(event){
     event.extendedProps.ClassQuarterNumber = eventTemplate.QuarterNumber;
     event.extendedProps.credits = eventTemplate.Credits;
 
-    event.extendedProps.sanity = 0;
+    event.extendedProps.insanityLevel = 0;
 
     event = checkForWarnings(event);
 
@@ -140,7 +141,6 @@ function checkForWarnings(event){
     return event;
 }
 function createSelectListRooms(){
-    elements.setItemsFromLocalStorage();
     let currentBuilding = elements.building.val();
     let rooms = resources.get(currentBuilding);
     elements.room.text("");
@@ -148,7 +148,7 @@ function createSelectListRooms(){
     for(let room of rooms){
         elements.room.append($(`<option value="${room}">${room}</option>`))
     }
-    elements.setItemsFromLocalStorage();
+    elements.room.val(localStorage.getItem(elements.room.attr('id')))
 }
 function updatePopUpSelectList(){
     let element = $(`#pufRoomNumber`);
