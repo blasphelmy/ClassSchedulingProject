@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 function createCalender(events) {
     if(developerMode) console.log("rendering calendar...");
+    if(!elements.checkNull()) return;
     var calendarEl = document.getElementById('calendar');
     let scroll = document.querySelectorAll('.fc-scroller.fc-scroller-liquid-absolute')[0]?.scrollTop ?? 0;
     calendar = new FullCalendar.Calendar(calendarEl, {

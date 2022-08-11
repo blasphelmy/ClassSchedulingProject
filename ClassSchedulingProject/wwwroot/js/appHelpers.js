@@ -142,6 +142,8 @@ function checkForWarnings(event){
 }
 function createSelectListRooms(){
     let currentBuilding = elements.building.val();
+    console.log(currentBuilding)
+    if(currentBuilding === "Select Building") return;
     let rooms = resources.get(currentBuilding);
     elements.room.text("");
     elements.room.append($(`<option>Select Room</option>`))
