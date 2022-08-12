@@ -212,9 +212,7 @@ function pufSelectBoxChange(element) {
             document.getElementById("pufBuilding").value = "na";
             document.getElementById("pufBuilding").disabled = true;
         } else {
-            document.getElementById("pufRoomNumber").value = "na";
             document.getElementById("pufRoomNumber").disabled = false;
-            document.getElementById("pufBuilding").value = "na";
             document.getElementById("pufBuilding").disabled = false;
         }
     }

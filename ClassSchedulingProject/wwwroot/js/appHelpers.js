@@ -133,7 +133,7 @@ function checkEventSanity(event){
 function checkForWarnings(event){
     event.extendedProps.warnings = new Array();
     if(event.daysOfWeek.length === 0) event.extendedProps.warnings.push("Event days of week not set");
-    if(event.extendedProps.room === "" || event.extendedProps.building === "") event.extendedProps.warnings.push("Location not set")
+    if((!event.extendedProps.room || !event.extendedProps.building) && (event.extendedProps.delivery !== "Online")) event.extendedProps.warnings.push("Location not set")
     if(event.endTime === "" || event.startTime === "") event.extendedProps.warnings.push("Times not set")
     if(event.extendedProps.startDate === "" || event.extendedProps.endDate === "") event.extendedProps.warnings.push("Start and end date not set")
     if(event.extendedProps.classNumber === 0) event.extendedProps.warnings.push("Class number not set")
@@ -266,7 +266,7 @@ let pufDeleteAction = function (UUID) {
     closePopUp();
 }
 function formatTimeString(iTs, timestamps) {
-    if (iTs[0] === "" || iTs[1] === "") return "time to be scheduled...";
+    if (!iTs || iTs[0] === "" || iTs[1] === "") return "time to be scheduled...";
     let timeStamp = [];
     for (let ts of iTs) {
         ts = ts.split(":");

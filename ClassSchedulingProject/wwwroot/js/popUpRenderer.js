@@ -224,24 +224,39 @@ function renderPopUp(event) {
      createDraggableElement(document.getElementById("eventPopUP"));
      centerWindow(document.getElementById("eventPopUP"));
 }
-var zIndex = 50;
+window.zIndex = 50;
 function warningPopUps(warnings, errors, event, coor){ 
     let defaultColor = `#dfd29e`
     if(_theme === 2) defaultColor = "#555555"
     let newId = `warning_${event.extendedProps.uuid}`;
-    hideWarning(newId);
+    let zIndex = hideWarning(newId);
     warnings = JSON.parse(warnings);
     errors = JSON.parse(errors);
     let capturedX = coor?.x ?? _mousePOS.x - 400;
     let capturedY = coor?.y ?? _mousePOS.y;
     let $element = $(`#EventWarnings`);
-    let $newWarning = $(`<div onclick="focusWarningWindow('${newId}')" class="eventWarning" id="${newId}">
-                            <span style="width:20px" class="close" onclick="hideWarning('${newId}')">&times;</span>
-                        </div>`)
+    let existing = $(`#${newId}`);
+
+    let $newWarning = function(){
+        if(existing.length) return existing.append($(`<span style="width:20px" class="close" onclick="deleteWarning('${newId}')">&times;</span>`));
+        return $(`<div onclick="focusWarningWindow('${newId}')" class="eventWarning" id="${newId}">
+        <span style="width:20px" class="close" onclick="hideWarning('${newId}')">&times;</span>
+    </div>`)
+    }()
     // $element.text("");
     $newWarning.css(`left`, `${capturedX}px`)
     $newWarning.css(`top`, `${capturedY}px`)
-    $newWarning.append(`<div style="color: rgb(${HEXtoRGB(event.color, colorFilterBrightness, _colorBrightnessVal).join(",")}); font-weight: bold; font-size: 16px">${event.title} - ${event.extendedProps.instructorName}</div>`)
+    $newWarning.append(`<div style="color: rgb(${HEXtoRGB(event.color, colorFilterBrightness, _colorBrightnessVal).join(",")}); font-weight: bold; font-size: 16px">${event.title} - ${event.extendedProps.instructorName}<br />
+    <span style="color : ${defaultColor}; font-size: 13px">${function(){
+        if(event.extendedProps.building && event.extendedProps.room) return `"<span class='underlineText' onclick="goToEvent('${event.extendedProps.building}', '${event.extendedProps.room}')" style='color:${defaultColor}'>${event.extendedProps.building + "-" + event.extendedProps.room}</span>" |`
+        if(event.extendedProps.delivery !== "Online") return `rooms not set... |`
+        return "Online |";
+    }()} ${formatTimeString([event.extendedProps.startTime, event.extendedProps.endTime]) + " |"}
+        ${function(){
+            if(event.daysOfWeek && event.daysOfWeek.length > 0 && event.extendedProps.delivery !== "Online") return formatdaysOfWeek(event.daysOfWeek, "M T W TH F".split(" "))
+            return "days not set"
+        }()}
+    </span></div>`)
     for(let error of errors){
       $newWarning.append($(`<div style="color: red; font-weight: bold">&#x2022; ${error}</div>`))
     }
@@ -250,17 +265,29 @@ function warningPopUps(warnings, errors, event, coor){
     }
     $newWarning.css(`display`, `block`)
     $element.append($newWarning)
-    $(`#${newId}`).css("z-index", ++zIndex)
-    createDraggableElement(document.getElementById(newId));
-    focusWarningWindow(newId);
+    $(`#${newId}`).css("z-index", zIndex ||  ++window.zIndex)
+    if (!zIndex) createDraggableElement(document.getElementById(newId));
+    if(!zIndex) focusWarningWindow(newId);
 
   }
   function hideWarning(id){
     let $element = $(`#${id}`);
-    try{
+    if($element.length){
+        let zIndex = Number($element.css("z-index"))
+        $element.text("");
+        return zIndex;
+    }else{
+        return undefined;
+    }
+  }
+  function deleteWarning(id){
+    let $element = $(`#${id}`);
+    if($element.length){
+        let zIndex = Number($element.css("z-index"))
         $element.remove();
-    }catch{
-
+        return zIndex;
+    }else{
+        return undefined;
     }
   }
   function focusWarningWindow(id){
@@ -269,7 +296,7 @@ function warningPopUps(warnings, errors, event, coor){
     // for(let element of elements){
     //     element.style.setProperty("z-index", "99")
     // }
-        $(`#${id}`).css("z-index", ++zIndex)
+        $(`#${id}`).css("z-index", ++window.zIndex)
 }
 function updateWarningDisplayIfExist(){
     let events = newCalender.data.events;
@@ -388,6 +415,7 @@ function generateFormData(info, event) {
                 return $("#pufBuilding").val();
             },
             room: function(){
+                if($("#pufRoomNumber").val() === "Select Room") return null;
                 return $("#pufRoomNumber").val();
             },
             component: function () {

@@ -121,6 +121,16 @@ input[type=range] {
    padding-left: 9px;
    color: white;
    transition: all .2s;
+   overflow: hidden;
+}
+.collaspe-custom{
+   cursor: pointer;
+   max-height: 30px;
+   overflow: hidden;
+   transition: all .2s;
+}
+.collaspe-cutom-show{
+   max-height: 15em;
 }
  .fc-timegrid-col-events {
     position: relative;
@@ -136,11 +146,10 @@ input[type=range] {
    font-size: 12px;
    display: none;
    height: fit-content;
-   width: 400px;
+   max-width: 600px;
    position: absolute;
    top: 0;
    left: 0;
-   background: rgba(255, 255, 255, .4);
    border-radius: 5px;
    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.219);
    backdrop-filter: blur(20px);

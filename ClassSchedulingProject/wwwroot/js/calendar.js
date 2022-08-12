@@ -124,16 +124,26 @@
                 checkedCombo.set(eventB.extendedProps.uuid + eventA.extendedProps.uuid, true);
 
                 //flush out unscheduled/unfinished event pairs
-                if(eventA.extendedProps.room === "" 
-                || eventA.extendedProps.building === ""
-                || eventB.extendedProps.room === ""
-                || eventB.extendedProps.building === ""
-                || eventA.extendedProps.startTime === ""
-                || eventA.extendedProps.endTime === ""
-                || eventB.extendedProps.startTime === ""
-                || eventB.extendedProps.endTime === ""
-                || eventA.daysOfWeek.length === 0
-                || eventB.daysOfWeek.length === 0) continue;
+                // if(eventA.extendedProps.room === "" 
+                // || eventA.extendedProps.building === ""
+                // || eventB.extendedProps.room === ""
+                // || eventB.extendedProps.building === ""
+                // || eventA.extendedProps.startTime === ""
+                // || eventA.extendedProps.endTime === ""
+                // || eventB.extendedProps.startTime === ""
+                // || eventB.extendedProps.endTime === ""
+                // || eventA.daysOfWeek.length === 0
+                // || eventB.daysOfWeek.length === 0) continue;
+                if(!eventA.extendedProps.room
+                || !eventA.extendedProps.building
+                || !eventB.extendedProps.room
+                || !eventB.extendedProps.building
+                || !eventA.extendedProps.startTime
+                || !eventA.extendedProps.endTime
+                || !eventB.extendedProps.startTime
+                || !eventB.extendedProps.endTime
+                || !eventA.daysOfWeek.length
+                || !eventB.daysOfWeek.length) continue;
 
                 let checkDayOverlay = function(eventA, eventB){
                     for(let dayA of eventA.daysOfWeek){
@@ -148,6 +158,11 @@
                     || (itsB.start <= itsA.start && itsA.start <= itsB.end)) return true;
                     return false;
                 }
+                let checkitsConflict_offSet = function(itsA, itsB, offset = (1000 * 60 * 15)){
+                    if((itsA.start.getTime() <= itsB.start.getTime() && itsB.start.getTime() <= (itsA.end.getTime() + offset))
+                    || (itsB.start.getTime() <= itsA.start && itsA.start.getTime() <= (itsB.end.getTime() + offset))) return true;
+                    return false;
+                }
                 let itsA = {
                     start : new Date("01 Jan 1970 " + eventA.extendedProps.startTime),
                     end : new Date("01 Jan 1970 " + eventA.extendedProps.endTime),
@@ -156,9 +171,24 @@
                     start : new Date("01 Jan 1970 " + eventB.extendedProps.startTime),
                     end : new Date("01 Jan 1970 " + eventB.extendedProps.endTime)
                 }
+                // let checkForAwkwardTimes = function(){
+                //     if(checkDayOverlay(eventA, eventB) && checkitsConflict_offSet(itsA, itsB)) {
+                //         eventA.extendedProps.warnings.push(`<span style="color:${colorB}">"${eventB.title}"</span> in room <span style="color:${defaultColor}">"${eventB.extendedProps.building + "-" + eventB.extendedProps.room}"</span> starts within 15 minutes of this event..`)
+                //         eventB.extendedProps.warnings.push(`<span style="color:${colorA}">"${eventA.title}"</span> in room <span style="color:${defaultColor}">"${eventA.extendedProps.building + "-" + eventA.extendedProps.room}"</span> starts within 15 minutes of this event..`)
+                //     }
+                // }
                 let colorA = `rgb(${HEXtoRGB(eventA.color, colorFilterBrightness, _colorBrightnessVal).join(",")})`;
                 let colorB = `rgb(${HEXtoRGB(eventB.color, colorFilterBrightness, _colorBrightnessVal).join(",")})`;
                 let defaultColor = `#dfd29e`
+                let override1 = false;
+                let override2 = false;
+                let override1A = false;
+                let override2A = false;
+                let roomA = eventA.extendedProps.building + "-" + eventA.extendedProps.room;
+                let roomB = eventB.extendedProps.building + "-" + eventB.extendedProps.room;
+                let eventALink = `"<span class='underlineText' onclick="goToEvent('${eventA.extendedProps.building}', '${eventA.extendedProps.room}')" style='color:${defaultColor}'>${roomA}</span>"`
+                let eventBLink = `"<span class='underlineText' onclick="goToEvent('${eventB.extendedProps.building}', '${eventB.extendedProps.room}')" style='color:${defaultColor}'>${roomB}</span>"`
+                
                 if(_theme === 2) defaultColor = "#555555"
                 //if events fall in the same room, check for time conflicts
                 if(eventA.extendedProps.room === eventB.extendedProps.room && eventA.extendedProps.building === eventB.extendedProps.building){
@@ -166,8 +196,14 @@
                         //check for tangible and concrete time conflicts
                         //if event are potentially taught on the same days and if they overlap
                         if(checkDayOverlay(eventA, eventB) && checkitsConflict(itsA, itsB)) {
-                                 eventA.extendedProps.errors.push(`Time conflict with <span style="color:${colorB}">"${eventB.title}"</span> in room <span style="color:${defaultColor}">"${thisRoom}"</span> from <span style="color:${defaultColor}">"${formatTimeString([eventB.extendedProps.startTime, eventB.extendedProps.endTime])}"</span>`)
-                                 eventB.extendedProps.errors.push(`Time conflict with <span style="color:${colorA}">"${eventA.title}"</span> in room <span style="color:${defaultColor}">"${thisRoom}"</span> from <span style="color:${defaultColor}">"${formatTimeString([eventA.extendedProps.startTime, eventA.extendedProps.endTime])}"</span>`)
+                                 eventA.extendedProps.errors.push(`Time conflict with <span style="color:${colorB}">"${eventB.title}"</span> in room ${eventBLink} from <span style="color:${defaultColor}">"${formatTimeString([eventB.extendedProps.startTime, eventB.extendedProps.endTime])}"</span>`)
+                                 eventB.extendedProps.errors.push(`Time conflict with <span style="color:${colorA}">"${eventA.title}"</span> in room ${eventBLink} from <span style="color:${defaultColor}">"${formatTimeString([eventA.extendedProps.startTime, eventA.extendedProps.endTime])}"</span>`)
+                                 override1A = true;
+                        }
+                        else if(checkDayOverlay(eventA, eventB) && checkitsConflict_offSet(itsA, itsB)) {
+                            eventA.extendedProps.warnings.push(`<span style="color:${colorB}">"${eventB.title}"</span> from <span style="color:${defaultColor}">"${formatTimeString([eventB.extendedProps.startTime, eventB.extendedProps.endTime])}"</span> in this room ${eventBLink} starts/ends within 15 minutes of this event..`)
+                            eventB.extendedProps.warnings.push(`<span style="color:${colorA}">"${eventA.title}"</span> from <span style="color:${defaultColor}">"${formatTimeString([eventA.extendedProps.startTime, eventA.extendedProps.endTime])}"</span> in this room ${eventALink} starts/ends within 15 minutes of this event..`)
+                            override1 = true;
                         }
                 //if events belong to the same program and have the same quarter number, check for time conflicts
                 }
@@ -175,13 +211,16 @@
                 // console.log(eventA.extendedProps.ProgramId == eventB.extendedProps.ProgramId)
                 if(eventA.extendedProps.ClassQuarterNumber === eventB.extendedProps.ClassQuarterNumber 
                     && eventA.extendedProps.ProgramId == eventB.extendedProps.ProgramId){
-                        let roomA = eventA.extendedProps.building + "-" + eventA.extendedProps.room;
-                        let roomB = eventB.extendedProps.building + "-" + eventB.extendedProps.room;
-                        //check for tangible and concrete time conflicts
                         //if event are potentially taught on the same days and if they overlap
-                        if(checkDayOverlay(eventA, eventB) && checkitsConflict(itsA, itsB)) {
-                                    eventA.extendedProps.errors.push(`Conflict with <span style="color:${colorB}">"${eventB.title}"</span> in room <span style="color:${defaultColor}">"${roomB}"</span> from <span style="color:${defaultColor}">"${formatTimeString([eventB.extendedProps.startTime, eventB.extendedProps.endTime])}"</span> - classes meant to be taught together are overlapping`)
-                                    eventB.extendedProps.errors.push(`Conflict with <span style="color:${colorA}">"${eventA.title}"</span> in room <span style="color:${defaultColor}">"${roomA}"</span> from <span style="color:${defaultColor}">"${formatTimeString([eventA.extendedProps.startTime, eventA.extendedProps.endTime])}"</span> - classes meant to be taught together are overlapping`)
+                        if(!override1A && checkDayOverlay(eventA, eventB) && checkitsConflict(itsA, itsB)) {
+                            eventA.extendedProps.errors.push(`Conflict with <span style="color:${colorB}">"${eventB.title}"</span> in room ${eventBLink} from <span style="color:${defaultColor}">"${formatTimeString([eventB.extendedProps.startTime, eventB.extendedProps.endTime])}"</span> - classes meant to be taught together are overlapping`)
+                            eventB.extendedProps.errors.push(`Conflict with <span style="color:${colorA}">"${eventA.title}"</span> in room ${eventALink} from <span style="color:${defaultColor}">"${formatTimeString([eventA.extendedProps.startTime, eventA.extendedProps.endTime])}"</span> - classes meant to be taught together are overlapping`)
+                            override2A = true;
+                        }
+                        else if(!override1 && !override1A && checkDayOverlay(eventA, eventB) && checkitsConflict_offSet(itsA, itsB)) {
+                            eventA.extendedProps.warnings.push(`<span style="color:${colorB}">"${eventB.title}"</span> in room ${eventBLink} from <span style="color:${defaultColor}">"${formatTimeString([eventB.extendedProps.startTime, eventB.extendedProps.endTime])}"</span> starts within 15 minutes of this event. These two courses are meant to be taught together during each quarter`)
+                            eventB.extendedProps.warnings.push(`<span style="color:${colorA}">"${eventA.title}"</span> in room ${eventALink} from <span style="color:${defaultColor}">"${formatTimeString([eventA.extendedProps.startTime, eventA.extendedProps.endTime])}"</span> starts within 15 minutes of this event. These two courses are meant to be taught together during each quarter`)
+                            override2 = true;
                         }
                 }
 
@@ -191,9 +230,13 @@
                     let roomB = eventB.extendedProps.building + "-" + eventB.extendedProps.room;
                     //check for tangible and concrete time conflicts
                     //if event are potentially taught on the same days and if they overlap
-                    if(checkDayOverlay(eventA, eventB) && checkitsConflict(itsA, itsB)) {
-                                eventA.extendedProps.errors.push(`<span style="color:${colorA}">${eventA.extendedProps.instructorName}</span> is already scheduled to teach <span style="color:${colorB}">"${eventB.title}"</span> in room <span style="color:${defaultColor}">"${roomB}"</span> from <span style="color:${defaultColor}">"${formatTimeString([eventB.extendedProps.startTime, eventB.extendedProps.endTime])}"</span> during this time`)
-                                eventB.extendedProps.errors.push(`<span style="color:${colorB}">${eventB.extendedProps.instructorName}</span> is already scheduled to teach <span style="color:${colorA}">"${eventA.title}"</span> in room <span style="color:${defaultColor}">"${roomA}"</span> from <span style="color:${defaultColor}">"${formatTimeString([eventA.extendedProps.startTime, eventA.extendedProps.endTime])}"</span> during this time`)
+                    if(!override2A && !override1A && checkDayOverlay(eventA, eventB) && checkitsConflict(itsA, itsB)) {
+                                eventA.extendedProps.errors.push(`<span style="color:${colorA}">${eventA.extendedProps.instructorName}</span> is already scheduled to teach <span style="color:${colorB}">"${eventB.title}"</span> in room ${eventBLink} from <span style="color:${defaultColor}">"${formatTimeString([eventB.extendedProps.startTime, eventB.extendedProps.endTime])}"</span> during this time`)
+                                eventB.extendedProps.errors.push(`<span style="color:${colorB}">${eventB.extendedProps.instructorName}</span> is already scheduled to teach <span style="color:${colorA}">"${eventA.title}"</span> in room ${eventALink} from <span style="color:${defaultColor}">"${formatTimeString([eventA.extendedProps.startTime, eventA.extendedProps.endTime])}"</span> during this time`)
+                    }
+                    else if((!override2 && !override1 && !override2A && !override1A) && checkDayOverlay(eventA, eventB) && checkitsConflict_offSet(itsA, itsB)) {
+                        eventA.extendedProps.warnings.push(`This instructor is already teaching <span style="color:${colorB}">"${eventB.title}"</span> in room ${eventBLink} from <span style="color:${defaultColor}">"${formatTimeString([eventB.extendedProps.startTime, eventB.extendedProps.endTime])}"</span> starts within 15 minutes of this event.`)
+                        eventB.extendedProps.warnings.push(`This instructor is already teaching <span style="color:${colorA}">"${eventA.title}"</span> in room ${eventALink} from <span style="color:${defaultColor}">"${formatTimeString([eventA.extendedProps.startTime, eventA.extendedProps.endTime])}"</span> starts within 15 minutes of this event.`)
                     }
                 }
             }

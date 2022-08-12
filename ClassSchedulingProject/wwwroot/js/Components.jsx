@@ -260,7 +260,7 @@ class EventListComponent extends React.Component {
                   if(o.extendedProps.warnings?.length > 0 || o.extendedProps.errors?.length > 0) warningDisplay = "block"
                   if(o.extendedProps.errors?.length > 0) errorFill = "red";
 
-                return (
+                  return (
                   <div className="row">
                     <div className="col-10">
                       <div key={`class-${o.extendedProps.uuid}`} id={`class-${o.extendedProps.uuid}`} data={JSON.stringify(o)}>
@@ -268,14 +268,20 @@ class EventListComponent extends React.Component {
                           <span style={{ color: `rgb(${HEXtoRGB(o.color, colorFilterBrightness, _colorBrightnessVal).join(",")})` }}>
                             "<span className="underlineText" onClick={() => editEvent($(`#class-${o.extendedProps.uuid}`))}>{o.title}</span>"</span>
                           <div style={{ padding: "0" }}>
-                            {formatdaysOfWeek(o.daysOfWeek)}, {formatTimeString([o.startTime, o.endTime])} {function(){
-                              if(o.extendedProps.building !== "" && o.extendedProps.room !== "") return (<span onClick={() => goToEvent(o.extendedProps.building, o.extendedProps.room)} className="underlineText"><b>view -&gt; {o.extendedProps.building + "-" + o.extendedProps.room}</b></span>)
-                              return "rooms not set"
+                          {formatdaysOfWeek(o.daysOfWeek)}; {formatTimeString([o.startTime, o.endTime])}   {function(){
+                              if(o.extendedProps.building && o.extendedProps.room ) return (<span onClick={() => goToEvent(o.extendedProps.building, o.extendedProps.room)} className="underlineText"><b>view -&gt; {o.extendedProps.building + "-" + o.extendedProps.room}</b></span>)
+                              return ""
                             }()}
                             {function(){
-                              if(o.extendedProps.classNumber && o.extendedProps.section) return <span><br />Class #{o.extendedProps.classNumber}, Section {o.extendedProps.section} </span>
-                              if(o.extendedProps.classNumber) return <span><br />Class #{o.extendedProps.classNumber}</span>
-                              if(o.extendedProps.section) return <span><br />Section {o.extendedProps.section} </span>
+                              if(o.extendedProps.classNumber || o.extendedProps.section || o.extendedProps.delivery) return <br />
+                            }()}
+                            {function(){
+                              if(o.extendedProps.delivery) return <span>{o.extendedProps.delivery + " "}</span>
+                            }()}
+                            {function(){
+                              if(o.extendedProps.classNumber && o.extendedProps.section) return <span>Class #{o.extendedProps.classNumber}, Section {o.extendedProps.section} </span>
+                              if(o.extendedProps.classNumber) return <span>Class #{o.extendedProps.classNumber}</span>
+                              if(o.extendedProps.section) return <span>Section {o.extendedProps.section} </span>
                             }()}
                             <br />
                             <a href="#" style={{color:"#4090f2"}} onClick={() => createUserEventListPopUp(o.extendedProps.instructorHash)}><span>View all events assigned to {o.extendedProps.instructorName}</span></a>
