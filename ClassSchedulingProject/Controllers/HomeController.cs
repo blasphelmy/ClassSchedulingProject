@@ -11,6 +11,8 @@ using ClassSchedulingProject.data;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 using ClassSchedulingProject.Structs;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 
 namespace ClassSchedulingProject.Controllers
 {
@@ -286,7 +288,9 @@ namespace ClassSchedulingProject.Controllers
 
             if(program != null){
                 foreach(CourseOfferingsTemplates course in program.CourseOfferingsTemplates){
-                    coursesOffered.Add(new CourseOfferedTemplates(course));
+                    CourseOfferedTemplates aCourse = new CourseOfferedTemplates(course);
+                    // if(course.Credits != null) aCourse.Credits = course.Credits;
+                    coursesOffered.Add(aCourse);
                 }
             }
             newRes.programTemplates = JsonSerializer.Serialize(coursesOffered);
@@ -461,6 +465,24 @@ namespace ClassSchedulingProject.Controllers
             UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
             if(thisUser != null && thisUser.AccountFlag < 3)
             {
+                if(eventTemplate.Id == -4)
+                {
+                    CourseOfferingsTemplates newCourse = new CourseOfferingsTemplates();
+                    newCourse.Title = eventTemplate.Title;
+                    newCourse.QuarterNumber = eventTemplate.QuarterNumber;
+                    newCourse.CoursePrefix = eventTemplate.CoursePrefix;
+                    newCourse.CourseNumber = eventTemplate.CourseNumber;
+                    newCourse.Component = eventTemplate.Component;
+                    newCourse.Credits = eventTemplate.Credits;
+                    newCourse.ProgramId = eventTemplate.ProgramId;
+
+                    newCourse.InstitutionId = thisUser.PrimaryInstitutionId;
+
+                    context.CourseOfferingsTemplates.Add(newCourse);
+                    context.SaveChanges();
+
+                    return Json(2);
+                }
                 CourseOfferingsTemplates existing = context.CourseOfferingsTemplates.FirstOrDefault(e => e.Id == eventTemplate.Id);
                 existing.Title = eventTemplate.Title;
                 existing.QuarterNumber = eventTemplate.QuarterNumber;
@@ -472,6 +494,26 @@ namespace ClassSchedulingProject.Controllers
                 return Json(1);
             }
 
+            return Json(-1);
+        }
+        [HttpGet]
+        public IActionResult deleteCourse(int courseID){
+            UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
+            if(courseID != 0 && thisUser != null && thisUser.AccountFlag < 3){
+
+                try
+                {
+                    context.Database.ExecuteSqlCommand("Delete from apiEvents where courseID=@id", new SqlParameter("@id", courseID));
+  
+                    context.Database.ExecuteSqlCommand("Delete from CourseOfferingsTemplates where Id=@id", new SqlParameter("@id", courseID));
+                    return Json(1);
+                }
+                catch
+                {
+                    return Json(-1);
+                }
+
+            }   
             return Json(-1);
         }
         [HttpGet]

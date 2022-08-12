@@ -5,7 +5,7 @@
 }
 
 <div style="padding-left: 20px; overflow:hidden; max-width: 100%;">
-    <select id="programID" style="margin-bottom: 10px">
+    <select id="programID" style="margin-bottom: 10px" onchange="manageProgram.fetchEventTemplates(this)">
         @foreach (ProgramOfferings program in Model.Department.ProgramOfferings)
         {
             @if(_f == null) {
@@ -18,7 +18,6 @@
         <option value="addNewProgram">Add a New Program</option>
     </select>
     @if(courses != null){
-        <p>Courses for @_f.ProgramName</p>
         <table class="table table-responsive">
             <thead>
                 <tr>
@@ -30,7 +29,7 @@
                     <th>Credits</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="mangeProgramTableBody">
                 @foreach(CourseOfferingsTemplates course in courses){
                 <tr id="tableRow-@course.Id">
                     <td><input data="QuarterNumber" type="number" min="1" max="8" value="@course.QuarterNumber"></td>
@@ -49,44 +48,37 @@
                         <option value="Ind Study"></option>
                     </select></td>
                     <td><input data="CourseCredits" type="text" value="@course.Credits"></td>
-                    <td><a id="@course.Id" href="#" onclick="save('tableRow-@course.Id')">Save</a></td> 
+                    <td><a id="@course.Id" href="#" onclick="manageProgram.save('tableRow-@course.Id')">Save</a></td> 
+                    <td><a href="#" class="text-danger" onclick="manageProgram.delete('@course.Id')">Delete</a></td>
                 </tr>
                 }
+                <tr id="tableRow-NEW">
+                    <td><input data="QuarterNumber" type="number" min="1" max="8" placeholder="1"></td>
+                    <td><select data="CoursePrefix">
+                        <@foreach(ValidPrefixes prefix in Model.Department.ValidPrefixes){
+                            <option value="@prefix.Prefix">@prefix.Prefix</option>
+                        }>
+                    </select></td>
+                    <td><input data="CourseNumber" type="number" placeholder="226"></td>
+                    <td><input data="Title" type="text" placeholder="Computer Programming IV"></td>
+                    <td><select data="Component">
+                        <option value="Lecture">Lecture</option>
+                        <option value="Lab">Lab</option>
+                        <option value="Ind Study"></option>
+                    </select></td>
+                    <td><input data="CourseCredits" type="text" placeholder="5"></td>
+                    <td><a id="NULL" href="#" onclick="manageProgram.save('tableRow-NEW')">Save</a></td> 
+                </tr>
             </tbody>
         </table>
     }
 </div>
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<script src="/js/manageProgram.js"></script>
 <script>
-    function save(id){
-        let tableRowElement = $(`#${id} td`);
-        let programID = document.getElementById("programID").value;
-
-        var newPost = {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: {
-                Id : Number(id.split("-")[1]),
-                ProgramId : Number(document.getElementById("programID").value)
-            }
-        }
-        
-        tableRowElement.each(function(i, o){
-            switch(o.firstChild.getAttribute("data")){
-                case "QuarterNumber": newPost.body.QuarterNumber = Number(o.firstChild.value); break;
-                case "CoursePrefix": newPost.body.CoursePrefix = o.firstChild.value.toString(); break;
-                case "CourseNumber": newPost.body.CourseNumber = Number(o.firstChild.value); break;
-                case "Title": newPost.body.Title = o.firstChild.value.toString(); break;
-                case "Component": newPost.body.Component = o.firstChild.value.toString(); break;
-                case "QuarterNumber": newPost.body.QuarterNumber = Number(o.firstChild.value); break;
-                case "CourseCredits": newPost.body.Credits = parseFloat(o.firstChild.value); break;
-            }
-        })
-        newPost.body = JSON.stringify(newPost.body);
-        fetch("/home/saveProgramEventTemplate", newPost).then(data => data.json().then(function(data){
-            console.log(data);
-        }))
-        console.log(newPost.body);
-    }
+    window.onload = function(){
+    if(!localStorage.getItem("programID")) localStorage.setItem("programID", document.getElementById("programID").value);
+    document.getElementById("programID").value = localStorage.getItem("programID");
+    manageProgram.fetchEventTemplates(document.getElementById("programID"))
+}
 </script>
