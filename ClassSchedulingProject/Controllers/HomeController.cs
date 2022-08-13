@@ -116,6 +116,7 @@ namespace ClassSchedulingProject.Controllers
         [HttpGet]
         public IActionResult manageProgram(){
             UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
+            ViewBag.userList = context.UserInformation.ToList();
             if(thisUser == null || thisUser.AccountFlag > 2) return RedirectToAction("Index", "Home");
             ViewData["Title"] = thisUser.PrimaryInstitutionId + " Home";
             if(Request.Cookies["theme"] == null) SetCookie("theme", "1", 99999);

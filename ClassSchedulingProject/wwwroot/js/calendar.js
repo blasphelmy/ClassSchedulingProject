@@ -38,14 +38,29 @@
         }
         return false;
     }
+    sortEvents(newEventList){
+        for(let i in newEventList){
+            newEventList[i] = JSON.parse(newEventList[i]);
+            newEventList[i] = checkEventSanity(newEventList[i]);
+        }
+        newEventList = newEventList.sort(function(a, b){
+            if (a.extendedProps.instructorHash === b.extendedProps.instructorHash){
+                return a.title < b.title ? -1 : 1
+              } else {
+                return a.extendedProps.instructorName < b.extendedProps.instructorName ? -1 : 1
+              }
+        })
+        return newEventList;
+    }
     parseEvents(eventString) {
         if(developerMode) console.log(eventString);
         let newEventList = eventString.split(" _--__- ").filter(e => e !== "");
+        newEventList = this.sortEvents(newEventList);
         this.data.events = [];
         this.UsersEventsMap = new Map();
         for (let i in newEventList) {
-            newEventList[i] = JSON.parse(newEventList[i]);
-            newEventList[i] = checkEventSanity(newEventList[i]);
+            //newEventList[i] = JSON.parse(newEventList[i]);
+            //newEventList[i] = checkEventSanity(newEventList[i]);
             newEventList[i].overlap = true;
             if (this.usersColors.get(newEventList[i].extendedProps.instructorHash) === undefined) {
                 this.usersColors.set(newEventList[i].extendedProps.instructorHash, this.colorWheel.colors[this.colorWheel.index++]);
@@ -69,13 +84,14 @@
     }
     updateEvents(eventString) {
         let newEventList = eventString.split(" _--__- ").filter(e => e !== "");
-        //if(developerMode) console.log(newEventList);
+        //if(developerMode) console.log(newEventList)
+        newEventList = this.sortEvents(newEventList);
         this.colorWheel.index = 0;
         this.UsersEventsMap = new Map();
         this.data.events = [];
         for (let i in newEventList) {
-            newEventList[i] = JSON.parse(newEventList[i]);
-            newEventList[i] = checkEventSanity(newEventList[i]);
+            // newEventList[i] = JSON.parse(newEventList[i]);
+            // newEventList[i] = checkEventSanity(newEventList[i]);
             newEventList[i].overlap = true;
             this.data.events[i] = newEventList[i];
             if (this.EventMap.get(this.data.events[i]) != i) {

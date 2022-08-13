@@ -2,10 +2,13 @@
 @{
     ProgramOfferings _f = null;
     List<CourseOfferingsTemplates> courses = new List<CourseOfferingsTemplates>();
+    getRole role = new getRole();
 }
 
 <div style="padding-left: 20px; overflow:hidden; max-width: 100%;">
-    <select id="programID" style="margin-bottom: 10px" onchange="manageProgram.fetchEventTemplates(this)">
+    <div class="row">
+        <div class="col">
+<select id="programID" style="margin-bottom: 10px" onchange="manageProgram.fetchEventTemplates(this)">
         @foreach (ProgramOfferings program in Model.Department.ProgramOfferings)
         {
             @if(_f == null) {
@@ -15,7 +18,7 @@
             }
             <option value="@program.Id">@program.ProgramName</option>
         }
-        <option value="addNewProgram">Add a New Program</option>
+        @* <option value="addNewProgram">Add a New Program</option> *@
     </select>
     @if(courses != null){
         <table class="table table-responsive">
@@ -71,7 +74,89 @@
                 </tr>
             </tbody>
         </table>
-    }
+        }
+    </div>
+    <div class="col">
+        <h3>Users registered to your department</h3>
+        <table class="table table-responsive">
+            <thead>
+                <th>Instructor Name</th>
+                <th>Instructor Email</th>
+                <th>Department Name</th>
+                <th>Role</th>
+                <th>Save</th>
+            </thead>
+            <tbody>
+                @foreach (UserInformation user in ViewBag.userList)
+                {
+                    @if(user.DepartmentId == Model.DepartmentId && user.AccountFlag > 0){
+                        <tr id="data_@user.EventsAuthorId">
+                        <td>@user.FirstName @user.LastName</td>
+                        <td>@user.PrimaryEmail</td>
+                        <td>
+                            <select>
+                                <option value="null">Unregister</option>
+                                <option value="@Model.DepartmentId" selected>@Model.Department.DepartmentName</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select>
+                                <option value="@user.AccountFlag">@role.role(user.AccountFlag)</option>
+                                <option value="4">Unregistered</option>
+                                <option value = "3">Instructor</option>
+                                @if(Model.AccountFlag < 2){
+                                    <option value="2">Admin Assistant</option>
+                                    <option value="1">Admin</option>
+                                }
+                            </select>
+                        </td>
+                        <td><a href="#" onclick="saveUser('@user.EventsAuthorId')">Save</a></td>
+                    </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+        <h3>Not registed users</h3>
+        <table class="table table-responsive">
+            <thead>
+                <th>Instructor Name</th>
+                <th>Instructor Email</th>
+                <th>Department Name</th>
+                <th>Role</th>
+                <th>Save</th>
+            </thead>
+            <tbody>
+                @foreach (UserInformation user in ViewBag.userList)
+                {
+                    @if(user.DepartmentId == null){
+                        <tr>
+                        <td>@user.FirstName @user.LastName</td>
+                        <td>@user.PrimaryEmail</td>
+                        <td>
+                            <select>
+                                <option value="@Model.DepartmentId">@Model.Department.DepartmentName</option>
+                                <option value="null" selected>Not set</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select>
+                                <option value="@user.AccountFlag">@role.role(user.AccountFlag)</option>
+                                <option value = "3">Instructor</option>
+                                @if(Model.AccountFlag < 2){
+                                    <option value="2">Admin Assistant</option>
+                                    <option value="1">Admin</option>
+                                }
+                            </select>
+                        </td>
+                        <td>Save</td>
+                    </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    </div>
 </div>
 <script src="/lib/jquery/dist/jquery.min.js"></script>
 <script src="/js/manageProgram.js"></script>

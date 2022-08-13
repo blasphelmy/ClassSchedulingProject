@@ -296,7 +296,17 @@ function warningPopUps(warnings, errors, event, coor){
     // for(let element of elements){
     //     element.style.setProperty("z-index", "99")
     // }
-        $(`#${id}`).css("z-index", ++window.zIndex)
+    let warningPopups = document.getElementsByClassName("eventWarning");
+    for(let e of warningPopups){
+        e.classList.remove("eventWarning_focus");
+    }
+    let eventPopups = document.getElementsByClassName("popup");
+    for(let e of eventPopups){
+        e.classList.remove("eventWarning_focus");
+    }
+
+    $(`#${id}`).css("z-index", ++window.zIndex);
+    $(`#${id}`).addClass("eventWarning_focus");
 }
 function updateWarningDisplayIfExist(){
     let events = newCalender.data.events;

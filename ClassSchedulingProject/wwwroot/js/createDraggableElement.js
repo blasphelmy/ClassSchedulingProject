@@ -7,6 +7,8 @@ function createDraggableElement(element) {
     element.ontouchstart = touchStart;
 
         function dragMouseDown(e) {
+        if(!element.classList.contains("popup")) focusWarningWindow(element.id)
+        else element.style.setProperty("z-index", ++window.zIndex)
         e = e || window.event;
         // get the mouse cursor position at startup:
         x2 = e.clientX;
@@ -17,6 +19,8 @@ function createDraggableElement(element) {
     }
 
         function touchStart(e) {
+        if(!element.classList.contains("popup")) focusWarningWindow(element.id)
+        else element.style.setProperty("z-index", ++window.zIndex)
         e = e || window.event;
         x1 = e.targetTouches[0].clientX;
         y1 = e.targetTouches[0].clientY;

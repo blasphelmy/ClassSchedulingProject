@@ -27,11 +27,6 @@ class ListViewComponent extends React.Component{
     if(events.length === 0 || events === undefined || events === null){
       return;
     }
-    try{
-      events = events.sort((a, b) => a.extendedProps.instructorName > b.extendedProps.instructorName ? 1 : -1)
-     }catch{
-      if(developerMode) console.log("error sorting events")
-     }
     return (
           <div>
             <button className="btn" onClick={() => downloadFile()}><svg style={{position: "relative", top : "-2px"}} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-download" viewBox="0 0 16 16">
@@ -239,7 +234,7 @@ class EventListComponent extends React.Component {
     if(this.type === "FilteredEvents") events = events.map(eventBuilder);
 
    try{
-    events = events.sort((a, b) => a.extendedProps.instructorName > b.extendedProps.instructorName ? 1 : -1)
+
    }catch{
     // console.log("error sorting events")
    }
@@ -261,7 +256,7 @@ class EventListComponent extends React.Component {
                   if(o.extendedProps.errors?.length > 0) errorFill = "red";
 
                   return (
-                  <div className="row">
+                  <div className="row listItemComponent">
                     <div className="col-10">
                       <div key={`class-${o.extendedProps.uuid}`} id={`class-${o.extendedProps.uuid}`} data={JSON.stringify(o)}>
                         <p style={{ borderColor: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.extendedProps.courseID), colorFilterBrightness, _colorBrightnessVal).join(",")})` }} key={`${key}-p`} className="ActiveEventsListItem">

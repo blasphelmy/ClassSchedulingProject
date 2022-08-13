@@ -13,8 +13,8 @@ window.addEventListener('click', (event) => {
     if(developerMode) console.log(ua)
 })
 window.addEventListener('mousemove', function(e){
-    _mousePOS.x = e.pageX;
-    _mousePOS.y = e.pageY;
+    _mousePOS.x = e.clientX;
+    _mousePOS.y = e.clientY;
 
     ua = ua + 0.0008;
     if(ua > 4) ua = 4;
@@ -310,4 +310,11 @@ function changeBackToCalendarThenGoToEvent(building, room, callback) {
 }
 function stopPropagation(e){
     e.stopPropagation();
+}
+var sortEvents = (a, b) => {
+    if (a.extendedProps.instructorHash=== b.extendedProps.InstructorHash){
+        return a.title > b.title ? -1 : 1
+        } else {
+        return a.extendedProps.instructorName < b.extendedProps.instructorName ? -1 : 1
+    }
 }
