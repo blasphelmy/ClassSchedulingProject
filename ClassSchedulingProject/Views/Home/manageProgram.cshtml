@@ -89,20 +89,20 @@
             <tbody>
                 @foreach (UserInformation user in ViewBag.userList)
                 {
-                    @if(user.DepartmentId == Model.DepartmentId && user.AccountFlag > 0){
-                        <tr id="data_@user.EventsAuthorId">
+                    @if(user.DepartmentId == Model.DepartmentId && user.AccountFlag > 0 && user.AccountHash != Model.AccountHash){
+                        <tr>
                         <td>@user.FirstName @user.LastName</td>
                         <td>@user.PrimaryEmail</td>
                         <td>
-                            <select>
-                                <option value="null">Unregister</option>
+                            <select id="dptId_@user.EventsAuthorId">
+                                <option value="null">Remove from department</option>
                                 <option value="@Model.DepartmentId" selected>@Model.Department.DepartmentName</option>
                             </select>
                         </td>
                         <td>
-                            <select>
+                            <select id="role_@user.EventsAuthorId">
                                 <option value="@user.AccountFlag">@role.role(user.AccountFlag)</option>
-                                <option value="4">Unregistered</option>
+                                <option value="4">Deactivate</option>
                                 <option value = "3">Instructor</option>
                                 @if(Model.AccountFlag < 2){
                                     <option value="2">Admin Assistant</option>
@@ -117,7 +117,7 @@
             </tbody>
         </table>
 
-        <h3>Not registed users</h3>
+        <h3>Not registered users</h3>
         <table class="table table-responsive">
             <thead>
                 <th>Instructor Name</th>
@@ -129,18 +129,18 @@
             <tbody>
                 @foreach (UserInformation user in ViewBag.userList)
                 {
-                    @if(user.DepartmentId == null){
+                    @if(user.DepartmentId == null && user.AccountHash != Model.AccountHash){
                         <tr>
                         <td>@user.FirstName @user.LastName</td>
                         <td>@user.PrimaryEmail</td>
                         <td>
-                            <select>
+                            <select id="dptId_@user.EventsAuthorId">
                                 <option value="@Model.DepartmentId">@Model.Department.DepartmentName</option>
                                 <option value="null" selected>Not set</option>
                             </select>
                         </td>
                         <td>
-                            <select>
+                            <select id="role_@user.EventsAuthorId">
                                 <option value="@user.AccountFlag">@role.role(user.AccountFlag)</option>
                                 <option value = "3">Instructor</option>
                                 @if(Model.AccountFlag < 2){
@@ -149,7 +149,7 @@
                                 }
                             </select>
                         </td>
-                        <td>Save</td>
+                        <td><a href="#" onclick="saveUser('@user.EventsAuthorId')">Save</a></td>
                     </tr>
                     }
                 }

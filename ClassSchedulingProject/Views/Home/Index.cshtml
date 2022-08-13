@@ -146,9 +146,11 @@ const userList = JSON.parse('@Html.Raw(ViewBag.userList)')
 const _theme = @ViewData["theme"];
 document.getElementById("role").innerText = function() { 
     switch (role) {
-        case 0: return "Admin"; break;
-        case 1: return "Admin Assistant"; break;
-        default: return "Professor"; break;
+        case 0: return "Web Admin"; break;
+        case 1: return "Admin"; break;
+        case 2: return "Admin Assistant"; break;
+        case 3: return "Professor"; break;
+        default: return "NOT REGISTERED"; break;
     }
 }();
 function toggleCalendarState(){

@@ -1,3 +1,18 @@
+function saveUser(id){
+    let eventAuthorID = id;
+    let departmentID = Number(document.getElementById(`dptId_${id}`).value);
+    if(departmentID === NaN) departmentID = null;
+    let role = Number(document.getElementById(`role_${id}`).value);
+    if(role !== 0 && role !== 1 && role !== 2 && role !== 3 && role !== 4) {
+        return;
+    }
+    fetch(`/home/saveUser?eventAuthorID=${eventAuthorID}&department=${departmentID}&role=${role}`).then(data => data.json()).then(function(data){
+        if(data === 0){
+            window.location.reload();
+        }
+    })
+}
+
 const manageProgram = {};
 manageProgram.save = function (id){
     let tableRowElement = $(`#${id} td`);
@@ -34,7 +49,7 @@ manageProgram.save = function (id){
     })
     newPost.body = JSON.stringify(newPost.body);
     fetch("/home/saveProgramEventTemplate", newPost).then(data => data.json().then(function(data){
-        // window.location.reload();
+        window.location.reload();
     }))
 
 }

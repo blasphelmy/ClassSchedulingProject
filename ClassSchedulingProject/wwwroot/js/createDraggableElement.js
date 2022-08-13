@@ -1,4 +1,5 @@
 function createDraggableElement(element) {
+    element.style.setProperty("z-index", ++window.zIndex)
     dragElement(element);
 
     function dragElement(element) {

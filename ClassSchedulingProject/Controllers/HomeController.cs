@@ -498,6 +498,23 @@ namespace ClassSchedulingProject.Controllers
             return Json(-1);
         }
         [HttpGet]
+        public IActionResult saveUser(string eventAuthorID, int? department, int role){
+            UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
+            if(thisUser != null && thisUser.AccountFlag < 3){
+                if(thisUser.AccountFlag <= role){
+                    UserInformation user = context.UserInformation.FirstOrDefault(u => u.EventsAuthorId == eventAuthorID);
+                    user.DepartmentId = department;
+                    user.AccountFlag = role;
+                    context.SaveChanges();
+                    return Json(0);
+                }else{
+                    return Json(-1);
+                }
+            }
+            return Json(-1);
+        }
+
+        [HttpGet]
         public IActionResult deleteCourse(int courseID){
             UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
             if(courseID != 0 && thisUser != null && thisUser.AccountFlag < 3){
@@ -559,7 +576,6 @@ namespace ClassSchedulingProject.Controllers
             }
             return Json(0);
         }
-
         //helper methods
         public int verifyUser(string hash)
         {

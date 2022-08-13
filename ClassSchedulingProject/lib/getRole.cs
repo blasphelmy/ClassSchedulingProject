@@ -12,7 +12,7 @@ public class getRole
                 case 1 : return "Admin";
                 case 2 : return "Admin Assistant";
                 case 3 : return "Instructor";
-                default : return "Unregistered";
+                default : return "Not Activated";
             }
         }
     }
