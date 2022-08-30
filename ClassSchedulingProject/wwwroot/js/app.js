@@ -1,9 +1,15 @@
 ﻿var calendar, init = 0, elements = {}, isFetching = 0, calEvents = [], newEvent = {}, ua = 5, EventTemplatesColorMap = new Map(), EventTemplateMaps = new Map(), newCalender, _mousePOS = { x : 0, y : 0 };
-const slotDuration = `00:05 00:10 00:15 00:20 00:30 01:00)`.split(" "), colors = "#3587e9 #ff8700 #c87a17 #5e4fa2 #00ea2f #1fb976 #ee66a8 #79a2ed".split(" "), timeoffset = (7 * 1000 * 60 * 60)
+const slotDuration = `00:05 00:10 00:15 00:20 00:30 01:00)`.split(" "), timeoffset = (7 * 1000 * 60 * 60)
 const developerMode = false;
+const gColors = ("#5c95ac #007736 #9b9838 #007acf #d06576 #493375 #ad4597 #6a7b12 #36aa9a #29949b #8d77f3 #883bac #8154f6 #ee8a29 #007acf".split(" "));
 let eventBuilder = function(e){
+    e = JSON.parse(JSON.stringify(e));
     if(e.extendedProps.room === elements.room.val() &&
         e.extendedProps.building === elements.building.val()){
+            let color = e.color;
+            color = hexToHSL(color);
+            if(_theme === 1) color[2] *= .85;
+            e.color = hslToHex(color);
         return e;
     }
     return {};
@@ -184,12 +190,12 @@ function formatCalendarItem(info) {
     let eventTimeElement = info.el.querySelectorAll('.fc-event-time')[0];
     try {
         eventTimeElement.innerHTML = `${function () {
-            if (info.event._def.extendedProps.userAccountID === newCalender.data.userAccountID && role < 3 && _isActive == 1 && caldata.ProgramID == info.event._def.extendedProps.ProgramId) {
+            if (info.event._def.extendedProps.userAccountID === userAccountID && role < 3 && _isActive == 1 && caldata.ProgramID == info.event._def.extendedProps.ProgramId) {
                 return `<span id="eventDelete_${info.event._def.extendedProps.uuid}" class="close text-light" style="position:relative;bottom:6px;">&times;</span> <br /> `;
             }
             return ``;
         }()}<span>${info.event._def.title} <br /> ${info.event._def.extendedProps.instructorName}</span><br />${formatTime(info)}`;
-        if (info.event._def.extendedProps.userAccountID === newCalender.data.userAccountID) {
+        if (info.event._def.extendedProps.userAccountID === userAccountID) {
             document.getElementById(`eventDelete_${info.event._def.extendedProps.uuid}`).addEventListener("click", function (e) {
                 closePopUp();
                 e.stopPropagation();

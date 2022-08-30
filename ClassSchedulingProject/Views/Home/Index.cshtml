@@ -14,6 +14,7 @@
 }
 <style>
 </style>
+<p>@ViewBag.testField1</p>
 <div id="menuBar">
     <span id="leftGroupingsMenuBar">
     <div id="s1" style="display : none" class="spinner-border spinner-border-sm status sLoading" role="status">
@@ -72,10 +73,6 @@
                     </select>
                     <select id="room" class="custom-select-sm" style="margin-bottom:25px" onchange="fetchNewCalendar(this)">
                       <option selected>Select Room</option>
-                      <option value="108">108</option>
-                      <option value="111">111</option>
-                      <option value="112">112</option>
-                      <option value="114">114</option>
                     </select>
                 </span>
         </div>
@@ -119,11 +116,10 @@
 <script src="/lib/react/babel7189.js"></script>
 <script src="/js/convertTableToCSV.js"></script>
 <script>
+//all of this should be turned into constants
 let caldata = {
     firstName: "@thisUser.FirstName",
     lastName: "@thisUser.LastName",
-    userAccountID: "@thisUser.EventsAuthorId",
-    userAccountLevel: "@thisUser.AccountFlag",
     UserAssociatedDepartment: "@thisUser.Department.DepartmentName",
     ProgramType: "",
     ProgramName: "",

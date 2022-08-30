@@ -9,7 +9,6 @@ function ActivateEvent(element) {
     }
     let event = {
         title: data.Title,
-
         extendedProps: {
             coursePrefix: data.CoursePrefix,
             courseNumber: data.CourseNumber,
@@ -179,9 +178,12 @@ function createAnEventPopUp(info, event, source = "eventTemplates") {
         for (let i = 0; i < event.daysOfWeek.length; i++) {
             checkboxes[Number(event.daysOfWeek[i]) - 1].checked = true
         }
-    }
+    }        
     centerWindow(document.getElementById("addEventPopUp"));
-    if(!/^((?!chrome|android).)*safari/i.test(navigator.userAgent) && window.innerWidth > 699) createDraggableElement(document.getElementById("addEventPopUp"));
+    if(!/^((?!chrome|android).)*safari/i.test(navigator.userAgent) && window.innerWidth > 699) {
+        createDraggableElement(document.getElementById("addEventPopUp"));
+        // setPopUpPos(document.getElementById("addEventPopUp"), { x: _mousePOS.x, y: _mousePOS.y });
+    }
     // setPopUpPos(document.getElementById("addEventPopUp"), { x: info.jsEvent.clientX, y: info.jsEvent.clientY });
 }
 function renderPopUp(event) {
@@ -222,7 +224,7 @@ function renderPopUp(event) {
         </div>
     </div>`).appendTo("body");
      createDraggableElement(document.getElementById("eventPopUP"));
-     centerWindow(document.getElementById("eventPopUP"));
+     setPopUpPos(document.getElementById("eventPopUP"), { x: _mousePOS.x, y: _mousePOS.y });
 }
 window.zIndex = 50;
 function warningPopUps(warnings, errors, event, coor){ 
@@ -330,7 +332,7 @@ function createPopUp(info) {
     let event = newCalender.data.events[newCalender.EventMap.get(info.event._def.extendedProps.uuid)];
     renderPopUp(event, info);
     let popupElement = document.getElementById("eventPopUP");
-    setPopUpPos(popupElement, { x: info.jsEvent.clientX, y: info.jsEvent.clientY });
+    setPopUpPos(document.getElementById("eventPopUP"), { x: _mousePOS.x, y: _mousePOS.y });
 }
 function setPopUpPos(popupElement, mouseClickData) {
     let screenWidth = window.innerWidth;
@@ -383,7 +385,7 @@ function generateFormData(info, event) {
         extendedProps: {
             courseID : event.extendedProps.courseID,
             uuid: info?.event?._def?.extendedProps.uuid ?? event?.extendedProps?.uuid ?? create_UUID(),
-            userAccountID: event?.extendedProps?.userAccountID || newCalender.data.userAccountID,
+            userAccountID: event?.extendedProps?.userAccountID || userAccountID,
             instructorHash: function () {
                 let e = $("#pufInstructor");
                 if (e.val()) {

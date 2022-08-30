@@ -12,7 +12,8 @@
         this.usersColors = new Map();
         this.EventMap = new Map();
         this.colorWheel = {
-            colors: ("#6a7b12 #29949b #8d77f3 #883bac #5f24f6 #ee8a29 #007acf".split(" ")),
+            //colors: ("#6a7b12 #29949b #8d77f3 #883bac #5f24f6 #ee8a29 #007acf".split(" ")),
+            colors: gColors,
             default: "#ab4e68",
             locked: "",
             index: 0
@@ -20,8 +21,6 @@
         this.data = {};
         this.data.firstName = data.firstName;
         this.data.lastName = data.lastName;
-        this.data.userAccountID = data.userAccountID;
-        this.data.userAccountLevel = data.userAccountLevel;
         this.data.events = [];
         this.UsersEventsMap = new Map();
         if(developerMode) console.log(this.data);
@@ -32,8 +31,8 @@
     checkPermissions(event){
         if(event.extendedProps.ProgramId !== caldata.ProgramID) return false
         if(role < 3) return true;
-        if (event.extendedProps.ProgramId === caldata.ProgramID && (event.extendedProps.userAccountID === this.data.userAccountID
-            || event.extendedProps.instructorHash === this.data.userAccountID)) {
+        if (event.extendedProps.ProgramId === caldata.ProgramID && (event.extendedProps.userAccountID === userAccountID
+            || event.extendedProps.instructorHash === userAccountID)) {
             return true;
         }
         return false;
@@ -68,13 +67,14 @@
                     this.colorWheel.index = 0;
                 }
             }
-            if (this.checkPermissions(newEventList[i])) {
+            if (newEventList[i].extendedProps.instructorHash === userAccountID) {
                 newEventList[i].color = this.colorWheel.default;
             } else {
                 newEventList[i].color = this.usersColors.get(newEventList[i].extendedProps.instructorHash);
             }
-            if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#444"
+            if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#444444"
             if(_isActive === 0 && newEventList[i].extendedProps.ProgramId === caldata.ProgramID) newEventList[i].color = "#a36475"
+            newEventList[i].color2 = newEventList[i].color;
             this.data.events.push(newEventList[i]);
             this.EventMap.set(this.data.events[i].extendedProps.uuid, i);
             this.setUserEventMap(this.data.events[i]);
@@ -106,17 +106,19 @@
                 }
             }
 
-            if (this.checkPermissions(newEventList[i])) {
+            if (newEventList[i].extendedProps.instructorHash === userAccountID) {
                 this.data.events[i].color = this.colorWheel.default;
             } else {
                 this.data.events[i].color = this.usersColors.get(this.data.events[i].extendedProps.instructorHash);
             }
-            if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#444";
+            if(newEventList[i].extendedProps.ProgramId !== caldata.ProgramID) newEventList[i].color = "#444444";
             if(_isActive === 0 && newEventList[i].extendedProps.ProgramId === caldata.ProgramID) newEventList[i].color = "#a36475"
             //this.addEvent(newEventList[i], 1);
+            newEventList[i].color2 = newEventList[i].color;
             this.setUserEventMap(this.data.events[i]);
         }
         this.checkForConflicts();
+        updateWarningDisplayIfExist();
         setTimeout(createCalender, 20);
     }
     checkForConflicts(){
@@ -161,6 +163,10 @@
                     }
                     return false;
                 }
+                
+                //if events never falls on the same day we skip checking
+                if(!checkDayOverlay(eventA, eventB)) continue;
+
                 const checkitsConflict_offSet = function(itsA, itsB, offset = (1000 * 60 * 15)){
                     if((itsA.start.getTime() <= itsB.start.getTime() && itsB.start.getTime() <= (itsA.end.getTime() + offset))
                     || (itsB.start.getTime() <= itsA.start && itsA.start.getTime() <= (itsB.end.getTime() + offset))) return true;
@@ -196,12 +202,12 @@
                 if(eventA.extendedProps.room === eventB.extendedProps.room && eventA.extendedProps.building === eventB.extendedProps.building){
                         //check for tangible and concrete time conflicts
                         //if event are potentially taught on the same days and if they overlap
-                        if(checkDayOverlay(eventA, eventB) && checkitsConflict_offSet(itsA, itsB, 0)) {
+                        if(checkitsConflict_offSet(itsA, itsB, 0)) {
                                  eventA.extendedProps.errors.push(`Time conflict with <span style="color:${colorB}">"${eventB.title}"</span> in room ${eventBLink} from ${eventBTime}`)
                                  eventB.extendedProps.errors.push(`Time conflict with <span style="color:${colorA}">"${eventA.title}"</span> in room ${eventBLink} from ${eventATime}`)
                                  override1A = true;
                         }
-                        else if(checkDayOverlay(eventA, eventB) && checkitsConflict_offSet(itsA, itsB)) {
+                        else if(checkitsConflict_offSet(itsA, itsB)) {
                             eventA.extendedProps.warnings.push(`<span style="color:${colorB}">"${eventB.title}"</span> from ${eventBTime} in this room ${eventBLink} starts/ends within 15 minutes of this event..`)
                             eventB.extendedProps.warnings.push(`<span style="color:${colorA}">"${eventA.title}"</span> from ${eventATime} in this room ${eventALink} starts/ends within 15 minutes of this event..`)
                             override1 = true;
@@ -211,12 +217,12 @@
                 if(eventA.extendedProps.ClassQuarterNumber === eventB.extendedProps.ClassQuarterNumber 
                     && eventA.extendedProps.ProgramId == eventB.extendedProps.ProgramId){
                         //if event are potentially taught on the same days and if they overlap
-                        if(!override1A && checkDayOverlay(eventA, eventB) && checkitsConflict_offSet(itsA, itsB, 0)) {
+                        if(!override1A && checkitsConflict_offSet(itsA, itsB, 0)) {
                             eventA.extendedProps.errors.push(`Conflict with <span style="color:${colorB}">"${eventB.title}"</span> in room ${eventBLink} from ${eventBTime} - classes meant to be taught together are overlapping`)
                             eventB.extendedProps.errors.push(`Conflict with <span style="color:${colorA}">"${eventA.title}"</span> in room ${eventALink} from ${eventATime} - classes meant to be taught together are overlapping`)
                             override2A = true;
                         }
-                        else if(!override1 && !override1A && checkDayOverlay(eventA, eventB) && checkitsConflict_offSet(itsA, itsB)) {
+                        else if(!override1 && !override1A && checkitsConflict_offSet(itsA, itsB)) {
                             eventA.extendedProps.warnings.push(`<span style="color:${colorB}">"${eventB.title}"</span> in room ${eventBLink} from ${eventBTime} starts within 15 minutes of this event. These two courses are meant to be taught together during each quarter`)
                             eventB.extendedProps.warnings.push(`<span style="color:${colorA}">"${eventA.title}"</span> in room ${eventALink} from ${eventATime} starts within 15 minutes of this event. These two courses are meant to be taught together during each quarter`)
                             override2 = true;
@@ -227,11 +233,11 @@
                 if(eventA.extendedProps.instructorHash === eventB.extendedProps.instructorHash){
                     //check for tangible and concrete time conflicts
                     //if event are potentially taught on the same days and if they overlap
-                    if(!override2A && !override1A && checkDayOverlay(eventA, eventB) && checkitsConflict_offSet(itsA, itsB, 0)) {
-                                eventA.extendedProps.errors.push(`<span style="color:${colorA}">${eventA.extendedProps.instructorName}</span> is already scheduled to teach <span style="color:${colorB}">"${eventB.title}"</span> in room ${eventBLink} from ${eventBTime} during this time`)
-                                eventB.extendedProps.errors.push(`<span style="color:${colorB}">${eventB.extendedProps.instructorName}</span> is already scheduled to teach <span style="color:${colorA}">"${eventA.title}"</span> in room ${eventALink} from ${eventATime} during this time`)
+                    if(!override2A && !override1A && checkitsConflict_offSet(itsA, itsB, 0)) {
+                        eventA.extendedProps.errors.push(`<span style="color:${colorA}">${eventA.extendedProps.instructorName}</span> is already scheduled to teach <span style="color:${colorB}">"${eventB.title}"</span> in room ${eventBLink} from ${eventBTime} during this time`)
+                        eventB.extendedProps.errors.push(`<span style="color:${colorB}">${eventB.extendedProps.instructorName}</span> is already scheduled to teach <span style="color:${colorA}">"${eventA.title}"</span> in room ${eventALink} from ${eventATime} during this time`)
                     }
-                    else if((!override2 && !override1 && !override2A && !override1A) && checkDayOverlay(eventA, eventB) && checkitsConflict_offSet(itsA, itsB)) {
+                    else if((!override2 && !override1 && !override2A && !override1A) && checkitsConflict_offSet(itsA, itsB)) {
                         eventA.extendedProps.warnings.push(`This instructor is already teaching <span style="color:${colorB}">"${eventB.title}"</span> in room ${eventBLink} from ${eventBTime} starts/ends within 15 minutes of this event.`)
                         eventB.extendedProps.warnings.push(`This instructor is already teaching <span style="color:${colorA}">"${eventA.title}"</span> in room ${eventALink} from ${eventATime} starts/ends within 15 minutes of this event.`)
                     }
@@ -335,21 +341,18 @@
                 $("#s3").text(`error saving event, server responded with : ${data}`);
            }
            if (callback) callback();
-           this.checkForConflicts();
-           updateWarningDisplayIfExist();
         });
     }
     deleteEvent(uuid) {
         if(_isActive === 0) return $("#s3").text("calendar is locked!");
-        if (this.data.events[this.EventMap.get(uuid)] && this.data.events[this.EventMap.get(uuid)].extendedProps.userAccountID === this.data.userAccountID) {
+        if (this.data.events[this.EventMap.get(uuid)] && this.data.events[this.EventMap.get(uuid)].extendedProps.userAccountID === userAccountID) {
             $("#s3").text("deleting event...")
             fetch(`/home/deleteEvent?uuid=${uuid}`).then(response => response.json()).then((data) => {
                 if (data === 1) {
                     let title = this.data.events[this.EventMap.get(uuid)].title;
                     this.data.events = this.data.events.splice(Number(this.EventMap.get(uuid)), 1);
                     fetchData(new Object, function(){
-                        $("#s3").text(`${title} deleted...`)
-                        this.checkForConflicts();
+                        $("#s3").text(`${title} deleted...`);
                     });
                 }
             });

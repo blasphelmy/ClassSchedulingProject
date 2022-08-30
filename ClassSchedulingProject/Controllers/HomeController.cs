@@ -1,12 +1,9 @@
 ﻿using ClassSchedulingProject.Models;
 using ClassSchedulingProject.lib;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using ClassSchedulingProject.data;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
@@ -20,7 +17,6 @@ namespace ClassSchedulingProject.Controllers
     {
         private ClassSchedulerDbContext context;
         List<CourseOfferedTemplates> courseTemplates;
-        private IDictionary<string, InstitutionsRegistry> institutionsDict;
         private IDictionary<string, int> registeredEmailsDict;
         private IDictionary<string, string> institutionEmailSuffixDict;
         private IDictionary<string, ApiEvents> eventMap;
@@ -34,13 +30,11 @@ namespace ClassSchedulingProject.Controllers
         {
             this.context = newContext;
             courseTemplates = new List<CourseOfferedTemplates>();
-            institutionsDict = new Dictionary<string, InstitutionsRegistry>();
             institutionEmailSuffixDict = new Dictionary<string, string>();
             eventMap = new Dictionary<string , ApiEvents>();
             registeredEmailsDict = new Dictionary<string, int>();
             foreach (InstitutionsRegistry i in context.InstitutionsRegistry)
             {
-                institutionsDict.Add(i.InstitutionName, i);
                 instutionNames = instutionNames + i.InstitutionId + ",," + i.InstitutionName + "--";
             }
             foreach (UserInformation i in context.UserInformation)
@@ -57,10 +51,13 @@ namespace ClassSchedulingProject.Controllers
                 courseTemplates.Add(new CourseOfferedTemplates(course));
             }
         }
+        //public List<>
 
         public IActionResult Index()
         {
             string cookieValueFromReq = Request.Cookies["sessionID"];
+            if(Request.Cookies["theme"] == null) SetCookie("theme", "1", 99999);
+            ViewData["theme"] = Request.Cookies["theme"];
             if (verifyUser(cookieValueFromReq) == 1)
             {
                 ViewBag.isAuthorized = 1;
@@ -84,8 +81,6 @@ namespace ClassSchedulingProject.Controllers
                 ViewBag.resources = JsonSerializer.Serialize(resources);
 
                 ViewData["Title"] = thisUser.PrimaryInstitutionId + " Home";
-                if(Request.Cookies["theme"] == null) SetCookie("theme", "1", 99999);
-                ViewData["theme"] = Request.Cookies["theme"];
                 ViewBag.thisUser = thisUser;
                 ViewData["role"] = thisUser.AccountFlag;
                 ViewBag.userList = JsonSerializer.Serialize(userList);
@@ -402,9 +397,16 @@ namespace ClassSchedulingProject.Controllers
                 {
                     return Json("not authorized to make changes to this event..");
                 }
+
+                //some additional checks on newEvent here
+                if (existing != null)
+                {
+                    //basically just to make sure that this event isnt being tampered with i guess.
+                    newEvent.EventAuthorHash = existing.EventAuthorHash;
+                }
                 context.ApiEvents.Add(newEvent);
                 status++;
-                context.SaveChanges();
+                if(existing != null || thisUser.AccountFlag < 3) context.SaveChanges();
                 return Json(status);
 
             }
@@ -496,6 +498,36 @@ namespace ClassSchedulingProject.Controllers
             }
 
             return Json(-1);
+        }
+        [HttpGet]
+        public IActionResult migrateEvents(int year, int quarter, int targetYear, int targetQuarter){
+            UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
+            
+            if(thisUser == null || thisUser.AccountFlag > 2) return Json("Error");
+
+            List<ApiEvents> eventQueue = context.ApiEvents.ToList().Where(e => e.Year == year && e.Quarter == quarter).ToList();
+
+            foreach(ApiEvents Event in eventQueue)
+            {
+                ApiEvents newEvent = Event;
+                string newUUID = "MIGRATED-EVENT-" + ((newEvent.EventUuid + newEvent.EventUuid + newEvent.EventData + (rand.Next() * 100 * 17).ToString() + (rand.Next() * 100 * 17).ToString()).ComputeSha256Hash());
+                newEvent.EventData = newEvent.EventData.Replace(newEvent.EventUuid, newUUID);
+                newEvent.EventUuid = newUUID;
+                newEvent.Id = null;
+                newEvent.Year = targetYear;
+                newEvent.Quarter = targetQuarter;
+                context.ApiEvents.Add(newEvent);
+            }
+            try
+            {
+                context.SaveChanges();
+            }
+            catch
+            {
+                return Json("Error saving events");
+            }
+            return Json(1);
+
         }
         [HttpGet]
         public IActionResult saveUser(string eventAuthorID, int? department, int role){

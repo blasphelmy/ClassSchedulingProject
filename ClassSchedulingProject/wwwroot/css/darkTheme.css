@@ -88,8 +88,8 @@
 .eventWarning_focus {
       backdrop-filter: blur(40px);
    -webkit-backdrop-filter: blur(40px);
-   background: rgba(56, 65, 75, 0.514)!important;
-   background: linear-gradient(180deg, rgba(56, 65, 75, 0.514) 0%, rgb(53, 58, 68) 48%, rgba(56, 65, 75, 0.514) 100%)!important;
+   background: rgba(49, 57, 66, 0.767)!important;
+   /* background: linear-gradient(180deg, rgba(56, 65, 75, 0.514) 0%, rgb(53, 58, 68) 48%, rgba(56, 65, 75, 0.514) 100%)!important; */
 }
  .fc  {
     -ms-overflow-style: none;

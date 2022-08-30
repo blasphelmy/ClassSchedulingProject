@@ -9,7 +9,7 @@ namespace ClassSchedulingProject.Models
     public partial class ApiEvents
     {
         [Key]
-        public int Id { get; set; }
+        public int? Id { get; set; }
         [Required]
         [Column("eventData")]
         public string EventData { get; set; }
