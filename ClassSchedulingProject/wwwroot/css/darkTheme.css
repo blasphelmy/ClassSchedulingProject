@@ -9,6 +9,10 @@
     background-color: var(--dark-2);
     color: var(--textcolor-1)!important;
  }
+ #eventMigration {
+   color: var(--textcolor-1);
+   background-color: rgba(0,0,0,.5)!important;
+}
  .navbar {
     background: var(--dark-1)!important;
     border-color: rgb(46, 46, 46)!important;

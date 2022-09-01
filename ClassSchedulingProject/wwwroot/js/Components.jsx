@@ -1,9 +1,19 @@
 class ListViewComponent extends React.Component{
+  setStateCB;
+  uuid;
+  type;
   constructor(props) {
     super(props);
     this.state = {
-      newCalData: props.i
+      events: props.i
     };
+    this.setStateCB = props.cb;
+    this.uuid = create_UUID()
+    if(!props.type){
+      this.type = "default"
+    }else{
+      this.type = props.type;
+    }
   }
 
   componentDidMount() {
@@ -15,25 +25,30 @@ class ListViewComponent extends React.Component{
   }
 
   tick() {
-    this.setState({
-      newCalData: newCalender.data
-    });
+    this.setState(this.setStateCB);
   }
   render() {
-    if(jQuery.isEmptyObject(this.state.newCalData)) return;
-    let events = this.state.newCalData.events.map(function(o){
+    if(jQuery.isEmptyObject(this.state.events)) return;
+    let events = this.state.events.map(function(o){
       if(o.extendedProps.ProgramId === caldata.ProgramID) return o;
     })
     if(events.length === 0 || events === undefined || events === null){
       return;
     }
+    let displayElements = "none";
+    let link = "";
+    if(this.type === "default"){
+      displayElements = "inline-block";
+      link = "#"
+    }
+
     return (
           <div>
-            <button className="btn" onClick={() => downloadFile()}><svg style={{position: "relative", top : "-2px"}} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-download" viewBox="0 0 16 16">
+            <button style={{display : displayElements}} className="btn" onClick={() => downloadFile(this.uuid)}><svg style={{position: "relative", top : "-2px", display : displayElements}} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-download" viewBox="0 0 16 16">
   <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
   <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
   </svg> Download as csv</button>
-            <table id="tableListView" className="table table-bordered listViewTable">
+            <table id={this.uuid} className="table table-bordered listViewTable table-responsive">
               <thead>
                 <tr>
                   <th>Class #</th>
@@ -51,7 +66,7 @@ class ListViewComponent extends React.Component{
                   <th>Days</th>
                   <th>Delivery</th>
                   <th>Instructor</th>
-                  <th>{"  "}</th>
+                  <th style = {{display : displayElements}}>{"  "}</th>
                 </tr>
               </thead>
               <tbody>
@@ -72,7 +87,7 @@ class ListViewComponent extends React.Component{
                         <td>{formatTimeString(iTs).split(" - ")[0] || "not set"}{"\t"}</td>
                         <td>{formatTimeString(iTs).split(" - ")[1] || "not set"}{"\t"}</td>
                         <td>{function(){
-                            if(o.extendedProps.room && o.extendedProps.building) return (<a href="#" onClick={() => changeBackToCalendarThenGoToEvent(o.extendedProps.building, o.extendedProps.room)}>
+                            if(o.extendedProps.room && o.extendedProps.building) return (<a href={link} onClick={() => changeBackToCalendarThenGoToEvent(o.extendedProps.building, o.extendedProps.room)}>
                               {o.extendedProps.building + "-" + o.extendedProps.room}
                             </a>)
                             return "Online/Not set"
@@ -80,7 +95,7 @@ class ListViewComponent extends React.Component{
                         <td>{formatdaysOfWeek(o.daysOfWeek, "M T W TH F".split(" "))}{"\t"}</td>
                         <td>{o.extendedProps.delivery || "null"}{"\t"}</td>
                         <td><span className="underlineText" onClick={() => createUserEventListPopUp(o.extendedProps.instructorHash)}>{o.extendedProps.instructorName || "Staff"}{"\t"}</span></td>
-                        <td><a id={`table-${o.extendedProps.uuid}`} href="#" data={JSON.stringify(o)} onClick={() => editEvent($(`#table-${o.extendedProps.uuid}`))}>Edit{"\t"}</a></td>
+                        <td style = {{display : displayElements}}><a style = {{display : displayElements}} id={`table-${o.extendedProps.uuid}`} href="#" data={JSON.stringify(o)} onClick={() => editEvent($(`#table-${o.extendedProps.uuid}`))}>Edit{"\t"}</a></td>
                       </tr>
                     )
                   })}

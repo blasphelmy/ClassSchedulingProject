@@ -51,7 +51,7 @@ let fetchData = (e, callback) => {
     if (!elements.checkNull()) {
         return createCalender(caldata);
     }
-    let filterterms = `${elements.year.val()},${elements.quarter.val()},${elements.building.val()},${elements.room.val()}`;
+    let filterterms = `${elements.year.val()},${elements.quarter.val()}`;
     //if(developerMode) console.log(filterterms);
     fetch(`/home/fetchEvents?filterterms=${filterterms}`).then(response => response.json()).then((data) => {
         if (data !== "error") {

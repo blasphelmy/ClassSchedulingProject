@@ -3,7 +3,7 @@
     ViewData["Title"] = ViewData["Title"];
     UserInformation thisUser = new UserInformation();
     List<int> AvailableYears = new List<int>();
-    for(int x = 0; x < 4; x++)
+    for(int x = -10; x < 4; x++)
     {
         AvailableYears.Add(DateTime.Now.Year + x);
     }
@@ -36,6 +36,9 @@
             <p style="margin-bottom:0">Welcome, @thisUser.FirstName @thisUser.LastName</p>
             <a href="#" onclick="createUserEventListPopUp(caldata.userAccountID)">View all my assigned events</a>
             <p style="margin-bottom: 10px">Your department: @thisUser.Department.DepartmentName, Role : <span id="role"></span></p>
+            @if(thisUser.AccountFlag < 3){
+                <a href="#" onclick="eventMigration()"><p>Migrate Events</p></a>
+            }
             <div style="margin-bottom: 10px">
                 <span>Calendar is :  </span>
                 <input id="isActiveToggle" data-off="Active" data-on="Locked" data-onstyle="danger" data-offstyle="primary" type="checkbox" onchange="toggleCalendarState()" data-toggle="toggle" data-size="xs" checked disabled>
@@ -102,6 +105,11 @@
 <div id="userEventListPopup">
 </div>
 <div id="EventWarnings"></div>
+@if(thisUser.AccountFlag < 3){
+    <div id="eventMigrationContainer">
+        
+    </div>
+}
 
 <link rel="stylesheet" href="/css/calendarAppDefaults.css" />
 <link rel="stylesheet" href="/libCal_f/main.css" />
@@ -163,6 +171,7 @@ function toggleCalendarState(){
 <script src="/js/main.jsx" type="text/babel"></script>
 <script src="/js/helpPage.jsx" type="text/babel"></script>
 @if(thisUser.AccountFlag < 3){
+    <script src="/js/privilagedTools.jsx" type="text/babel"></script>
     <script>
         function toggleCalendarState(){
             if(role > 2) return;
@@ -173,11 +182,17 @@ function toggleCalendarState(){
                 fetchData();
             })
         } 
+        function eventMigration(){  
+            createEventMigrationWindow();
+        }
     </script>
 }else{
     <script>
         function toggleCalendarState(){
 
         } 
+        function eventMigration(){
+
+        }
     </script>
 }

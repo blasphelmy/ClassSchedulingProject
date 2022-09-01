@@ -18,8 +18,8 @@ var TableToCSV = (tableID) => {
     data = data.join("\n")
     return data;
 }
-function downloadFile(){
-    const file = new File([TableToCSV("tableListView")], `${caldata.ProgramName}_${caldata.ProgramType}_${$("#qSel option:selected").text()}_${$("#yearSel option:selected").text()}_created_${new Date().toLocaleDateString()}.csv`, {
+function downloadFile(id){
+    const file = new File([TableToCSV(id)], `${caldata.ProgramName}_${caldata.ProgramType}_${$("#qSel option:selected").text()}_${$("#yearSel option:selected").text()}_created_${new Date().toLocaleDateString()}.csv`, {
         type: 'text/plain',
     })
     const link = document.createElement('a')

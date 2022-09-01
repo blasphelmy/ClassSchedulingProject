@@ -19,7 +19,11 @@ function changeView(e, callback){
         document.getElementById("listView").style.setProperty("display", "block");
         const listViewRoot = ReactDOM.createRoot(document.getElementById("listView"));
         if(developerMode) console.log(newCalender.data.events);
-        listViewRoot.render(<ListViewComponent i={newCalender.data} />);
+        listViewRoot.render(<ListViewComponent i={newCalender.data.events} cb={function(){
+            return {
+                    events: newCalender.data.events
+                }
+        }}/>);
     }else{
         document.getElementById("listView").style.setProperty("display", "none");
         document.getElementById("calendar").style.setProperty("opacity", "0");
