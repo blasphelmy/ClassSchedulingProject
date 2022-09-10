@@ -2,50 +2,15 @@
 function createEventMigrationWindow(){
     const _root = document.getElementById("eventMigrationContainer")
     const _eventMigration = ReactDOM.createRoot(_root)
-    var _sourceEvents = [];
-    var _targetEvents = [];
+    var _sourceEvents = []
+    var _targetEvents = []
     function _closeRenderEventMigrationWindow(){
         $("#eventMigration").remove()
     }
-    function _returnPrograms(){
-        let programs = []
-        $("#dptSel > option").each(function(){
-            programs.push({
-                programName: this.text,
-                programID : this.value
-            })
-        })
-        return programs
-    }
     function _parseEvents(dataString){
-        let newEventList = dataString.split(" _--__- ").filter(e => e !== "")
-        let returnEventList = []
-        let programID = Number($("#eventMigration_Program").val())
-        let defaultColor = function(){
-            if(_theme === 1) return "#ffffff"
-            return "#000000"
-        }()
-        for (let i in newEventList) {
-            newEventList[i] = JSON.parse(newEventList[i])
-            newEventList[i].color = defaultColor
-            newEventList[i].color2 = defaultColor
-            if (newCalender.usersColors.get(newEventList[i].extendedProps.instructorHash) === undefined) {
-                newCalender.usersColors.set(newEventList[i].extendedProps.instructorHash, newCalender.colorWheel.colors[newCalender.colorWheel.index++]);
-                if (newCalender.colorWheel.index >= newCalender.colorWheel.colors.length) {
-                    newCalender.colorWheel.index = 0;
-                }
-            }
-            if (newEventList[i].extendedProps.instructorHash === userAccountID) {
-                newEventList[i].color = newCalender.colorWheel.default;
-                newEventList[i].color2 = newCalender.colorWheel.default;
-            } else {
-                newEventList[i].color = newCalender.usersColors.get(newEventList[i].extendedProps.instructorHash);
-                newEventList[i].color2 = newCalender.usersColors.get(newEventList[i].extendedProps.instructorHash);
-            }
-            console.log(newEventList[i])
-            if(newEventList[i].extendedProps.ProgramId === programID) returnEventList.push(newEventList[i])
-        }
-        return returnEventList
+        let newCalender = new CalenderApp(caldata);
+        newCalender.parseEvents(dataString);
+        return newCalender.data.events;
     }
     function _fetchData(panel = "target"){
         let year
@@ -84,6 +49,44 @@ function createEventMigrationWindow(){
         })
         return years;
     }
+    function _returnPrograms(){
+        let programs = []
+        $("#dptSel > option").each(function(){
+            programs.push({
+                programName: this.text,
+                programID : this.value
+            })
+        })
+        return programs
+    }
+    function _migrateEvents(){
+        let option_a = $("#eventMigration_deleteExisting").prop('checked');
+        let option_b = $("#eventMigration_clearInstructors").prop('checked');
+        let option_c = $("#eventMigration_clearEventRoomNumbers").prop('checked');
+        let option_d = $("#eventMigration_clearClassSection").prop('checked');
+        console.log(option_a === "on")
+        let options = []
+
+        if(option_a){
+            options.push("1")           
+        }
+        if(option_b){
+            options.push("2")           
+        }
+        if(option_c){
+            options.push("3")           
+        }
+        if(option_d){
+            options.push("4")           
+        }
+        options = options.join("")
+        let sourceYear = Number($("#eventMigration_Source_Year").val())
+        let sourceQuarter = Number($("#eventMigration_Source_Quarter").val())
+        let targetYear = Number($("#eventMigration_Source_Year").val())
+        let targetQuarter = Number($("#eventMigration_Source_Quarter").val())
+        let fetch = $`/home/migrateEvents?year=${sourceYear}&quarter=${sourceQuarter}&targetYear=${targetYear}&targetQuarter=${targetQuarter}`
+
+    }
     function _renderEventMigrationWindow(){
         let programs = _returnPrograms()
         return (
@@ -96,7 +99,6 @@ function createEventMigrationWindow(){
                         <br></br>
                         <select id="eventMigration_Program" onChange={() => _updateSources()}>
                             {programs.map(function(o, i){
-                                console.log(o)
                                 return (<option value={o.programID}>{o.programName}</option>)
                             })}
                         </select>
@@ -109,7 +111,6 @@ function createEventMigrationWindow(){
                         <h4>Source Calendar</h4>
                         <select id="eventMigration_Source_Year" style={{marginRight: "5px"}} onChange={() => _fetchData("source")}>
                             {_years().map(function(o, i){
-                                console.log(o);
                                 return <option>{o}</option>
                             })}
                         </select>
@@ -132,7 +133,6 @@ function createEventMigrationWindow(){
                         <h4>Target Calendar</h4>
                         <select id="eventMigration_Target_Year" style={{marginRight: "5px"}} onChange={() => _fetchData()}>
                             {_years().map(function(o, i){
-                                console.log(o);
                                 return <option>{o}</option>
                             })}
                         </select>
@@ -167,6 +167,7 @@ function createEventMigrationWindow(){
                         <div>
                             <input id="eventMigration_clearClassSection" type={"checkbox"}></input> <label style={{top: "-2px", position: "relative"}}>{" Clear Class and Section Numbers"}</label>
                         </div> 
+                        <button style={{marginBottom : "15px"}} type="button" class="btn btn-primary btn-sm" onClick={() => _migrateEvents()}>Migrate Events</button>
                     </div>
                 </div> 
             </div>

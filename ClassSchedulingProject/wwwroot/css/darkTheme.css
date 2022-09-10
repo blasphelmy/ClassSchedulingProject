@@ -11,7 +11,7 @@
  }
  #eventMigration {
    color: var(--textcolor-1);
-   background-color: rgba(0,0,0,.5)!important;
+   background-color: rgba(39, 45, 52, 0.5)!important;
 }
  .navbar {
     background: var(--dark-1)!important;
@@ -143,3 +143,6 @@
   p > div {
    color: rgb(172, 172, 172);
   }
+  .c1 {
+   background-color: rgba(0, 0, 0, 0.144);
+}

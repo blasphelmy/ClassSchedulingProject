@@ -3,7 +3,7 @@
     ViewData["Title"] = ViewData["Title"];
     UserInformation thisUser = new UserInformation();
     List<int> AvailableYears = new List<int>();
-    for(int x = -10; x < 4; x++)
+    for(int x = -10; x < 5; x++)
     {
         AvailableYears.Add(DateTime.Now.Year + x);
     }
@@ -35,9 +35,9 @@
             <h2>@thisUser.PrimaryInstitution.InstitutionName</h2>
             <p style="margin-bottom:0">Welcome, @thisUser.FirstName @thisUser.LastName</p>
             <a href="#" onclick="createUserEventListPopUp(caldata.userAccountID)">View all my assigned events</a>
-            <p style="margin-bottom: 10px">Your department: @thisUser.Department.DepartmentName, Role : <span id="role"></span></p>
+            <p style="margin-bottom: 0px">Your department: @thisUser.Department.DepartmentName, Role : <span id="role"></span></p>
             @if(thisUser.AccountFlag < 3){
-                <a href="#" onclick="eventMigration()"><p>Migrate Events</p></a>
+                <a href="#" onclick="eventMigration()">Migrate Events</a>
             }
             <div style="margin-bottom: 10px">
                 <span>Calendar is :  </span>

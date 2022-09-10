@@ -165,33 +165,31 @@ namespace ClassSchedulingProject.Controllers
             }
             UserInformation thisUser = getUser(Request.Cookies["sessionID"] ?? sessionID);
             string institutionID = thisUser.PrimaryInstitutionId;
+            int[] programs = new int[thisUser.Department.ProgramOfferings.Count];
             string institutionEvents = "";
 
-            List<ApiEvents> eventList = context.ApiEvents.ToList();
-            if(eventList.Count > 0)
-            {
-                eventList = eventList.FindAll(e =>
-                {
-                if (e.InstitutonId == institutionID && 
-                    e.Year == int.Parse(terms[0]) && 
-                    e.Quarter == int.Parse(terms[1]))
-                    {
-                        foreach(ProgramOfferings program in thisUser.Department.ProgramOfferings){
-                            if(e.ProgramId == program.Id){
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                });
-            }
+            List<ApiEvents> eventList = (from ApiEvents in context.ApiEvents where ApiEvents.Year == int.Parse(terms[0]) && ApiEvents.Quarter == int.Parse(terms[1]) && ApiEvents.InstitutonId == institutionID select ApiEvents).ToList();
+            // if(eventList.Count > 0)
+            // {
+            //     eventList = eventList.FindAll(e =>
+            //     {
+            //     if (e.InstitutonId == institutionID && 
+            //         e.Year == int.Parse(terms[0]) && 
+            //         e.Quarter == int.Parse(terms[1]))
+            //         {
+            //             foreach(ProgramOfferings program in thisUser.Department.ProgramOfferings){
+            //                 if(e.ProgramId == program.Id){
+            //                     return true;
+            //                 }
+            //             }
+            //         }
+            //         return false;
+            //     });
+            // }
 
             foreach (ApiEvents evnt in eventList)
             {
-                if (evnt.InstitutonId == institutionID)
-                {
-                    institutionEvents = institutionEvents + evnt.EventData + " _--__- ";
-                }
+                institutionEvents = institutionEvents + evnt.EventData + " _--__- ";
             }
 
             return Json(institutionEvents);
@@ -500,12 +498,13 @@ namespace ClassSchedulingProject.Controllers
             return Json(-1);
         }
         [HttpGet]
-        public IActionResult migrateEvents(int year, int quarter, int targetYear, int targetQuarter){
+        public IActionResult migrateEvents(int year, int quarter, int targetYear, int targetQuarter, string options){
             UserInformation thisUser = getUser(Request.Cookies["sessionID"]);
             
             if(thisUser == null || thisUser.AccountFlag > 2) return Json("Error");
 
-            List<ApiEvents> eventQueue = context.ApiEvents.ToList().Where(e => e.Year == year && e.Quarter == quarter).ToList();
+            List<ApiEvents> eventQueue = context.ApiEvents.Where(e => e.Year == year && e.Quarter == quarter).ToList();
+            //List<ApiEvents> testLit = (from ApiEvents in context.ApiEvents where ApiEvents.Year == year && ApiEvents.Quarter == quarter select ApiEvents).ToList();
 
             foreach(ApiEvents Event in eventQueue)
             {
