@@ -270,13 +270,14 @@ class EventListComponent extends React.Component {
                   if (Object.keys(o).length === 0) return "";
                   if (o.extendedProps.ProgramId !== caldata.ProgramID) EventTemplatesColorMap.set(o.title, "#666")
                   if(o.extendedProps.warnings?.length > 0 || o.extendedProps.errors?.length > 0) warningDisplay = "block"
-                  if(o.extendedProps.errors?.length > 0) errorFill = "red";
+                  if(o.extendedProps.errors?.length > 0) errorFill = "red"
 
                   return (
                   <div className="row listItemComponent">
                     <div className="col-10">
                       <div key={`class-${o.extendedProps.uuid}`} id={`class-${o.extendedProps.uuid}`} data={JSON.stringify(o)}>
-                        <p style={{ borderColor: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.extendedProps.courseID), colorFilterBrightness, _colorBrightnessVal).join(",")})` }} key={`${key}-p`} className="ActiveEventsListItem">
+                        <p key={`${key}-p`} className="ActiveEventsListItem">
+                        {/* style={{ borderColor: `rgb(${HEXtoRGB(o.color2, colorFilterBrightness, _colorBrightnessVal).join(",")})` }} */}
                           <span style={{ color: `rgb(${HEXtoRGB(o.color2, colorFilterBrightness, _colorBrightnessVal).join(",")})` }}>
                             "<span className="underlineText" onClick={() => editEvent($(`#class-${o.extendedProps.uuid}`))}>{o.title}</span>"</span>
                           <div style={{ padding: "0" }}>
@@ -365,7 +366,6 @@ class EventTemplateComponent extends React.Component {
   tick() {
     this.setState(function (state) {
       for (let o of caldata.EventTemplates) o.activeEvents = [];
-
       newCalender.data.events.map(function (e) {
         caldata.EventTemplates.map(function (o) {
           // console.log(e, o)
@@ -399,7 +399,7 @@ class EventTemplateComponent extends React.Component {
                   return (
                     <div style={{marginBottom : "8px"}}>
                     <span id={`course-${o.Id}`} data={JSON.stringify(o)} onClick={() => ActivateEvent($(`#course-${o.Id}`))} key={id + "div"}>
-                      <p key={id} style={{ cursor : "pointer" ,marginBottom: '0', color: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.Id), colorFilterBrightness, _colorBrightnessVal).join(",")})`}}>
+                      <p key={id} style={{ cursor : "pointer" ,marginBottom: '0'}}>
                         <svg key={id + "svg"} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-check" viewBox="0 0 16 16">
                           <path key={id + "path"} d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
                         </svg>{"  "}
@@ -408,7 +408,8 @@ class EventTemplateComponent extends React.Component {
                       {o.activeEvents.map(function (o, i) {
                         return (
                           <div style={{margin: "0"}}>
-                            <p key={i + "-course"} style={{ fontSize: "12px", marginLeft: "15px", color: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.extendedProps.courseID), colorFilterBrightness, _colorBrightnessVal).join(",")})`, marginBottom: "0" }}>
+                          {/* color: `rgba(${HEXtoRGB(EventTemplatesColorMap.get(o.extendedProps.courseID), colorFilterBrightness, _colorBrightnessVal).join(",")})`, */}
+                            <p key={i + "-course"} style={{ fontSize: "12px", marginLeft: "15px", marginBottom: "0" }}>
                             {function(){
                               if(o.extendedProps.building && o.extendedProps.room ) return (<span onClick={() => goToEvent(o.extendedProps.building, o.extendedProps.room)} className="underlineText"><b>{o.extendedProps.building + "-" + o.extendedProps.room}</b></span>)
                               return ""

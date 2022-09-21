@@ -27,6 +27,9 @@
     background: var(--dark-1);
     color: var(--textcolor-1)!important;
  }
+ .card > .collapse  {
+   background: var(--dark-1);
+}
  .underlineText:hover {
     color: var(--linkColor)!important;
  }

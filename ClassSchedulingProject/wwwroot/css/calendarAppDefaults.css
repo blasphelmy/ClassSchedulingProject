@@ -1,7 +1,13 @@
 body {
     overflow-x: hidden;
+    background-color: #f5f5f5;
 }
-
+.navbar {
+   background-color: #f5f5f5!important;
+}
+select, option, input {
+   background-color: #f5f5f5;
+}
 input[type=range] {
    box-sizing: border-box;
    font-size: 16px;
@@ -62,6 +68,7 @@ input[type=range] {
 .card > .collapse  {
    /* background-color: blue!important; */
    font-weight:500;
+   background-color: #f3f3f3;
 }
 #eventPopUP {
    height: 405px;
@@ -73,7 +80,7 @@ input[type=range] {
    overflow: hidden;
 }
 #EventsByUserPopUp {
-   background: white;
+   background: rgb(223, 223, 223);
    max-height: 505px;
    max-width: 990px;
 }
@@ -142,7 +149,7 @@ input[type=range] {
    overflow-y: scroll;
 }
 .ActiveEventsListItem {
-   border-left: solid 2px;
+   border-left: solid 0px;
    padding-left: 9px;
    color: white;
    overflow: hidden;
@@ -213,7 +220,7 @@ input[type=range] {
    position: fixed;
    height: 28px;
    width: calc(100% - 2px); /*Compensate for body 1px border*/
-   background: #f3f3f3;
+   background: #dddddd;
    z-index: 100;
    width: 100%;
    bottom: 0;

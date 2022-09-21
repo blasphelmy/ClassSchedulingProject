@@ -84,7 +84,7 @@ function createEventMigrationWindow(){
         let sourceQuarter = Number($("#eventMigration_Source_Quarter").val())
         let targetYear = Number($("#eventMigration_Source_Year").val())
         let targetQuarter = Number($("#eventMigration_Source_Quarter").val())
-        let fetch = $`/home/migrateEvents?year=${sourceYear}&quarter=${sourceQuarter}&targetYear=${targetYear}&targetQuarter=${targetQuarter}`
+        let fetch = $`/home/migrateEvents?year=${sourceYear}&quarter=${sourceQuarter}&targetYear=${targetYear}&targetQuarter=${targetQuarter}&options=${options}`
 
     }
     function _renderEventMigrationWindow(){

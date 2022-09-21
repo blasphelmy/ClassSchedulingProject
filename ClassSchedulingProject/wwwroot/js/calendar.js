@@ -13,7 +13,7 @@
         this.EventMap = new Map();
         this.colorWheel = {
             //colors: ("#6a7b12 #29949b #8d77f3 #883bac #5f24f6 #ee8a29 #007acf".split(" ")),
-            colors: gColors,
+            colors: gColors.reverse(),
             default: "#ab4e68",
             locked: "",
             index: 0
